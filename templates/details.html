@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelPlanner — Детали путешествия</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}?v=1">
 </head>
 <body>
 
@@ -87,7 +87,9 @@
                         <i class="fa-solid fa-chevron-right item-arrow"></i>
                     </div>
                 </div>
-            </div> <div class="details-preview" style="background-image: url('{{ url_for('static', path='images/london.jpg') }}')">
+            </div>
+
+            <div class="details-preview" style="background-image: url('{{ url_for('static', path='images/london.jpg') }}')">
                 <div class="preview-overlay">
                     <h2>Путешествие в Великобританию</h2>
                     <p class="preview-date">
@@ -99,7 +101,39 @@
                 </div>
             </div>
 
-        </div> </main>
+        </div>
+    </main> <div class="routes-wrapper">
+        <hr>
+        <div class="routes-title">Созданные маршруты</div>
+
+        <div class="routes-grid">
+            {% if trips %}
+                {% for trip in trips %}
+                    <div class="custom-preview-card">
+                        <div class="custom-overlay">
+                            <h3>{{ trip.trip_name }}</h3>
+
+                            <p class="custom-route-date">
+                                <i class="fa-solid fa-location-dot"></i> {{ trip.destination }}
+                            </p>
+
+                            <p class="custom-route-date">
+                                <i class="fa-solid fa-calendar-day"></i> {{ trip.trip_date }}
+                            </p>
+
+                            {% if trip.budget %}
+                                <p class="custom-route-budget">
+                                    <i class="fa-solid fa-ruble-sign"></i> {{ trip.budget }} руб.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-routes">Вы еще не создали ни одного маршрута.</p>
+            {% endif %}
+        </div>
+    </div>
 
 </body>
 </html>

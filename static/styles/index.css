@@ -1,0 +1,15 @@
+@import url('./base.css');
+
+.content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+
+    svg {
+        fill: var(--secondary-color);
+        width: 72px;
+        height: 72px;
+        transform: rotate(45deg) translateY(-8px);
+    }
+}

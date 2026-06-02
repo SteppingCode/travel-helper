@@ -31,10 +31,10 @@ async def read_root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html", context={})
 
 
-@app.get("/api/trips")
-async def list_trips(db: Database = Depends(get_db)):
-    records = db.select("trips")
-    return [dict(row) for row in records]
+@app.get("/mytrips", response_class=HTMLResponse)
+async def read_my_trips(request: Request, db: Database = Depends(get_db)):
+    cards = db.select("trips")
+    return templates.TemplateResponse(request=request, name="mytrips.html", context={"cards": cards})
 
 
 @app.get('/favicon.ico', include_in_schema=False)

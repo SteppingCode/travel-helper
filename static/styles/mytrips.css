@@ -29,7 +29,7 @@
 
 .trips-controls {
   display: grid;
-  grid-template-columns: 1.7fr 1.5fr auto;
+  grid-template-columns: 1fr 1.5fr auto;
   gap: 16px;
   align-items: center;
 }
@@ -97,7 +97,7 @@
 }
 
 .filter-button {
-  width: 56px;
+  display: none;
 }
 
 .cards-list {
@@ -234,6 +234,12 @@
   background: #ffe9e9;
   color: #dc2626;
   border-color: transparent;
+
+  svg {
+    fill: rgb(200, 0, 0);
+    width: 32px;
+    height: 32px;
+  }
 }
 
 @media (max-width: 1100px) {

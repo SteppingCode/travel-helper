@@ -105,7 +105,7 @@ def initialize_database(db_path: str | None = None) -> None:
 if __name__ == "__main__":
     db = Database()
     db.add("trips", {
-        "name": "Test Trip",
+        "name": "Test Trip3",
         "city": "Test City",
         "country": "Test Country",
         "date_from": "2024-01-01",

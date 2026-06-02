@@ -1,0 +1,247 @@
+@import url("./base.css");
+
+.page-content {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 24px 32px 40px;
+}
+
+.trips-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page-top h1 {
+  font-size: 2.5rem;
+  color: #1f2937;
+}
+
+.trips-controls {
+  display: grid;
+  grid-template-columns: 1.7fr 1.5fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.search-box {
+  background: #ffffff;
+  border: 1px solid rgba(94, 131, 174, 0.24);
+  border-radius: 16px;
+  padding: 10px 16px;
+}
+
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #2a2a2a;
+  font-size: 1rem;
+}
+
+.status-tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(94, 131, 174, 0.35);
+  background: rgba(255, 255, 255, 0.92);
+  color: #2a2a2a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--secondary-color);
+  color: #f9f5ed;
+  border-color: transparent;
+}
+
+.view-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.icon-button {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  border: 1px solid rgba(94, 131, 174, 0.35);
+  background: #ffffff;
+  color: #2a2a2a;
+  cursor: pointer;
+}
+
+.icon-button.active {
+  background: var(--secondary-color);
+  color: #f9f5ed;
+  border-color: transparent;
+}
+
+.filter-button {
+  width: 56px;
+}
+
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.trip-card {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(94, 131, 174, 0.2);
+  box-shadow: 0 24px 45px rgba(94, 131, 174, 0.08);
+}
+
+.card-image {
+  min-height: 280px;
+  background-size: cover;
+  background-position: center;
+}
+
+.card-image-large {
+  background: radial-gradient(
+    circle at 35% 30%,
+    #f5f7fb 0%,
+    #dbe9f7 55%,
+    #6c8cb8 100%
+  );
+}
+
+.card-image-medium {
+  background: radial-gradient(
+    circle at 40% 30%,
+    #f7f6f4 0%,
+    #cee1f1 48%,
+    #5c88ba 100%
+  );
+}
+
+.card-image-small {
+  background: radial-gradient(
+    circle at 50% 34%,
+    #0f1934 0%,
+    #172d4e 35%,
+    #1f466f 100%
+  );
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 32px;
+  gap: 24px;
+}
+
+.card-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card-main h2 {
+  font-size: 2rem;
+  color: #1f2937;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(94, 131, 174, 0.15);
+  color: var(--secondary-color);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(42, 42, 42, 0.9);
+  font-size: 1rem;
+}
+
+.detail-item svg {
+  width: 22px;
+  height: 22px;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
+  border-radius: 16px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  background: var(--secondary-color);
+  color: #f9f5ed;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: var(--secondary-color);
+  border-color: rgba(94, 131, 174, 0.45);
+}
+
+.delete-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #ffe9e9;
+  color: #dc2626;
+  border-color: transparent;
+}
+
+@media (max-width: 1100px) {
+  .trips-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-card {
+    grid-template-columns: 1fr;
+  }
+}

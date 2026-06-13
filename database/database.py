@@ -1,13 +1,11 @@
 import glob
 import sqlite3
-from base64 import b64encode, b64decode
+from datetime import datetime
 from os import makedirs, path
 
 sql_dir = "sql"
-
 """
 checklists
-budget
 """
 
 def conn_db(db_path: str | None = None) -> sqlite3.Connection:
@@ -46,6 +44,7 @@ class Database:
 
     def add(self, table: str, data: dict) -> int:
         """Insert a row into the specified table and return the last row id."""
+        data.update({"created_at": datetime.now().isoformat()})
         columns = ", ".join(data.keys())
         placeholders = ", ".join("?" for _ in data)
         sql = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"

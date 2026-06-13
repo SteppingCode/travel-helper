@@ -81,6 +81,13 @@ header {
   }
 }
 
+.group_3 {
+  svg {
+    width: 68px !important;
+    height: 68px !important;
+  }
+}
+
 .menu {
   ul {
     display: flex;

@@ -5,6 +5,5 @@ CREATE TABLE IF NOT EXISTS users (
     phone TEXT UNIQUE NOT NULL,
     city TEXT,
     country TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    avatar LONGBLOB
+    created_at DATETIME NOT NULL
 );

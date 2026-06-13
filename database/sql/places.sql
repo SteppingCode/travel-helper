@@ -4,6 +4,5 @@ CREATE TABLE IF NOT EXISTS places (
     country VARCHAR(100) NOT NULL,
     rating FLOAT,
     description TEXT NOT NULL,
-    created_at DATETIME NOT NULL,
-    img LONGBLOB NOT NULL
+    created_at DATETIME NOT NULL
 );

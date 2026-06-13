@@ -7,6 +7,5 @@ CREATE TABLE IF NOT EXISTS trips (
     date_to DATE NOT NULL,
     created_at DATETIME NOT NULL,
     user_id INTEGER NOT NULL,
-    img LONGBLOB,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

@@ -124,8 +124,13 @@ h1{
   font-size: 1.1rem;
   font-weight: bold;
   margin: 0 0 6px 0;
+  
 }
-
+.place-name a{
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+}
 .place-rating {
   color: #f5c518;
   font-weight: bold;
@@ -240,4 +245,13 @@ h1{
   .search-bar {
     font-size: 15px;
   }
+}
+
+.searсh_{
+  border: 1px solid #5E83AE;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color:#f0f0f0;
 }

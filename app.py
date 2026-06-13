@@ -2,19 +2,14 @@ import io
 
 from pathlib import Path
 from uvicorn import run
-from fastapi import Depends, FastAPI, Request, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from database.database import Database, initialize_database
-from fastapi import FastAPI, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, Form, Request, UploadFile, File, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from datetime import date
 from typing import Optional
-import sqlite3
 
 app = FastAPI()
 
@@ -71,7 +66,7 @@ async def get_image(entity_type: str, image_id: int, db: Database = Depends(get_
         sql=f"select * from images i inner join image_links il on i.id = il.image_id where il.entity_type = {entity_type} and il.image_id = {image_id}",
         params=("fetchone",))
 
-# TODO: Ask ChatGPT How to make that when I add for example some post with image automatically adds a row in image_link and images tables?
+    # TODO: Ask ChatGPT How to make that when I add for example some post with image automatically adds a row in image_link and images tables?
 
     if not result:
         raise HTTPException(status_code=404, detail="Image not found")
@@ -102,17 +97,9 @@ async def favicon():
     return FileResponse('static/favicon.ico')
 
 
-if __name__ == '__main__':
-    run(app, host="0.0.0.0", port=8000, reload=True)
-
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return RedirectResponse(url="/details", status_code=303)
-
-
 @app.get("/create", response_class=HTMLResponse)
 async def create_page(request: Request):
-    return templates.TemplateResponse(request=request, name="index.html")
+    return templates.TemplateResponse(request=request, name="create_trip.html")
 
 
 @app.post("/create_route")
@@ -121,26 +108,19 @@ async def create_route(
         trip_name: str = Form(...),
         trip_date: date = Form(...),
         destination: str = Form(...),
-        budget: Optional[float] = Form(None)
+        budget: Optional[float] = Form(None),
+        db: Database = Depends(get_db)
 ):
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO trips (trip_name, trip_date, destination, budget) VALUES (?, ?, ?, ?)",
-            (trip_name, str(trip_date), destination, budget)
-        )
-        conn.commit()
-
-    return RedirectResponse(url="/details", status_code=303)
+    """
+    СОЗДАНИЕ ПУТЕШЕСТВИЯ
+    """
+    pass
+    # return RedirectResponse(url="/details", status_code=303)
 
 
 @app.get("/details", response_class=HTMLResponse)
-async def details(request: Request):
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM trips ORDER BY id DESC")
-        trips = cursor.fetchall()
+async def details(request: Request, db: Database = Depends(get_db)):
+    trips = db.select("trips")
 
     return templates.TemplateResponse(
         request=request,
@@ -149,6 +129,5 @@ async def details(request: Request):
     )
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+if __name__ == '__main__':
+    run(app, host="0.0.0.0", port=8000, reload=True)

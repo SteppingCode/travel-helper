@@ -1,5 +1,4 @@
 # Byte-compiled / optimized / DLL files
-.idea
 __pycache__/
 *.py[codz]
 *$py.class
@@ -222,3 +221,4 @@ __marimo__/
 
 #Databases
 *.db
+.idea/

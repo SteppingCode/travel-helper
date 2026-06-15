@@ -1,4 +1,5 @@
 import io
+import sqlite3
 
 from pathlib import Path
 from uvicorn import run
@@ -8,7 +9,7 @@ from database.database import Database, initialize_database
 from fastapi import FastAPI, Form, Request, UploadFile, File, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 app = FastAPI()
@@ -57,6 +58,8 @@ async def upload_file(image: UploadFile = File(...)):
         f.write(contents)
 
     return {"filename": image.filename}
+
+
 # TODO: Вынести вспомогательные функции в отдельный модуль
 @app.get("/{entity_type}/{image_id}")
 async def get_image(entity_type: str, image_id: int, db: Database = Depends(get_db)):
@@ -102,15 +105,21 @@ async def create_page(request: Request):
 @app.post("/create_route")
 async def create_route(
         request: Request,
-        # trip_name: str = Form(...),
-        # trip_date: date = Form(...),
-        # destination: str = Form(...),
-        # budget: Optional[float] = Form(None),
-        # db: Database = Depends(get_db)
+        trip_name: str = Form(...),
+        trip_date: date = Form(...),
+        destination: str = Form(...),
+        budget: Optional[float] = Form(None),
+        db: Database = Depends(get_db)
 ):
     """
     СОЗДАНИЕ ПУТЕШЕСТВИЯ
     """
+    try:
+        time_created = datetime.now()
+        db.add("trips", {"name": trip_name, "city": destination, "country": "TEST", "date_from": trip_date, "date_to": "2999-01-01", "created_at": time_created, "user_id": 1})
+
+    except sqlite3.Error as err:
+        print(err)
     return RedirectResponse(url="/details", status_code=303)
 
 
@@ -125,12 +134,20 @@ async def details(request: Request, db: Database = Depends(get_db)):
     )
 
 
-
 @app.get("/places", response_class=HTMLResponse)
 async def places(request: Request):
     pass
     # TODO: Починить страницу
     # return templates.TemplateResponse(request=request, name="place.html")
+
+
+@app.get("/trip/{trip_id}")
+async def get_trip(request: Request, trip_id: int, db: Database = Depends(get_db)):
+    pass
+
+@app.get("/budget")
+async def budget_page(request: Request, db: Database = Depends(get_db)):
+    pass
 
 
 if __name__ == '__main__':

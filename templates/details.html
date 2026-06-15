@@ -1,139 +1,119 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TravelPlanner — Детали путешествия</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}?v=1">
-</head>
-<body>
+{% extends 'base.html' %} {% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+<title>TravelPlanner</title>
+<style>
+    .wrapper {
+        flex-direction: column;
+    }
+</style>
+{% endblock %} {% block content %}
+<main class="main-container">
+    <div class="details-card">
 
-    <header class="navbar">
-        <div class="nav-left">
-            <i class="fa-solid fa-bars burger-menu"></i>
-            <div class="logo">
-                <i class="fa-solid fa-plane"></i> TravelPlanner
-            </div>
-        </div>
-        <nav class="nav-links navbar-menu">
-            <a href="/">Главная</a>
-            <a href="/details" class="active">Мои путешествия</a>
-            <a href="/create">Создать поездку</a>
-            <a href="#">Места</a>
-        </nav>
-        <div class="nav-right">
-            <i class="fa-solid fa-circle-user profile-icon"></i>
-        </div>
-    </header>
+        <div class="details-info">
+            <h2>Детали вашего путешествия <i class="fa-solid fa-earth-americas title-icon"></i></h2>
+            <p class="subtitle">Подробная информация о поездке с местами и чек-листом</p>
 
-    <main class="main-container">
-        <div class="details-card">
-
-            <div class="details-info">
-                <h2>Детали вашего путешествия <i class="fa-solid fa-earth-americas title-icon"></i></h2>
-                <p class="subtitle">Подробная информация о поездке с местами и чек-листом</p>
-
-                <div class="menu-list">
-                    <div class="menu-item">
-                        <div class="item-left">
-                            <div class="item-icon">
-                                <i class="fa-solid fa-location-dot"></i>
-                            </div>
-                            <div>
-                                <h3>Места поездки</h3>
-                                <p>Все локации и достопримечательности</p>
-                            </div>
+            <div class="menu-list">
+                <div class="menu-item">
+                    <div class="item-left">
+                        <div class="item-icon">
+                            <i class="fa-solid fa-location-dot"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
-                    </div>
-
-                    <div class="menu-item">
-                        <div class="item-left">
-                            <div class="item-icon">
-                                <i class="fa-solid fa-clipboard-list"></i>
-                            </div>
-                            <div>
-                                <h3>Чек-лист</h3>
-                                <p>Список дел и важных вещей</p>
-                            </div>
+                        <div>
+                            <h3>Места поездки</h3>
+                            <p>Все локации и достопримечательности</p>
                         </div>
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
                     </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
 
-                    <div class="menu-item">
-                        <div class="item-left">
-                            <div class="item-icon">
-                                <i class="fa-solid fa-calendar-days"></i>
-                            </div>
-                            <div>
-                                <h3>Даты поездки</h3>
-                                <p>15 - 28 июня 2026</p>
-                            </div>
+                <div class="menu-item">
+                    <div class="item-left">
+                        <div class="item-icon">
+                            <i class="fa-solid fa-clipboard-list"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
+                        <div>
+                            <h3>Чек-лист</h3>
+                            <p>Список дел и важных вещей</p>
+                        </div>
                     </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
 
-                    <div class="menu-item">
-                        <div class="item-left">
-                            <div class="item-icon">
-                                <i class="fa-solid fa-user-group"></i>
-                            </div>
-                            <div>
-                                <h3>Участники</h3>
-                                <p>2 путешественника</p>
-                            </div>
+                <div class="menu-item">
+                    <div class="item-left">
+                        <div class="item-icon">
+                            <i class="fa-solid fa-calendar-days"></i>
                         </div>
-                        <i class="fa-solid fa-chevron-right item-arrow"></i>
+                        <div>
+                            <h3>Даты поездки</h3>
+                            <p>15 - 28 июня 2026</p>
+                        </div>
                     </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-left">
+                        <div class="item-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <div>
+                            <h3>Участники</h3>
+                            <p>2 путешественника</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right item-arrow"></i>
                 </div>
             </div>
+        </div>
 
-            <div class="details-preview" style="background-image: url('{{ url_for('static', path='images/london.jpg') }}')">
-                <div class="preview-overlay">
-                    <h2>Путешествие в Великобританию</h2>
-                    <p class="preview-date">
-                        <i class="fa-solid fa-calendar-day"></i> 15 - 28 июня 2026
-                        <span class="separator">•</span>
-                        <i class="fa-solid fa-hourglass-half"></i> 14 дней
-                    </p>
-                    <p class="preview-desc">Изучаем культуру, архитектуру и национальную кухню</p>
-                </div>
+        <div class="details-preview" style="background-image: url('{{ url_for('static', path='images/london.jpg') }}')">
+            <div class="preview-overlay">
+                <h2>Путешествие в Великобританию</h2>
+                <p class="preview-date">
+                    <i class="fa-solid fa-calendar-day"></i> 15 - 28 июня 2026
+                    <span class="separator">•</span>
+                    <i class="fa-solid fa-hourglass-half"></i> 14 дней
+                </p>
+                <p class="preview-desc">Изучаем культуру, архитектуру и национальную кухню</p>
             </div>
-
         </div>
-    </main> <div class="routes-wrapper">
-        <hr>
-        <div class="routes-title">Созданные маршруты</div>
 
-        <div class="routes-grid">
-            {% if trips %}
-                {% for trip in trips %}
-                    <div class="custom-preview-card">
-                        <div class="custom-overlay">
-                            <h3>{{ trip.trip_name }}</h3>
-
-                            <p class="custom-route-date">
-                                <i class="fa-solid fa-location-dot"></i> {{ trip.destination }}
-                            </p>
-
-                            <p class="custom-route-date">
-                                <i class="fa-solid fa-calendar-day"></i> {{ trip.trip_date }}
-                            </p>
-
-                            {% if trip.budget %}
-                                <p class="custom-route-budget">
-                                    <i class="fa-solid fa-ruble-sign"></i> {{ trip.budget }} руб.
-                                </p>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p class="no-routes">Вы еще не создали ни одного маршрута.</p>
-            {% endif %}
-        </div>
     </div>
+</main>
+<div class="routes-wrapper">
+    <hr>
+    <div class="routes-title">Созданные маршруты</div>
 
-</body>
-</html>
+    <div class="routes-grid">
+        {% if trips %}
+        {% for trip in trips %}
+        <div class="custom-preview-card">
+            <div class="custom-overlay">
+                <h3>{{ trip.trip_name }}</h3>
+
+                <p class="custom-route-date">
+                    <i class="fa-solid fa-location-dot"></i> {{ trip.destination }}
+                </p>
+
+                <p class="custom-route-date">
+                    <i class="fa-solid fa-calendar-day"></i> {{ trip.trip_date }}
+                </p>
+
+                {% if trip.budget %}
+                <p class="custom-route-budget">
+                    <i class="fa-solid fa-ruble-sign"></i> {{ trip.budget }} руб.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="no-routes">Вы еще не создали ни одного маршрута.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

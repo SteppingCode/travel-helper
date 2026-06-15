@@ -57,16 +57,13 @@ async def upload_file(image: UploadFile = File(...)):
         f.write(contents)
 
     return {"filename": image.filename}
-
-
+# TODO: Вынести вспомогательные функции в отдельный модуль
 @app.get("/{entity_type}/{image_id}")
 async def get_image(entity_type: str, image_id: int, db: Database = Depends(get_db)):
     """Getting entity's image"""
     result = db.execute(
         sql=f"select * from images i inner join image_links il on i.id = il.image_id where il.entity_type = {entity_type} and il.image_id = {image_id}",
         params=("fetchone",))
-
-    # TODO: Ask ChatGPT How to make that when I add for example some post with image automatically adds a row in image_link and images tables?
 
     if not result:
         raise HTTPException(status_code=404, detail="Image not found")
@@ -105,17 +102,16 @@ async def create_page(request: Request):
 @app.post("/create_route")
 async def create_route(
         request: Request,
-        trip_name: str = Form(...),
-        trip_date: date = Form(...),
-        destination: str = Form(...),
-        budget: Optional[float] = Form(None),
-        db: Database = Depends(get_db)
+        # trip_name: str = Form(...),
+        # trip_date: date = Form(...),
+        # destination: str = Form(...),
+        # budget: Optional[float] = Form(None),
+        # db: Database = Depends(get_db)
 ):
     """
     СОЗДАНИЕ ПУТЕШЕСТВИЯ
     """
-    pass
-    # return RedirectResponse(url="/details", status_code=303)
+    return RedirectResponse(url="/details", status_code=303)
 
 
 @app.get("/details", response_class=HTMLResponse)
@@ -127,6 +123,14 @@ async def details(request: Request, db: Database = Depends(get_db)):
         name="details.html",
         context={"trips": trips}
     )
+
+
+
+@app.get("/places", response_class=HTMLResponse)
+async def places(request: Request):
+    pass
+    # TODO: Починить страницу
+    # return templates.TemplateResponse(request=request, name="place.html")
 
 
 if __name__ == '__main__':

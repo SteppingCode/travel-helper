@@ -1,40 +1,12 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %} {% block head %}
     <link rel="stylesheet" href = "{{ url_for('static', filename='place.css') }}">
-    <title>TravelPlanner</title>
-
-</head>
-<body>
     <style>
         body{
             background-image: url("/static/photo/фон2.jpg");
               background-size:cover;
         }
     </style>
-    <header>
-        <nav>
-            <div class="logo">
-                <img src="static\photo\меню.png" alt="Logo_menu" >
-                <img src= "static\photo\самолет_лого.png" alt="Logo" style="transform: rotate(45deg);">
-                <span>TravelPlanner</span>
-            </div>
-            <nav>
-                 <ul>
-                    <li><a href="/">Главная</a></li>
-                    <li><a href="/my-trips">Мои путешествия</a></li>
-                    <li><a href="/create-trip">Создать поездку</a></li>
-                    <li><a href="/popular_place">Места</a></li>
-                </ul>
-            </nav>
-            <div class="profile-icon">
-                <img src="static\photo\profile.png" alt="Profile" width="30" height="30">
-                
-            </div>
-        </nav>
-    </header>
+{% endblock %} {% block content %}
     <section>
         <h1>Популярные места</h1>
         <input type="text" class="search-bar" placeholder="Поиск мест...">
@@ -155,6 +127,4 @@
             
         </div>
     </section>
-    
-</body>
-</html>
+{% endblock %}

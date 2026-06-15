@@ -4,7 +4,7 @@
         <meta charset = "UTF-8">
         <meta name="viewport" content = "width=devise-width, initial -scale=1.0">
         <title>TravelPlanner</title>
-        <link rel="stylesheet" href = "{{ url_for('static', filename='budget.css') }}">
+        <link rel="stylesheet" href="/static/budget.css">
     </head>
     <body>
         <div class="overlay-blend"></div>
@@ -17,8 +17,8 @@
         <header>
             <nav>
                 <div class = "logo">
-                    <img src ="static\photo\меню.png" alt = "logo_menu">
-                    <img   src="static\photo\самолет_лого.png" alt="Logo"  style="transform: rotate(45deg)">
+                    <img src ="static/photo/меню.png" alt = "logo_menu">
+                    <img   src="static/photo/самолет_лого.png" alt="Logo"  style="transform: rotate(45deg)">
                     <span>TravelPlanner</span>
                 </div>
                 <nav>
@@ -26,11 +26,11 @@
                         <li><a href = "/">Главная</a></li>
                         <li><a href="/my_trups">Мои путешствия</a></li>
                         <li><a href = "/treate_trips">Создать поездку</a></li>
-                        <li><a href = "popular_place">Места</a></li>
+                        <li><a href = "/popular_places">Места</a></li>
                     </ul>
                 </nav>
                 <div class="prof_icon">
-                    <img src = "static\photo\profile.png" alt="icon_prof" width="30" height="30">
+                    <img src = "static/photo/profile.png" alt="icon_prof" width="30" height="30">
                 </div>
                 
             </nav>

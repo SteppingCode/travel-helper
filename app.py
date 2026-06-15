@@ -89,7 +89,7 @@ async def read_root(request: Request, db: Database = Depends(get_db)):
 @app.get("/mytrips", response_class=HTMLResponse)
 async def read_my_trips(request: Request, db: Database = Depends(get_db)):
     trips = db.select("trips")
-    return templates.TemplateResponse(request=request, name="mytrips.html", context={"trips": trips})
+    return templates.TemplateResponse(request=request, name="trips.html", context={"trips": trips})
 
 
 @app.get('/favicon.ico', include_in_schema=False)
@@ -133,12 +133,24 @@ async def details(request: Request, db: Database = Depends(get_db)):
         context={"trips": trips}
     )
 
-
 @app.get("/places", response_class=HTMLResponse)
-async def places(request: Request):
-    pass
+async def places(request: Request, q: Optional[str] = None, db: Database = Depends(get_db)):
     # TODO: Починить страницу
-    # return templates.TemplateResponse(request=request, name="place.html")
+    places = db.select("places")
+    filtered_places = places
+
+    if q and q.strip():  # Защита от пустой строки
+        q_lower = q.lower().strip()
+        filtered_places = [
+            place for place in places
+            if (q_lower in place.get("name", "").lower() or
+                q_lower in place.get("country", "").lower() or
+                q_lower in place.get("description", "").lower() or
+                any(q_lower in tag.lower() for tag in place.get("tags", [])))
+        ]
+
+    return templates.TemplateResponse(request=request, name="places.html",
+                                      context={"places": filtered_places, "query": q or ""})
 
 
 @app.get("/trip/{trip_id}")
@@ -147,7 +159,7 @@ async def get_trip(request: Request, trip_id: int, db: Database = Depends(get_db
 
 @app.get("/budget")
 async def budget_page(request: Request, db: Database = Depends(get_db)):
-    pass
+    return templates.TemplateResponse(request=request, name="budget.html")
 
 
 if __name__ == '__main__':

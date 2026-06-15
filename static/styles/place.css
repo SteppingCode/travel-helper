@@ -1,75 +1,3 @@
-/* Основные стили */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  line-height: 1.5;
-}
-
-header {
-  background: #5E83AE;
-  color: white;
-  padding: 12px 15px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Логотип */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: white;
-}
-
-.logo img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-}
-
-.logo span {
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-/* Меню */
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-}
-
-li a {
-  color: white;
-  text-decoration: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-li a:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
 /* Поиск */
 .search-bar {
   width: 100%;
@@ -78,7 +6,7 @@ li a:hover {
   margin: 15px auto;
   border: 1px solid #ddd;
   border-radius: 50px;
-  font-size: 16px; /* важно для iOS */
+  font-size: 16px;
   display: block;
 }
 
@@ -159,16 +87,6 @@ h1{
 
 /* ==================== АДАПТИВ ==================== */
 
-/* Мобильное меню */
-.hamburger {
-  display: none;
-  font-size: 28px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
 /* Планшеты и мобильные */
 @media (max-width: 992px) {
   .places-grid {
@@ -179,37 +97,6 @@ h1{
 }
 
 @media (max-width: 768px) {
-  nav {
-    padding: 8px 0;
-  }
-
-  .hamburger {
-    display: block;
-  }
-
-  ul {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #5E83AE;
-    flex-direction: column;
-    padding: 15px 20px;
-    gap: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: none; /* по умолчанию скрыто */
-  }
-
-  /* Показываем меню при активном классе */
-  ul.active {
-    display: flex;
-  }
-
-  li a {
-    padding: 12px 16px;
-    font-size: 1.1rem;
-  }
-
   .search-bar {
     margin: 12px 15px;
     padding: 14px 18px;
@@ -229,10 +116,6 @@ h1{
 
   .place-card img {
     height: 190px;
-  }
-
-  .logo span {
-    font-size: 1.1rem;
   }
 
   .place-name {

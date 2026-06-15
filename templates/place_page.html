@@ -1,33 +1,7 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/detail.css">
+{% extends 'base.html' %}{% block head %}
+  <link rel="stylesheet" href="/styles/detail.css">
   <title>{{ place.name }} — {{ place.country }}</title>
-</head>
-<body>
-
-<header>
-  <nav>
-    <div class="logo">
-      <!-- Важно: используйте прямые слеши /static/... -->
-      <img src="{{ url_for('static', path='/photo/меню.png') }}" alt="logo_menu">
-      <img src="{{ url_for('static', path='/photo/самолет_лого.png') }}" alt="Logo" style="transform: rotate(45deg)">
-      <span>TravelPlanner</span>
-    </div>
-    <ul>
-      <li><a href="/">Главная</a></li>
-      <li><a href="/my_trups">Мои путешествия</a></li>
-      <li><a href="/treate_trips">Создать поездку</a></li>
-      <li><a href="/places">Места</a></li>
-    </ul>
-    <div class="prof_icon">
-      <img src="{{ url_for('static', path='/photo/profile.png') }}" alt="icon_prof" width="30" height="30">
-    </div>
-  </nav>
-</header>
-
+{% endblock %}{% block content %}
 <!-- Главное фото: пробуем сначала из inf, если нет — из places -->
 <img
   src="{{ url_for('static', path=place.main_photo) }}"
@@ -96,10 +70,4 @@
     {% endif %}
   </div>
 </div>
-
-<footer>
-  &copy; 2026 Travel Helper
-</footer>
-
-</body>
-</html>
+{% endblock %}

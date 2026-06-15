@@ -1,47 +1,47 @@
 {% extends "base.html" %} {% block head %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>Создайте свою поездку</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles/style.css') }}">
 {% endblock %} {% block content %}
-    <main class="main-container">
-        <div class="hero-card" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('{{ url_for('static', path='images/background.jpg') }}');">
+<main class="main-container">
+    <div class="hero-card" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('{{ url_for('static', path='assets/background.jpg') }}');">
 
-            <h2>Создайте свою идеальную поездку! <i class="fa-solid fa-route"></i></h2>
+        <h2>Создайте свою идеальную поездку! <i class="fa-solid fa-route"></i></h2>
 
-            <form action="/create_route" method="POST" class="grid-form">
+        <form action="/create_route" method="POST" class="grid-form">
 
-                <div class="input-field">
-                    <i class="fa-solid fa-pen icon"></i>
-                    <input type="text" name="trip_name" placeholder="Название поездки..." required>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
-                </div>
+            <div class="input-field">
+                <i class="fa-solid fa-pen icon"></i>
+                <input type="text" name="trip_name" placeholder="Название поездки..." required>
+                <i class="fa-solid fa-chevron-down arrow"></i>
+            </div>
 
-                <div class="input-field" onclick="this.querySelector('input').showPicker()">
-                    <i class="fa-solid fa-calendar-days icon"></i>
-                    <input type="date" name="trip_date" placeholder="Выбор даты...">
-                    <i class="fa-solid fa-chevron-down arrow"></i>
-                </div>
+            <div class="input-field" onclick="this.querySelector('input').showPicker()">
+                <i class="fa-solid fa-calendar-days icon"></i>
+                <input type="date" name="trip_date" placeholder="Выбор даты...">
+                <i class="fa-solid fa-chevron-down arrow"></i>
+            </div>
 
-                <div class="input-field">
-                    <i class="fa-solid fa-location-dot icon"></i>
-                    <input type="text" name="destination" placeholder="Пункт назначения..." required>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
-                </div>
+            <div class="input-field">
+                <i class="fa-solid fa-location-dot icon"></i>
+                <input type="text" name="destination" placeholder="Пункт назначения..." required>
+                <i class="fa-solid fa-chevron-down arrow"></i>
+            </div>
 
-                <div class="input-field">
-                    <i class="fa-solid fa-dollar-sign icon"></i>
-                    <input type="number" name="budget" placeholder="Бюджет...">
-                    <i class="fa-solid fa-chevron-down arrow"></i>
-                </div>
+            <div class="input-field">
+                <i class="fa-solid fa-dollar-sign icon"></i>
+                <input type="number" name="budget" placeholder="Бюджет...">
+                <i class="fa-solid fa-chevron-down arrow"></i>
+            </div>
 
-                <div class="button-container">
-                    <button type="submit" class="submit-btn">
-                        Создать маршрут <br>
-                        <i class="fa-solid fa-briefcase"></i>
-                    </button>
-                </div>
+            <div class="button-container">
+                <button type="submit" class="submit-btn">
+                    Создать маршрут <br>
+                    <i class="fa-solid fa-briefcase"></i>
+                </button>
+            </div>
 
-            </form>
-        </div>
-    </main>
+        </form>
+    </div>
+</main>
 {% endblock %}

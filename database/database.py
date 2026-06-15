@@ -103,6 +103,7 @@ def initialize_database(db_path: str | None = None) -> None:
 
 if __name__ == "__main__":
     db = Database()
+    # Добавление записи в таблицу trips
     db.add("trips", {
         "name": "Test Trip3",
         "city": "Test City",
@@ -110,6 +111,5 @@ if __name__ == "__main__":
         "date_from": "2024-01-01",
         "date_to": "2024-01-10",
         "created_at": "2024-01-01T00:00:00",
-        "user_id": 1,
-        "img": None
+        "user_id": 1
     })

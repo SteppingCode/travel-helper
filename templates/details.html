@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block head %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='styles/style.css') }}">
 <title>TravelPlanner</title>
 <style>
     .wrapper {
@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <div class="details-preview" style="background-image: url('{{ url_for('static', path='images/london.jpg') }}')">
+        <div class="details-preview" style="background-image: url('{{ url_for('static', path='assets/london.jpg') }}')">
             <div class="preview-overlay">
                 <h2>Путешествие в Великобританию</h2>
                 <p class="preview-date">

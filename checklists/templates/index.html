@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чек-лист путешественника</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #F9F5ED;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0;
+            color: #2A2A2A;
+        }
+
+        /* Header styles */
+        header {
+            background-color: #2A2A2A;
+            padding: 15px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 35px;
+            width: auto;
+        }
+
+        .logo span {
+            color: #F9F5ED;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        header nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+
+        header nav ul li a {
+            color: #F9F5ED;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 5px 10px;
+        }
+
+        header nav ul li a:hover {
+            color: #5E83AE;
+        }
+
+        .prof_icon {
+            display: flex;
+            align-items: center;
+        }
+
+        .prof_icon img {
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .prof_icon img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2A2A2A;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #5E83AE;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background-color: #2A2A2A;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .category-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #5E83AE;
+            border-bottom: 2px solid #5E83AE;
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-title .settings-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: inline-block;
+        }
+
+        .category-title .settings-icon.show {
+            opacity: 1;
+        }
+
+        .category-title .settings-icon img {
+            width: 100%;
+            height: 100%;
+            filter: invert(1);
+        }
+
+        .checklist-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #3a3a3a;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .item-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-main input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #5E83AE;
+        }
+
+        .item-text {
+            font-size: 1rem;
+            color: #F9F5ED;
+            flex: 1;
+        }
+
+        .item-text.done {
+            text-decoration: line-through;
+            color: #5E83AE;
+        }
+
+        .icon-placeholder {
+            width: 28px;
+            height: 28px;
+            background-color: #4a4a4a;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #5E83AE;
+        }
+
+        .user-data-input {
+            margin-top: 10px;
+            margin-left: 40px;
+        }
+
+        .user-data-input input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #5E83AE;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            background-color: #3a3a3a;
+            color: #F9F5ED;
+            transition: border-color 0.2s;
+        }
+
+        .user-data-input input:focus {
+            outline: none;
+            border-color: #F9F5ED;
+        }
+
+        .user-data-input input::placeholder {
+            color: #888;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-save {
+            background-color: #5E83AE;
+            color: #2A2A2A;
+        }
+
+        .btn-save:hover {
+            background-color: #4a6e94;
+            transform: scale(1.02);
+        }
+
+        .btn-reset {
+            background-color: #3a3a3a;
+            color: #F9F5ED;
+        }
+
+        .btn-reset:hover {
+            background-color: #4a4a4a;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            color: #5E83AE;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 15px;
+            }
+            header {
+                padding: 10px 20px;
+            }
+            header nav ul {
+                gap: 15px;
+            }
+            header nav ul li a {
+                font-size: 0.9rem;
+            }
+            .logo span {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="{{ url_for('static', filename='photo/меню.png') }}" alt="logo_menu">
+                <img src="{{ url_for('static', filename='photo/самолет_лого.png') }}" alt="Logo" style="transform: rotate(45deg)">
+                <span>TravelPlanner</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">Главная</a></li>
+                    <li><a href="/my_trups">Мои путешествия</a></li>
+                    <li><a href="/treate_trips">Создать поездку</a></li>
+                    <li><a href="/place">Места</a></li>
+                </ul>
+            </nav>
+            <div class="prof_icon">
+                <img src="{{ url_for('static', filename='photo/profile.png') }}" alt="icon_prof" width="30" height="30">
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>🗺️ Чек-лист путешественника</h1>
+        <p class="subtitle">Подготовься к поездке со всем необходимым</p>
+
+        <form method="POST" id="checklistForm">
+            <div class="checklist-grid">
+                {% for category, items in checklist.items() %}
+                <div class="category-card" data-category="{{ category }}">
+                    <div class="category-title">
+                        {{ category }}
+                        <span class="settings-icon" id="settings-{{ loop.index }}">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235E83AE'%3E%3Cpath d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E" alt="settings">
+                        </span>
+                    </div>
+                    {% for idx, item in enumerate(items) %}
+                    <div class="checklist-item" data-category="{{ category }}" data-index="{{ idx }}">
+                        <div class="item-main">
+                            <div class="icon-placeholder"></div>
+                            <input type="checkbox"
+                                   name="{{ category }}_{{ idx }}_done"
+                                   id="check_{{ category }}_{{ idx }}"
+                                   {% if item.done %}checked{% endif %}
+                                   onchange="handleCheckboxChange(this)">
+                            <label for="check_{{ category }}_{{ idx }}"
+                                   class="item-text {% if item.done %}done{% endif %}">
+                                {{ item.text }}
+                            </label>
+                        </div>
+                        <div class="user-data-input">
+                            <input type="text"
+                                   name="{{ category }}_{{ idx }}_data"
+                                   value="{{ item.user_data }}"
+                                   placeholder="Введите свои данные..."
+                                   oninput="handleUserDataChange(this)">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-save">💾 Сохранить изменения</button>
+                <a href="{{ url_for('reset') }}" class="btn btn-reset" onclick="return confirm('Сбросить все данные?')">🔄 Сбросить чек-лист</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Функция для проверки, был ли изменен элемент
+        function hasItemChanged(element) {
+            const item = element.closest('.checklist-item');
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            const textInput = item.querySelector('.user-data-input input');
+
+            // Проверяем, был ли изменен чекбокс или текстовое поле
+            return checkbox.defaultChecked !== checkbox.checked ||
+                   textInput.defaultValue !== textInput.value;
+        }
+
+        // Обработчик изменения чекбокса
+        function handleCheckboxChange(checkbox) {
+            const item = checkbox.closest('.checklist-item');
+            const label = item.querySelector('.item-text');
+
+            // Обновляем стиль текста
+            if (checkbox.checked) {
+                label.classList.add('done');
+            } else {
+                label.classList.remove('done');
+            }
+
+            // Показываем иконку настроек
+            showSettingsIcon(checkbox);
+        }
+
+        // Обработчик изменения текстового поля
+        function handleUserDataChange(input) {
+            showSettingsIcon(input);
+        }
+
+        // Функция для показа иконки настроек
+        function showSettingsIcon(element) {
+            const categoryCard = element.closest('.category-card');
+            const settingsIcon = categoryCard.querySelector('.settings-icon');
+
+            // Проверяем, есть ли изменения в этой категории
+            const items = categoryCard.querySelectorAll('.checklist-item');
+            let hasChanges = false;
+
+            items.forEach(item => {
+                if (hasItemChanged(item)) {
+                    hasChanges = true;
+                }
+            });
+
+            // Показываем или скрываем иконку
+            if (hasChanges) {
+                settingsIcon.classList.add('show');
+            } else {
+                settingsIcon.classList.remove('show');
+            }
+        }
+
+        // Проверяем все категории при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryCards = document.querySelectorAll('.category-card');
+            categoryCards.forEach(card => {
+                const items = card.querySelectorAll('.checklist-item');
+                let hasChanges = false;
+
+                items.forEach(item => {
+                    if (hasItemChanged(item)) {
+                        hasChanges = true;
+                    }
+                });
+
+                const settingsIcon = card.querySelector('.settings-icon');
+                if (hasChanges) {
+                    settingsIcon.classList.add('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

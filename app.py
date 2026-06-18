@@ -38,6 +38,26 @@ def startup_event():
 #
 #     return RedirectResponse(url="/", status_code=302)
 
+@app.get("/places", response_class=HTMLResponse)
+async def places(request: Request, q: Optional[str] = None, db: Database = Depends(get_db)):
+    places = db.select("place")
+    filtered_places = places
+    if q and q.strip():  # Защита от пустой строки
+        q_lower = q.lower().strip()
+        filtered_places = [
+            place for place in places
+            if (q_lower in place.get("city", "").lower() or
+                q_lower in place.get("country", "").lower() or
+                q_lower in place.get("descriptions", "").lower() or
+                q_lower in str(place.get("tags", "")).lower())
+        ]
+
+    return templates.TemplateResponse(
+        request=request,
+        name="places.html",
+        context={"places": filtered_places, "query": q or ""}
+    )
+
 # ===EXAMPLE===
 @app.post("/upload")
 async def upload_file(image: UploadFile = File(...)):
@@ -126,26 +146,6 @@ async def details(request: Request, db: Database = Depends(get_db)):
     )
 
 
-@app.get("/places", response_class=HTMLResponse, tags=["Public"])
-async def places(request: Request, q: Optional[str] = None, db: Database = Depends(get_db)):
-    # TODO: Починить страницу
-    places = db.select("places")
-    filtered_places = places
-
-    if q and q.strip():  # Защита от пустой строки
-        q_lower = q.lower().strip()
-        filtered_places = [
-            place for place in places
-            if (q_lower in place.get("name", "").lower() or
-                q_lower in place.get("country", "").lower() or
-                q_lower in place.get("description", "").lower() or
-                any(q_lower in tag.lower() for tag in place.get("tags", [])))
-        ]
-
-    return templates.TemplateResponse(request=request, name="places.html",
-                                      context={"places": filtered_places, "query": q or ""})
-
-
 @app.get("/trip/{trip_id}", tags=["Auth"])
 async def get_trip(request: Request, trip_id: int, db: Database = Depends(get_db)):
     pass
@@ -154,7 +154,3 @@ async def get_trip(request: Request, trip_id: int, db: Database = Depends(get_db
 @app.get("/budget", tags=["Auth"])
 async def budget_page(request: Request, db: Database = Depends(get_db)):
     return templates.TemplateResponse(request=request, name="budget.html")
-
-
-if __name__ == '__main__':
-    run(app, host="0.0.0.0", port=8000, reload=True)

@@ -8,23 +8,44 @@
   border-radius: 50px;
   font-size: 16px;
   display: block;
+  align-items: center;
+}
+.places-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+  min-height: 300px;           /* предотвращает сильное схлопывание */
 }
 
+.place-card {
+  display: block;
+  transition: all 0.25s ease;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.place-card.hidden {
+  display: none;
+}
 h1{
   padding: 20px;
 }
 /* Сетка мест */
 .places-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+   
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 20px;
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
+  margin-left: 20px;
  
 }
 
 .place-card {
+  display:block;
   border: 1px solid #5E83AE;
   border-radius: 12px;
   overflow: hidden;
@@ -92,6 +113,7 @@ h1{
   .places-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
+    overflow: auto;
     padding: 16px;
   }
 }
@@ -130,11 +152,3 @@ h1{
   }
 }
 
-.searсh_{
-  border: 1px solid #5E83AE;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s, box-shadow 0.3s;
-  background-color:#f0f0f0;
-}

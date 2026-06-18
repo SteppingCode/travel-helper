@@ -1,17 +1,18 @@
 .budget_section1 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
   padding: 20px;
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
   align-items: center;
   font-size: 26px;
+  
 }
 
-
-.budget_h1{
-  margin-left: 20px;
+.h1{
+  margin:20px;
+  margin-left: 100px;
 }
 
 .budget_h2{
@@ -54,18 +55,14 @@
     
 }
 
-.budget_section_1_3 {
-  align-items: center;
-  size: 36px;
-}
 
 .budget_section_1 {
   background-color: #ddd;
   background-blend-mode:screen;
   text-align: center;
+  
   border: 1px solid #5E83AE;
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s, box-shadow 0.3s;
 
@@ -85,6 +82,8 @@
 }
 
 .budget-distribution {
+  display: block;
+   
   background: #ddd;
   border-radius: 20px;
   padding: 20px;
@@ -92,8 +91,8 @@
   margin-bottom: 20px;
   border: 1px solid #5E83AE;
   max-width: 1400px;
-  
   margin-left: auto;
+  width:100%;
   margin-right: auto;
 }
 
@@ -224,13 +223,24 @@
   transition: width 0.4s ease;
 }
 .budget-section{
+  
   background-color: #ddd;
   max-width: 1400px;
   border:1px solid #5E83AE;
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
+  width:100%;
   margin-left: auto;
   margin-right: auto;
+}
+.par{
+  display: flex;
+  flex-direction: column; /* Ставит элементы друг под другом */
+  gap: 20px; /* Отступ между блоками (опционально) */
+}
+.main{
+  display: flex;
+  flex-direction: column; /* Ставит элементы друг под другом */
+  width: 100%;
 }

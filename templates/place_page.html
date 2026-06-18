@@ -1,0 +1,73 @@
+{% extends 'base.html' %}{% block head %}
+  <link rel="stylesheet" href="/styles/detail.css">
+  <title>{{ place.name }} — {{ place.country }}</title>
+{% endblock %}{% block content %}
+<!-- Главное фото: пробуем сначала из inf, если нет — из places -->
+<img
+  src="{{ url_for('static', path=place.main_photo) }}"
+  alt="{{ place.name }}"
+  class="hero-image"
+>
+
+<div class="container">
+  <!-- Заголовок и подзаголовок -->
+  <h1 class="destination-title">{{ place.name }}, {{ place.country }}</h1>
+  {% if place.description_subtitle %}
+    <p class="destination-subtitle">{{ place.description_subtitle }}</p>
+  {% endif %}
+
+  <!-- Галерея: используем поля из объединённого place -->
+  <div class="gallery">
+    {% if place.gallery_1 %}
+      <img src="{{ url_for('static', path=place.gallery_1) }}" alt="{{ place.name_photo_1 or 'Фото' }}">
+    {% endif %}
+    {% if place.gallery_2 %}
+      <img src="{{ url_for('static', path=place.gallery_2) }}" alt="{{ place.items_heading_2 or 'Фото' }}">
+    {% endif %}
+    {% if place.gallery_3 %}
+      <img src="{{ url_for('static', path=place.gallery_3) }}" alt="{{ place.items_heading_3 or 'Фото' }}">
+    {% endif %}
+  </div>
+
+  <!-- Описание -->
+  <div class="description">
+    <h2>О месте</h2>
+    <p>{{ place.description }}</p>
+  </div>
+
+  <!-- Достопримечательности -->
+  <div class="attractions">
+    <h2>Основные достопримечательности</h2>
+
+    {% if place.items_heading_1 %}
+      <div class="attraction-item">
+        <img src="{{ url_for('static', path=place.items_photo_1) }}" alt="{{ place.items_heading_1 }}">
+        <div class="attraction-content">
+          <h3>{{ place.items_heading_1 }}</h3>
+          <p>{{ place.items_description_1 }}</p>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if place.items_heading_2 %}
+      <div class="attraction-item">
+        <img src="{{ url_for('static', path=place.items_photo_2) }}" alt="{{ place.items_heading_2 }}">
+        <div class="attraction-content">
+          <h3>{{ place.items_heading_2 }}</h3>
+          <p>{{ place.items_description_2 }}</p>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if place.items_heading_3 %}
+      <div class="attraction-item">
+        <img src="{{ url_for('static', path=place.items_photo_3) }}" alt="{{ place.items_heading_3 }}">
+        <div class="attraction-content">
+          <h3>{{ place.items_heading_3 }}</h3>
+          <p>{{ place.items_description_3 }}</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

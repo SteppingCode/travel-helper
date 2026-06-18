@@ -1,162 +1,133 @@
-<! DOCTYPE html>
-<html lang = "ru">
-    <head>
-        <meta charset = "UTF-8">
-        <meta name="viewport" content = "width=devise-width, initial -scale=1.0">
-        <title>TravelPlanner</title>
-        <link rel="stylesheet" href="/static/budget.css">
-    </head>
-    <body>
-        <div class="overlay-blend"></div>
-        <style>
-            body{
-                background-image: url("/static/photo/фон2.jpg");
-                background-size: cover;
-            }
-        </style>
-        <header>
-            <nav>
-                <div class = "logo">
-                    <img src ="static/photo/меню.png" alt = "logo_menu">
-                    <img   src="static/photo/самолет_лого.png" alt="Logo"  style="transform: rotate(45deg)">
-                    <span>TravelPlanner</span>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href = "/">Главная</a></li>
-                        <li><a href="/my_trups">Мои путешствия</a></li>
-                        <li><a href = "/treate_trips">Создать поездку</a></li>
-                        <li><a href = "/popular_places">Места</a></li>
-                    </ul>
-                </nav>
-                <div class="prof_icon">
-                    <img src = "static/photo/profile.png" alt="icon_prof" width="30" height="30">
-                </div>
-                
-            </nav>
-        </header>
-        <section class = "budget_h1">
-            <h1 class = "h1">Планирование бюджета</h1>  
-            <div class = "budget_section1">
-                <div class = "budget_section_1">
-                    <div class = "val">₽</div>
-                    <div class="many">395K</div>
-                    <span class = "inf">Общий бюджет</span> 
-                    
-                </div>
-
-                <div class = "budget_section_1">
-                    <div class = "val3">₽</div>
-                    <div class="many">132K</div>
-                    <span class = "inf">Средний бюджет</span> 
-                </div>
-
-                 <div class = "budget_section_1">
-                    <div class = "val1">₽</div>
-                    <div class="many">395K</div>
-                    <span class = "inf">Запланировано</span> 
-                </div>
-
-                <div class = "budget_section_1">
-                    <div class = "val2">₽</div>
-                    <div >0К</div>
-                    <span class = "inf">Потрачено</span> 
-                </div>
+{% extends 'base.html' %} {% block head %}
+<title>TravelPlanner</title>
+<link rel="stylesheet" href="{{ url_for('static', path='styles/budget.css') }}">
+{% endblock %}
+{% block content %}
+<div class="main">
+    <div class="overlay-blend"></div>
+    <section class="budget_h1">
+        <h1 class="h1">Планирование бюджета</h1>
+        <div class="budget_section1">
+            <div class="budget_section_1">
+                <div class="val">₽</div>
+                <div class="many">395K</div>
+                <span class="inf">Общий бюджет</span>
             </div>
 
+            <div class="budget_section_1">
+                <div class="val3">₽</div>
+                <div class="many">132K</div>
+                <span class="inf">Средний бюджет</span>
+            </div>
 
-        </section>
+            <div class="budget_section_1">
+                <div class="val1">₽</div>
+                <div class="many">395K</div>
+                <span class="inf">Запланировано</span>
+            </div>
+
+            <div class="budget_section_1">
+                <div class="val2">₽</div>
+                <div class="many">0К</div>
+                <span class="inf">Потрачено</span>
+            </div>
+        </div>
+    </section>
+    <div class = "par">
         <div class="budget-distribution">
-        <h2>Распределение бюджета по категориям</h2>
-        
-        <div class="category-item">
-            <div class="category-icon">✈️</div>
-            <div class="category-info">
-            <div class="category-header">
-                <span class="category-name">Транспорт</span>
-                <span class="category-percent">30%</span>
-            </div>
-            <div class="category-amount">118 500 ₽</div>
-            <div class="progress-bar">
-                <div class="progress" style="width: 30%; background-color: #3b82f6;"></div>
-            </div>
-            </div>
-        </div>
+            <h2>Распределение бюджета по категориям</h2>
 
-        <div class="category-item">
-            <div class="category-icon">🛏️</div>
-            <div class="category-info">
-            <div class="category-header">
-                <span class="category-name">Проживание</span>
-                <span class="category-percent">35%</span>
+            <div class="category-item">
+                <div class="category-icon">✈️</div>
+                <div class="category-info">
+                    <div class="category-header">
+                        <span class="category-name">Транспорт</span>
+                        <span class="category-percent">30%</span>
+                    </div>
+                    <div class="category-amount">118 500 ₽</div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 30%; background-color: #3b82f6;"></div>
+                    </div>
+                </div>
             </div>
-            <div class="category-amount">138 250 ₽</div>
-            <div class="progress-bar">
-                <div class="progress" style="width: 35%; background-color: #10b981;"></div>
-            </div>
-            </div>
-        </div>
 
-        <div class="category-item">
-            <div class="category-icon">🍽️</div>
-            <div class="category-info">
-            <div class="category-header">
-                <span class="category-name">Питание</span>
-                <span class="category-percent">20%</span>
+            <div class="category-item">
+                <div class="category-icon">🛏️</div>
+                <div class="category-info">
+                    <div class="category-header">
+                        <span class="category-name">Проживание</span>
+                        <span class="category-percent">35%</span>
+                    </div>
+                    <div class="category-amount">138 250 ₽</div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 35%; background-color: #10b981;"></div>
+                    </div>
+                </div>
             </div>
-            <div class="category-amount">79 000 ₽</div>
-            <div class="progress-bar">
-                <div class="progress" style="width: 20%; background-color: #ef4444;"></div>
-            </div>
-            </div>
-        </div>
 
-        <div class="category-item">
-            <div class="category-icon">⭐</div>
-            <div class="category-info">
-            <div class="category-header">
-                <span class="category-name">Развлечение</span>
-                <span class="category-percent">15%</span>
+            <div class="category-item">
+                <div class="category-icon">🍽️</div>
+                <div class="category-info">
+                    <div class="category-header">
+                        <span class="category-name">Питание</span>
+                        <span class="category-percent">20%</span>
+                    </div>
+                    <div class="category-amount">79 000 ₽</div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 20%; background-color: #ef4444;"></div>
+                    </div>
+                </div>
             </div>
-            <div class="category-amount">59 250 ₽</div>
-            <div class="progress-bar">
-                <div class="progress" style="width: 15%; background-color: #eab308;"></div>
+
+            <div class="category-item">
+                <div class="category-icon">⭐</div>
+                <div class="category-info">
+                    <div class="category-header">
+                        <span class="category-name">Развлечение</span>
+                        <span class="category-percent">15%</span>
+                    </div>
+                    <div class="category-amount">59 250 ₽</div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 15%; background-color: #eab308;"></div>
+                    </div>
+                </div>
             </div>
-            </div>
-        </div>
         </div>
         <div class="budget-section">
             <h2>Бюджет по путешествиям</h2>
-            
+
             <div class="trip-item">
                 <div class="trip-info">
-                <span class="trip-name">Летний отпуск в Париже</span>
-                <span class="trip-amount">150 000 ₽</span>
+                    <span class="trip-name">Летний отпуск в Париже</span>
+                    <span class="trip-amount">150 000 ₽</span>
                 </div>
                 <div class="progress-bar">
-                <div class="progress" style="width: 75%; background-color: #3b82f6;"></div>
+                    <div class="progress" style="width: 75%; background-color: #3b82f6;"></div>
                 </div>
             </div>
 
             <div class="trip-item">
                 <div class="trip-info">
-                <span class="trip-name">Уикенд в горах</span>
-                <span class="trip-amount">45 000 ₽</span>
+                    <span class="trip-name">Уикенд в горах</span>
+                    <span class="trip-amount">45 000 ₽</span>
                 </div>
                 <div class="progress-bar">
-                <div class="progress" style="width: 40%; background-color: #3b82f6;"></div>
+                    <div class="progress" style="width: 40%; background-color: #3b82f6;"></div>
                 </div>
             </div>
 
             <div class="trip-item">
                 <div class="trip-info">
-                <span class="trip-name">Путешествие по Японии</span>
-                <span class="trip-amount">200 000 ₽</span>
+                    <span class="trip-name">Путешествие по Японии</span>
+                    <span class="trip-amount">200 000 ₽</span>
                 </div>
                 <div class="progress-bar">
-                <div class="progress" style="width: 90%; background-color: #3b82f6;"></div>
+                    <div class="progress" style="width: 90%; background-color: #3b82f6;"></div>
                 </div>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+
+
+</div>
+{% endblock %}

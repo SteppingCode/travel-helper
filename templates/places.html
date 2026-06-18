@@ -1,62 +1,62 @@
 {% extends 'base.html' %}
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', path='styles/place.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles/place.css') }}">
 {% endblock %}
 
 {% block content %}
-<section>
-    <h1>Популярные места</h1>
-    
-    <form method="get" action="{{ request.url.path }}">
-        <input 
-            id="searchInput" 
-            type="text" 
-            name="q" 
-            class="search-bar" 
-            placeholder="Поиск мест..." 
-            value="{{ query }}">
-    </form>
+    <section>
+        <h1>Популярные места</h1>
 
-    <div class="places-grid">
-        {% if places and places|length > 0 %}
-            {% for p in places %}
-            <div class="place-card">
-                <img src="{{ p.images }}" alt="{{ p.city }}">
-                <div class="place-info">
-                    <div class="place-name"><a href="/inf/{{ p.id }}">{{ p.city }}</a></div>
-                    <div class="place-name_country">{{ p.country }}</div>
-                    <div class="place-rating">★{{ p.rating }}</div>
-                    <div class="place-description">{{ p.descriptions }}</div>
-                    <div class="tags">{{ p.tags }}</div>
-                </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p style="grid-column: 1 / -1; text-align: center; font-size: 18px; color: #666;">
-                Ничего не найдено 😔
+        <form method="get" action="{{ request.url.path }}">
+            <input
+                    id="searchInput"
+                    type="text"
+                    name="q"
+                    class="search-bar"
+                    placeholder="Поиск мест..."
+                    value="{{ query }}">
+        </form>
+
+        <div class="places-grid">
+            {% if places and places|length > 0 %}
+                {% for p in places %}
+                    <div class="place-card">
+                        <img src="{{ p.images }}" alt="{{ p.city }}">
+                        <div class="place-info">
+                            <div class="place-name"><a href="{{ url_for('get_place', place_id=p.id) }}">{{ p.city }}</a></div>
+                            <div class="place-name_country">{{ p.country }}</div>
+                            <div class="place-rating">★{{ p.rating }}</div>
+                            <div class="place-description">{{ p.descriptions }}</div>
+                            <div class="tags">{{ p.tags }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="grid-column: 1 / -1; text-align: center; font-size: 18px; color: #666;">
+                    Ничего не найдено 😔
+                </p>
+            {% endif %}
+        </div>
+
+        {% if total_places is defined %}
+            <p style="text-align: center; margin-top: 15px; color: #666;">
+                Найдено: {{ total_places }} мест
             </p>
         {% endif %}
-    </div>
+    </section>
 
-    {% if total_places is defined %}
-    <p style="text-align: center; margin-top: 15px; color: #666;">
-        Найдено: {{ total_places }} мест
-    </p>
-    {% endif %}
-</section>
+    <script>
+        // Клиентский поиск (дополнительный, работает поверх серверного)
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const filter = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.place-card');
 
-<script>
-    // Клиентский поиск (дополнительный, работает поверх серверного)
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const filter = this.value.toLowerCase().trim();
-        const cards = document.querySelectorAll('.place-card');
-
-        cards.forEach(card => {
-            const text = card.textContent.toLowerCase();
-            card.style.display = text.includes(filter) ? 'block' : 'none';
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(filter) ? 'block' : 'none';
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}
 
 

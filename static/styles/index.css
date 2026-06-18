@@ -138,6 +138,10 @@
 
 .trip-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  a {
+    text-decoration: none;
+  }
 }
 
 .trip-card {
@@ -148,21 +152,20 @@
 
 .trip-preview {
   width: 100%;
-  min-height: 220px;
+  height: 220px;
   background-size: cover;
   background-position: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
-.trip-sochi .trip-preview {
+.trip-preview {
   background: radial-gradient(circle at 20% 20%, #dbe9f7 0%, #6c8cb8 100%);
-}
-
-.trip-paris .trip-preview {
-  background: radial-gradient(circle at 40% 30%, #eef4fc 0%, #6798c3 100%);
-}
-
-.trip-tokyo .trip-preview {
-  background: radial-gradient(circle at 50% 25%, #0f1f3b 0%, #202e59 100%);
 }
 
 .trip-info {

@@ -1,13 +1,12 @@
 {% extends 'base.html' %}{% block head %}
-  <link rel="stylesheet" href="/styles/detail.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='styles/detail.css') }}">
   <title>{{ place.name }} — {{ place.country }}</title>
 {% endblock %}{% block content %}
-<!-- Главное фото: пробуем сначала из inf, если нет — из places -->
-<img
-  src="{{ url_for('static', path=place.main_photo) }}"
-  alt="{{ place.name }}"
-  class="hero-image"
->
+{#<img#}
+{#  src="{{ url_for('static', path=place.main_photo) }}"#}
+{#  alt="{{ place.name }}"#}
+{#  class="hero-image"#}
+{#>#}
 
 <div class="container">
   <!-- Заголовок и подзаголовок -->
@@ -17,17 +16,17 @@
   {% endif %}
 
   <!-- Галерея: используем поля из объединённого place -->
-  <div class="gallery">
-    {% if place.gallery_1 %}
-      <img src="{{ url_for('static', path=place.gallery_1) }}" alt="{{ place.name_photo_1 or 'Фото' }}">
-    {% endif %}
-    {% if place.gallery_2 %}
-      <img src="{{ url_for('static', path=place.gallery_2) }}" alt="{{ place.items_heading_2 or 'Фото' }}">
-    {% endif %}
-    {% if place.gallery_3 %}
-      <img src="{{ url_for('static', path=place.gallery_3) }}" alt="{{ place.items_heading_3 or 'Фото' }}">
-    {% endif %}
-  </div>
+{#  <div class="gallery">#}
+{#    {% if place.gallery_1 %}#}
+{#      <img src="{{ url_for('static', path=place.gallery_1) }}" alt="{{ place.name_photo_1 or 'Фото' }}">#}
+{#    {% endif %}#}
+{#    {% if place.gallery_2 %}#}
+{#      <img src="{{ url_for('static', path=place.gallery_2) }}" alt="{{ place.items_heading_2 or 'Фото' }}">#}
+{#    {% endif %}#}
+{#    {% if place.gallery_3 %}#}
+{#      <img src="{{ url_for('static', path=place.gallery_3) }}" alt="{{ place.items_heading_3 or 'Фото' }}">#}
+{#    {% endif %}#}
+{#  </div>#}
 
   <!-- Описание -->
   <div class="description">

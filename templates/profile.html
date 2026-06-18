@@ -1,0 +1,341 @@
+{% extends 'base.html' %} {% block head %}
+    <title>Профиль | TravelPlanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='styles/profile.css') }}">
+{% endblock %} {% block content %}
+    <div class="main-wrapper">
+        <!-- ШАПКА ПРОФИЛЯ -->
+        <div class="profile-header">
+            <div class="header-content">
+                <div class="menu-container">
+                    <button class="menu-icon" onclick="toggleMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="#"
+                           onclick="document.querySelector('form').scrollIntoView({behavior: 'smooth'}); return false;">✏️
+                            Редактировать профиль</a>
+                        <a href="#" onclick="showNotifications(); return false;">🔔 Уведомления</a>
+                        <a href="#" onclick="showPrivacy(); return false;">🔒 Конфиденциальность</a>
+                        <a href="#" onclick="showHelp(); return false;">❓ Помощь</a>
+                    </div>
+                </div>
+
+                <div class="plane-icon-header">✈️</div>
+
+                <div class="header-info">
+                    <h1>TravelPlanner</h1>
+                    <p>Ваш личный гид в путешествиях</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-container">
+            <!-- ЛЕВАЯ КОЛОНКА -->
+            <div class="sidebar-card">
+                <div class="profile-avatar">
+                    <div class="avatar-image" onclick="document.getElementById('avatarInput').click()">
+                        {% if user.avatar %}
+                            <img src="{{ url_for('uploaded_file', filename=user.avatar) }}" alt="Avatar"
+                                 class="avatar-img">
+                        {% else %}
+                            <div class="avatar-emoji">🌍</div>
+                        {% endif %}
+                        <div class="avatar-overlay">
+                            <span>✏️ Изменить</span>
+                        </div>
+                    </div>
+                    <div class="profile-name">Путешественник</div>
+                    <div class="profile-email" id="leftEmail">{{ user.email }}</div>
+                </div>
+
+                <div class="budget-block">
+                    <div class="budget-label">Общий бюджет</div>
+                    <div class="budget-amount" id="leftBudget">
+                        {% if user.budget and user.budget != '' %}
+                            {{ "{:,.0f}".format(user.budget|int).replace(',', ' ') }} ₽
+                        {% else %}
+                            <span class="budget-placeholder">—</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="leftTotalTrips">
+                            {% if user.total_trips and user.total_trips != '' %}
+                                {{ user.total_trips }}
+                            {% else %}
+                                <span class="stat-number-placeholder">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">всего поездок</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="leftCompletedTrips">
+                            {% if user.completed_trips and user.completed_trips != '' %}
+                                {{ user.completed_trips }}
+                            {% else %}
+                                <span class="stat-number-placeholder">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Завершено</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="leftPlacesVisited">
+                            {% if user.places_visited and user.places_visited != '' %}
+                                {{ user.places_visited }}
+                            {% else %}
+                                <span class="stat-number-placeholder">—</span>
+                            {% endif %}
+                        </div>
+                        <div class="stat-label">Посещено мест</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">📱</div>
+                    <div class="contact-info">
+                        <div class="contact-label">ТЕЛЕФОН</div>
+                        <div class="contact-value" id="leftPhone">{{ user.phone or 'Не указан' }}</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <div class="contact-info">
+                        <div class="contact-label">ГОРОД</div>
+                        <div class="contact-value" id="leftCity">{{ user.city or 'Не указан' }}</div>
+                    </div>
+                </div>
+
+                <div class="contact-item" style="border-top: 2px solid #5E83AE; margin-top: 1rem; padding-top: 1rem;">
+                    <div class="contact-icon">📊</div>
+                    <div class="contact-info">
+                        <div class="contact-label">СТАТУС</div>
+                        <div class="contact-value" id="userStatus">Активный путешественник</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ПРАВАЯ КОЛОНКА -->
+            <div class="main-content">
+                <div class="top-bar">
+                    <h2>Настройки профиля</h2>
+                    <!-- Значок настроек -->
+                    <div class="settings-indicator-wrapper">
+                        {% if user.profile_edited %}
+                            <div class="settings-indicator" id="settingsIndicator">
+                                <span class="settings-icon">⚙️</span>
+                                <span class="settings-tooltip">Изменения сохранены</span>
+                                <button class="settings-dropdown-btn" onclick="toggleSettingsMenu(event)">▼</button>
+
+                                <!-- Выпадающее меню настроек -->
+                                <div class="settings-dropdown-menu" id="settingsDropdownMenu">
+                                    <div class="settings-dropdown-header">Что вы хотите сделать?</div>
+                                    <button class="settings-option" onclick="editProfileOnly()">
+                                        <span class="settings-option-icon">✏️</span>
+                                        <span>Редактировать профиль</span>
+                                    </button>
+                                    <button class="settings-option" onclick="editPhotoOnly()">
+                                        <span class="settings-option-icon">📷</span>
+                                        <span>Изменить фото</span>
+                                    </button>
+                                    <button class="settings-option" onclick="editChecklistOnly()">
+                                        <span class="settings-option-icon">✅</span>
+                                        <span>Редактировать чек-лист</span>
+                                    </button>
+                                    <button class="settings-option danger" onclick="resetAllSettings()">
+                                        <span class="settings-option-icon">🔄</span>
+                                        <span>Сбросить все изменения</span>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button class="refresh-btn" onclick="refreshData()" title="Обновить данные">🔄</button>
+                </div>
+
+                <form id="profileForm" method="POST" enctype="multipart/form-data"
+                      onsubmit="event.preventDefault(); showConfirmModal();">
+                    <input type="hidden" name="edit_type" id="editTypeInput" value="full">
+
+                    <div class="info-section">
+                        <h2>Редактировать профиль</h2>
+
+                        <div class="photo-upload">
+                            <label class="photo-label">
+                                📷 Загрузить фото профиля
+                                <input type="file" name="avatar" id="avatarInput" class="photo-input" accept="image/*"
+                                       onchange="previewAvatar(this)">
+                            </label>
+                            {% if user.avatar %}
+                                <button type="button" class="remove-photo" onclick="removeAvatar()">🗑️ Удалить фото
+                                </button>
+                            {% endif %}
+                            <input type="hidden" name="remove_avatar" id="removeAvatarInput" value="0">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Email</label>
+                            <input type="email" name="email" id="emailInput" value="{{ user.email }}"
+                                   placeholder="your@email.com">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Телефон</label>
+                            <input type="tel" name="phone" id="phoneInput" value="{{ user.phone }}"
+                                   placeholder="+7 (___) ___-__-__">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Город</label>
+                            <input type="text" name="city" id="cityInput" value="{{ user.city }}"
+                                   placeholder="Ваш город">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Общий бюджет (₽)</label>
+                            <input type="number" name="budget" id="budgetInput"
+                                   value="{{ user.budget if user.budget else '' }}" placeholder="Например: 500000">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Всего поездок</label>
+                            <input type="number" name="total_trips" id="totalTripsInput"
+                                   value="{{ user.total_trips if user.total_trips else '' }}"
+                                   placeholder="Количество поездок">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Завершено поездок</label>
+                            <input type="number" name="completed_trips" id="completedTripsInput"
+                                   value="{{ user.completed_trips if user.completed_trips else '' }}"
+                                   placeholder="Завершено">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Посещено мест</label>
+                            <input type="number" name="places_visited" id="placesVisitedInput"
+                                   value="{{ user.places_visited if user.places_visited else '' }}" placeholder="Мест">
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h2>Настройки</h2>
+
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <div class="setting-icon">🔔</div>
+                                <span>Уведомления</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="notifications" id="notificationsSwitch"
+                                       {% if user.notifications %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <div class="setting-icon">💾</div>
+                                <span>Сохранение данных</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="data_saving" id="dataSavingSwitch"
+                                       {% if user.data_saving %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settings-item">
+                            <div class="settings-label">
+                                <div class="setting-icon">✉️</div>
+                                <span>Email-оповещения</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="email_alerts" id="emailAlertsSwitch"
+                                       {% if user.email_alerts %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="save-button" id="saveButton">💾 Сохранить изменения</button>
+                </form>
+
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="exportData()">📤 Экспорт данных</button>
+                    <button class="action-btn danger" onclick="confirmReset()">🔄 Сбросить все</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="confirmModal" class="confirm-modal">
+        <div class="confirm-modal-content">
+            <h2>📋 Проверьте данные</h2>
+            <div class="preview-data">
+                <div class="preview-row">
+                    <span class="preview-label">Email:</span>
+                    <span class="preview-value" id="previewEmail"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Телефон:</span>
+                    <span class="preview-value" id="previewPhone"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Город:</span>
+                    <span class="preview-value" id="previewCity"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Бюджет:</span>
+                    <span class="preview-value" id="previewBudget"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Всего поездок:</span>
+                    <span class="preview-value" id="previewTotalTrips"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Завершено:</span>
+                    <span class="preview-value" id="previewCompletedTrips"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Посещено мест:</span>
+                    <span class="preview-value" id="previewPlacesVisited"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Уведомления:</span>
+                    <span class="preview-value" id="previewNotifications"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Сохранение данных:</span>
+                    <span class="preview-value" id="previewDataSaving"></span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Email-оповещения:</span>
+                    <span class="preview-value" id="previewEmailAlerts"></span>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeConfirmModal()">✖️ Отмена</button>
+                <button class="confirm-btn" onclick="submitForm()">✅ Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для дополнительных функций -->
+    <div id="infoModal" class="confirm-modal">
+        <div class="confirm-modal-content">
+            <h2 id="infoModalTitle">Информация</h2>
+            <div id="infoModalContent" class="preview-data">
+                <p style="color: #F9F5ED;">Содержимое</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeInfoModal()">✖️ Закрыть</button>
+            </div>
+        </div>
+    </div>
+    <script type="application/javascript" src="{{ url_for('static', path='scripts/profile.js') }}"></script>
+{% endblock %}

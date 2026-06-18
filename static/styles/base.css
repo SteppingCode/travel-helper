@@ -11,6 +11,10 @@ Used color scheme:
   --text-color: rgba(42, 42, 42, 0.75);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -21,6 +25,7 @@ body {
   font-family: "Cal Sans", monospace;
   background-color: var(--primary-color);
   color: var(--text-color);
+  margin-bottom: 40px;
 }
 
 header {

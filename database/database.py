@@ -1,10 +1,10 @@
 import glob
+import os.path
 import sqlite3
 from datetime import datetime
 from os import makedirs, path
 from models import *
 
-sql_dir = "sql"
 """
 checklists
 """
@@ -93,7 +93,7 @@ def initialize_database(db_path: str | None = None) -> None:
     connection = conn_db(db_path)
     try:
         base_dir = path.dirname(path.abspath(__file__))
-        sql_path = path.join(base_dir, sql_dir, "*.sql")
+        sql_path = path.join(base_dir, "sql", "*.sql")
         for sql_file in sorted(glob.glob(sql_path)):
             with open(sql_file, "r", encoding="utf-8") as file:
                 connection.executescript(file.read())
@@ -103,12 +103,24 @@ def initialize_database(db_path: str | None = None) -> None:
 
 
 if __name__ == "__main__":
+    from PIL.Image import open
     db = Database()
+
     # trip1 = Trip(name="Trip 1", city="New York", country="USA", date_from="2020-01-01", date_to="2020-12-31", user_id=1)
     # db.add("trips", trip1.model_dump())
+    #
     # place1 = Place(city="TEST2", country="TEST2", rating=5.0, description="TEST2")
     # db.add("places", place1.model_dump())
-    entity_type = "images"
-    image_id = 1
-    result = db.execute(f"select * from images i inner join images_links il on i.id = il.image_id where il.entity_type = {entity_type} and il.image_id = {image_id}")
-    print(result.fetchone())
+    #
+    # image_path = "../uploads/sochi.jpg"
+    # file_size = os.path.getsize(image_path)
+    # width, height = open(image_path).size
+    # image1 = Image(file_path="sochi.jpg", original_name="sochi.jpg", mime_type="image/jpeg", file_size=file_size, width=width, height=height)
+    # db.add("images", image1.model_dump())
+    # db.add("images_links", {"image_id": 1, "entity_type": "trip", "entity_id": 1})
+
+    entity_type = "trip"
+    entity_id = 1
+    result = db.execute(f"select file_path from images inner join images_links on images.id = images_links.image_id where entity_type = ? and entity_id = ?", (entity_type, entity_id))
+    for r in result:
+        print(*r)

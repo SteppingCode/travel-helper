@@ -11,6 +11,11 @@
 <title>Главная страница</title>
 {% endblock %} {% block content %}
 <div class="content">
+    <form action="/token" method="post">
+        <input name="username" type="text" placeholder="Username">
+        <input name="password" type="password" placeholder="Password">
+        <button type="submit">Send</button>
+    </form>
     <section class="hero-card">
         <div class="hero-icon">
             <svg
@@ -83,43 +88,19 @@
                 <input type="submit" value="Upload"/>
             </form>
             {% if trips %}
-            {% for card in trips %}
-            <article class="trip-card trip-sochi">
-                <div class="trip-preview"></div>
-                <div class="trip-info">
-                    <strong>{{ card.name }}</strong>
-                    <span>{{card.city}}, {{card.country}}</span>
-                    <small>{{card.date_from}} - {{card.date_to}}</small>
-                </div>
-            </article>
-            {% endfor %}
+                {% for card in trips %}
+                    <article class="trip-card trip-sochi">
+                        <div class="trip-preview"></div>
+                        <div class="trip-info">
+                            <strong>{{ card.name }}</strong>
+                            <span>{{card.city}}, {{card.country}}</span>
+                            <small>{{card.date_from}} - {{card.date_to}}</small>
+                        </div>
+                    </article>
+                {% endfor %}
             {% else %}
-            Тут ничего нет.
+                Тут ничего нет.
             {% endif %}
-            <!--      <article class="trip-card trip-sochi">-->
-            <!--        <div class="trip-preview"></div>-->
-            <!--        <div class="trip-info">-->
-            <!--          <strong>Уикенд в горах</strong>-->
-            <!--          <span>Сочи, Россия</span>-->
-            <!--          <small>10 июн. - 13 июн.</small>-->
-            <!--        </div>-->
-            <!--      </article>-->
-            <!--      <article class="trip-card trip-paris">-->
-            <!--        <div class="trip-preview"></div>-->
-            <!--        <div class="trip-info">-->
-            <!--          <strong>Отпуск в Париже</strong>-->
-            <!--          <span>Париж, Франция</span>-->
-            <!--          <small>15 июл. - 25 июл.</small>-->
-            <!--        </div>-->
-            <!--      </article>-->
-            <!--      <article class="trip-card trip-tokyo">-->
-            <!--        <div class="trip-preview"></div>-->
-            <!--        <div class="trip-info">-->
-            <!--          <strong>Путешествие по Японии</strong>-->
-            <!--          <span>Токио, Япония</span>-->
-            <!--          <small>1 сент. - 14 сент.</small>-->
-            <!--        </div>-->
-            <!--      </article>-->
         </div>
     </section>
 

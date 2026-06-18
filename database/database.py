@@ -2,6 +2,7 @@ import glob
 import sqlite3
 from datetime import datetime
 from os import makedirs, path
+from models import *
 
 sql_dir = "sql"
 """
@@ -103,13 +104,11 @@ def initialize_database(db_path: str | None = None) -> None:
 
 if __name__ == "__main__":
     db = Database()
-    # Добавление записи в таблицу trips
-    db.add("trips", {
-        "name": "Test Trip3",
-        "city": "Test City",
-        "country": "Test Country",
-        "date_from": "2024-01-01",
-        "date_to": "2024-01-10",
-        "created_at": "2024-01-01T00:00:00",
-        "user_id": 1
-    })
+    # trip1 = Trip(name="Trip 1", city="New York", country="USA", date_from="2020-01-01", date_to="2020-12-31", user_id=1)
+    # db.add("trips", trip1.model_dump())
+    # place1 = Place(city="TEST2", country="TEST2", rating=5.0, description="TEST2")
+    # db.add("places", place1.model_dump())
+    entity_type = "images"
+    image_id = 1
+    result = db.execute(f"select * from images i inner join images_links il on i.id = il.image_id where il.entity_type = {entity_type} and il.image_id = {image_id}")
+    print(result.fetchone())

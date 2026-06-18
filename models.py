@@ -1,1 +1,50 @@
 from pydantic import BaseModel
+from typing import Optional
+
+
+class Trip(BaseModel):
+    name: str
+    city: str
+    country: str
+    date_from: str
+    date_to: str
+    user_id: int
+
+
+class User(BaseModel):
+    fullname: str
+    email: str
+    phone: str
+    city: Optional[str] = None
+    country: str
+
+
+class Place(BaseModel):
+    city: str
+    country: str
+    rating: Optional[float] = None
+    description: str
+
+
+class Tag(BaseModel):
+    text: str
+    entity_type: str
+    entity_id: int
+
+
+class Image(BaseModel):
+    file_path: str
+    original_name: str
+    mime_type: str
+    file_size: int
+    width: int
+    height: int
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None

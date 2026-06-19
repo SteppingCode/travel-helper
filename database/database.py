@@ -117,10 +117,10 @@ if __name__ == "__main__":
     # width, height = open(image_path).size
     # image1 = Image(file_path="sochi.jpg", original_name="sochi.jpg", mime_type="image/jpeg", file_size=file_size, width=width, height=height)
     # db.add("images", image1.model_dump())
-    # db.add("images_links", {"image_id": 1, "entity_type": "trip", "entity_id": 1})
+    db.add("images_links", {"image_id": 1, "entity_type": "place", "entity_id": 2})
 
-    entity_type = "trip"
-    entity_id = 1
-    result = db.execute(f"select file_path from images inner join images_links on images.id = images_links.image_id where entity_type = ? and entity_id = ?", (entity_type, entity_id))
-    for r in result:
-        print(*r)
+    # entity_type = "trip"
+    # entity_id = 1
+    # result = db.execute(f"select file_path from images inner join images_links on images.id = images_links.image_id where entity_type = ? and entity_id = ?", (entity_type, entity_id))
+    # for r in result:
+    #     print(*r)

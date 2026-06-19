@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from starlette.responses import StreamingResponse
 from database.database import Database, initialize_database
-from utils import get_db, check_image_exists, get_trips_from_db
+from utils import get_db, check_image_exists, get_entity_from_db
 from fastapi import FastAPI, Form, Request, UploadFile, File, HTTPException, Depends, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -28,13 +28,13 @@ def startup_event():
 
 @app.get("/", response_class=HTMLResponse, tags=["Public"])
 async def read_root(request: Request):
-    trips = get_trips_from_db()
+    trips = get_entity_from_db("trips")
     return templates.TemplateResponse(request=request, name="index.html", context={"trips": trips})
 
 
 @app.get("/places", response_class=HTMLResponse, tags=["Public"])
 async def places(request: Request, q: Optional[str] = None, db: Database = Depends(get_db)):
-    places = db.select("place")
+    places = get_entity_from_db("places")
     filtered_places = places
     if q and q.strip():  # Защита от пустой строки
         q_lower = q.lower().strip()
@@ -55,7 +55,9 @@ async def places(request: Request, q: Optional[str] = None, db: Database = Depen
 
 @app.get("/place/{place_id}", tags=["Public"])
 async def get_place(request: Request, place_id: int, db: Database = Depends(get_db)):
-    place = db.select("places", where="id = ?", params=(place_id,))
+    place = db.select("places", where="id = ?", params=(place_id,), fetch_one=True)
+    place = dict(place)
+    place["has_image"] = check_image_exists("place", place["id"])
     return templates.TemplateResponse(request=request, name="place_page.html", context={"place": place})
 
 
@@ -78,7 +80,7 @@ async def get_image(entity_type: str, entity_id: int, db: Database = Depends(get
 
 @app.get("/mytrips", response_class=HTMLResponse, tags=["Auth"])
 async def read_my_trips(request: Request):
-    trips = get_trips_from_db()
+    trips = get_entity_from_db("trips")
     return templates.TemplateResponse(request=request, name="trips.html", context={"trips": trips})
 
 
@@ -112,6 +114,13 @@ async def create_trip(
     except sqlite3.Error as err:
         print(err)
     return RedirectResponse(url="/details", status_code=303)
+
+
+
+@app.get("/profile", tags=["Auth"])
+async def profile_page(request: Request, db: Database = Depends(get_db)):
+    user = db.select("users")
+    return templates.TemplateResponse(request=request, name="profile.html", context={"user": user})
 
 
 @app.get("/budget", tags=["Auth"])

@@ -9,6 +9,8 @@ Used color scheme:
   --primary-color: #f9f5ed;
   --secondary-color: #5e83ae;
   --text-color: rgba(42, 42, 42, 0.75);
+  --dropdown-bg: #f9f5ed;
+  --dropdown-text: #2a2a2a;
 }
 
 html {
@@ -86,13 +88,85 @@ header {
   }
 }
 
-.group_3 {
-  svg {
-    width: 68px !important;
-    height: 68px !important;
-  }
+/* User menu styles */
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
+.user-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.user-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-button svg {
+  width: 68px !important;
+  height: 68px !important;
+  fill: var(--primary-color);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--dropdown-bg);
+  color: var(--dropdown-text);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+  z-index: 1000;
+  margin-top: 8px;
+  list-style: none;
+  padding: 8px 0;
+}
+
+.user-menu:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu li a {
+  display: block;
+  padding: 12px 20px;
+  color: var(--dropdown-text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+  font-size: 16px;
+}
+
+.dropdown-menu li a:hover {
+  background-color: rgba(94, 131, 174, 0.1);
+}
+
+.separator {
+  height: 1px;
+  background-color: rgba(42, 42, 42, 0.1);
+  margin: 6px 12px;
+}
+
+.group_3 {
+  /* Removed old svg styles as they are now in user-button */
+}
+
+/* Rest of the styles */
 .menu {
   ul {
     display: flex;
@@ -124,4 +198,57 @@ header {
       display: none !important;
     }
   }
+
+  /* Adjust user menu for mobile */
+  .user-button svg {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
+
+/* ====================== Dark Theme ====================== */
+[data-theme="dark"] {
+    --primary-color: #1f2529;
+    --secondary-color: #3a4a5a;
+    --text-color: #f9f5ed;
+    --dropdown-bg: #2a3238;
+    --dropdown-text: #e6e6e6;
+}
+
+[data-theme="dark"] header {
+    background-color: var(--secondary-color);
+}
+
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--dropdown-bg);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .dropdown-menu li a:hover {
+    background-color: rgba(94, 131, 174, 0.2);
+}
+
+[data-theme="dark"] .separator {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Theme toggle styles */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-toggle::before {
+    content: "☀️";
+    font-size: 18px;
+}
+
+[data-theme="dark"] .theme-toggle::before {
+    content: "🌙";
+}
+
+/* Hover effect for theme item */
+.dropdown-menu li .theme-toggle:hover {
+    background-color: rgba(94, 131, 174, 0.1);
 }

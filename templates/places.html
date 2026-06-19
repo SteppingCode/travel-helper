@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', path='styles/place.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles/places.css') }}">
+    <title>Популярные места</title>
 {% endblock %}
 
 {% block content %}
-    <section>
+    <section class="page-content">
         <h1>Популярные места</h1>
 
         <form method="get" action="{{ request.url.path }}">
@@ -18,18 +19,25 @@
         </form>
 
         <div class="places-grid">
-            {% if places and places|length > 0 %}
+            {% if places %}
                 {% for p in places %}
-                    <div class="place-card">
-                        <img src="{{ p.images }}" alt="{{ p.city }}">
-                        <div class="place-info">
-                            <div class="place-name"><a href="{{ url_for('get_place', place_id=p.id) }}">{{ p.city }}</a></div>
-                            <div class="place-name_country">{{ p.country }}</div>
-                            <div class="place-rating">★{{ p.rating }}</div>
-                            <div class="place-description">{{ p.descriptions }}</div>
-                            <div class="tags">{{ p.tags }}</div>
+                    <a href="{{ url_for('get_place', place_id=p.id) }}">
+                        <div class="place-card">
+                            <div class="place-preview">
+                                {% if p.has_image %}
+                                    <img src="{{ url_for('get_image', entity_type='place', entity_id=p.id) }}"
+                                         alt="{{ p.city }}">
+                                {% endif %}
+                            </div>
+                            <div class="place-info">
+                                <div class="place-name">{{ p.city }}</div>
+                                <div class="place-name_country">{{ p.country }}</div>
+                                <div class="place-rating">★{{ p.rating }}</div>
+                                <div class="place-description">{{ p.descriptions }}</div>
+                                <div class="tags">{{ p.tags }}</div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 {% endfor %}
             {% else %}
                 <p style="grid-column: 1 / -1; text-align: center; font-size: 18px; color: #666;">

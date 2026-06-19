@@ -25,14 +25,14 @@ def check_image_exists(entity_type: str, entity_id: int) -> Row | None:
     return result
 
 
-def get_trips_from_db() -> list | None:
+def get_entity_from_db(table_name: str) -> list | None:
     db = Database()
-    trips = db.select("trips")
+    entity = db.select(table_name)
 
-    trips_list = []
-    for trip in trips:
-        trip_dict = dict(trip)  # Convert sqlite3.Row to dict
-        trip_dict["has_image"] = check_image_exists("trip", trip["id"])
-        trips_list.append(trip_dict)
+    entity_list = []
+    for e in entity:
+        e_dict = dict(e)  # Convert sqlite3.Row to dict
+        e_dict["has_image"] = check_image_exists(table_name[0:-1], e["id"])
+        entity_list.append(e_dict)
 
-    return trips_list
+    return entity_list

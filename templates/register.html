@@ -1,0 +1,47 @@
+{% extends "base.html" %}{% block head %}
+    <title>Регистрация - TravelPlanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='styles/register.css') }}">
+{% endblock %}
+{% block author %}
+    <span>Разработано: Степин Е.А.</span>
+{% endblock %}
+{% block content %}
+    <div class="auth-container">
+        <h2>Создать аккаунт</h2>
+
+        {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label for="fullname">ФИО</label>
+                <input type="text" id="fullname" name="fullname" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="country">Страна</label>
+                <input type="text" id="country" name="country" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Зарегистрироваться</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,12 +1,14 @@
 {% extends 'base.html' %} {% block head %}
-    <title>TravelPlanner</title>
+    <title>Мой бюджет</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles/budget.css') }}">
 {% endblock %}
+{% block author %}
+    <span>Разработано: Суворова Е.А.</span>
+{% endblock %}
 {% block content %}
-    <div class="main">
-        <div class="overlay-blend"></div>
+    <div class="content">
         <section class="budget_h1">
-            <h1 class="h1">Планирование бюджета</h1>
+            <h1>Планирование бюджета</h1>
             <div class="budget_section1">
                 <div class="budget_section_1">
                     <div class="val">₽</div>
@@ -127,7 +129,5 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 {% endblock %}

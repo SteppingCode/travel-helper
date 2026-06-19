@@ -1,8 +1,10 @@
-from io import BytesIO
-from fastapi import HTTPException, Depends, Response
-from starlette.responses import StreamingResponse
+from fastapi import Response, Request
 from sqlite3 import Row
+from fastapi.templating import Jinja2Templates
 from database.database import Database
+import urllib.parse
+
+templates = Jinja2Templates(directory="templates")
 
 
 def get_db():
@@ -36,3 +38,30 @@ def get_entity_from_db(table_name: str) -> list | None:
         entity_list.append(e_dict)
 
     return entity_list
+
+
+def set_flash_message(response: Response, type: str, message: str) -> Response:
+    """
+    Добавляет cookie с уведомлением, которое прочитает JS на клиенте.
+    Допустимые типы: 'success', 'error', 'warning', 'info'
+    """
+    # Кодируем сообщение, чтобы пробелы и русский язык безопасно передались через HTTP заголовки
+    encoded_msg = urllib.parse.quote(f"{type}|{message}")
+
+    response.set_cookie(
+        key="toast_msg",
+        value=encoded_msg,
+        max_age=10,  # Cookie живет всего 10 секунд (хватит для редиректа)
+        path="/",
+        samesite="lax"
+    )
+    return response
+
+
+def render_template(request: Request, name: str, context: dict = None):
+    if context is None:
+        context = {}
+
+    context.update({"user": request.state.user})
+
+    return templates.TemplateResponse(request, name, context)

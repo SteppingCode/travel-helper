@@ -3,7 +3,9 @@
     <link rel="stylesheet" href="{{ url_for('static', path='styles/places.css') }}">
     <title>Популярные места</title>
 {% endblock %}
-
+{% block author %}
+    <span>Разработано: Суворова Е.А.</span>
+{% endblock %}
 {% block content %}
     <section class="page-content">
         <h1>Популярные места</h1>

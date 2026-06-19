@@ -106,7 +106,7 @@ if __name__ == "__main__":
     from PIL.Image import open
     db = Database()
 
-    # trip1 = Trip(name="Trip 1", city="New York", country="USA", date_from="2020-01-01", date_to="2020-12-31", user_id=1)
+    # trip1 = Trip(name="Trip 2", city="New York", country="USA", date_from="2020-01-01", date_to="2020-12-31", user_id=2)
     # db.add("trips", trip1.model_dump())
     #
     # place1 = Place(city="TEST2", country="TEST2", rating=5.0, description="TEST2")
@@ -117,8 +117,8 @@ if __name__ == "__main__":
     # width, height = open(image_path).size
     # image1 = Image(file_path="sochi.jpg", original_name="sochi.jpg", mime_type="image/jpeg", file_size=file_size, width=width, height=height)
     # db.add("images", image1.model_dump())
-    db.add("images_links", {"image_id": 1, "entity_type": "place", "entity_id": 2})
-
+    # db.add("images_links", {"image_id": 1, "entity_type": "place", "entity_id": 1})
+    #
     # entity_type = "trip"
     # entity_id = 1
     # result = db.execute(f"select file_path from images inner join images_links on images.id = images_links.image_id where entity_type = ? and entity_id = ?", (entity_type, entity_id))

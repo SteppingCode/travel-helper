@@ -9,7 +9,11 @@
             media="(max-width: 720px)"
     />
     <title>Главная страница</title>
-{% endblock %} {% block content %}
+{% endblock %}
+{% block author %}
+    <span>Разработано: Степин Е.А.</span>
+{% endblock %}
+{% block content %}
     <div class="content">
         <section class="hero-card">
             <div class="hero-icon">
@@ -52,53 +56,54 @@
             </div>
         </section>
 
-        <section class="stats-grid">
-            <article class="stat-card">
-                <span class="stat-number">3</span>
-                <span class="stat-label">Всего поездок</span>
-            </article>
-            <article class="stat-card">
-                <span class="stat-number">3</span>
-                <span class="stat-label">Предстоящие</span>
-            </article>
-            <article class="stat-card">
-                <span class="stat-number">0</span>
-                <span class="stat-label">Завершено</span>
-            </article>
-            <article class="stat-card">
-                <span class="stat-number">350K</span>
-                <span class="stat-label">Бюджет ₽</span>
-            </article>
-        </section>
-
-        <section class="section-block">
-            <div class="section-header">
-                <h2>Предстоящие путешествия</h2>
-            </div>
-            <div class="trip-grid">
-                {% if trips %}
-                    {% for card in trips %}
-                        <a href="{{ url_for('get_trip', trip_id=card.id) }}">
-                            <article class="trip-card">
-                                <div class="trip-preview">
-                                    {% if card.has_image %}
-                                        <img src="{{ url_for('get_image', entity_type='trip', entity_id=card.id) }}" alt="">
-                                    {% endif %}
-                                </div>
-                                <div class="trip-info">
-                                    <strong>{{ card.name }}</strong>
-                                    <span>{{ card.city }}, {{ card.country }}</span>
-                                    <small>{{ card.date_from }} - {{ card.date_to }}</small>
-                                </div>
-                            </article>
-                        </a>
-                    {% endfor %}
-                {% else %}
-                    Тут ничего нет.
-                {% endif %}
-            </div>
-        </section>
-
+        {% if user %}
+            <section class="stats-grid">
+                <article class="stat-card">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Всего поездок</span>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Предстоящие</span>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Завершено</span>
+                </article>
+                <article class="stat-card">
+                    <span class="stat-number">350K</span>
+                    <span class="stat-label">Бюджет ₽</span>
+                </article>
+            </section>
+            <section class="section-block">
+                <div class="section-header">
+                    <h2>Предстоящие путешествия</h2>
+                </div>
+                <div class="trip-grid">
+                    {% if trips %}
+                        {% for card in trips %}
+                            <a href="{{ url_for('get_trip', trip_id=card.id) }}">
+                                <article class="trip-card">
+                                    <div class="trip-preview">
+                                        {% if card.has_image %}
+                                            <img src="{{ url_for('get_image', entity_type='trip', entity_id=card.id) }}"
+                                                 alt="">
+                                        {% endif %}
+                                    </div>
+                                    <div class="trip-info">
+                                        <strong>{{ card.name }}</strong>
+                                        <span>{{ card.city }}, {{ card.country }}</span>
+                                        <small>{{ card.date_from }} - {{ card.date_to }}</small>
+                                    </div>
+                                </article>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        Тут ничего нет.
+                    {% endif %}
+                </div>
+            </section>
+        {% endif %}
         <section class="section-block">
             <div class="section-header">
                 <h2>Возможности</h2>

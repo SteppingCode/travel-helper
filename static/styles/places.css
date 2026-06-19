@@ -54,6 +54,7 @@ form {
         object-fit: cover;
     }
 }
+
 .place-card.hidden {
     display: none;
 }

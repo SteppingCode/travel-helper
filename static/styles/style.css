@@ -46,7 +46,7 @@
     align-items: center;
     position: relative;
     height: 70px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .input-field i, .input-field img {

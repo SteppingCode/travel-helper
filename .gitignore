@@ -222,3 +222,5 @@ __marimo__/
 #Databases
 *.db
 .idea/
+uploads/*
+!uploads/.gitkeep

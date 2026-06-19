@@ -6,204 +6,205 @@ Used color scheme:
 */
 
 :root {
-  --primary-color: #f9f5ed;
-  --secondary-color: #5e83ae;
-  --text-color: rgba(42, 42, 42, 0.75);
-  --dropdown-bg: #f9f5ed;
-  --dropdown-text: #2a2a2a;
+    --primary-color: #f9f5ed;
+    --secondary-color: #5e83ae;
+    --text-color: rgba(42, 42, 42, 0.75);
+    --dropdown-bg: #f9f5ed;
+    --dropdown-text: #2a2a2a;
 }
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  font-family: "Cal Sans", monospace;
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  margin-bottom: 40px;
+    font-family: "Cal Sans", monospace;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    margin-bottom: 40px;
 }
 
 header {
-  background-color: var(--secondary-color);
-  height: 100px;
-  display: flex;
-  align-content: center;
-  align-items: center;
-
-  .header-content {
+    background-color: var(--secondary-color);
+    height: 100px;
     display: flex;
+    align-content: center;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 52px;
-    color: var(--primary-color);
-    font-size: 24px;
-    letter-spacing: -1px;
-    height: 72px;
-    width: 100%;
 
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
+    .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 52px;
+        color: var(--primary-color);
+        font-size: 24px;
+        letter-spacing: -1px;
+        height: 72px;
+        width: 100%;
 
-    svg {
-      fill: var(--primary-color);
-      height: 72px;
-      width: 72px;
-    }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-    .group_1,
-    .group_2,
-    .group_3 {
-      display: flex;
+        svg {
+            fill: var(--primary-color);
+            height: 72px;
+            width: 72px;
+        }
+
+        .group_1,
+        .group_2,
+        .group_3 {
+            display: flex;
+        }
     }
-  }
 }
 
 .group_1 {
-  gap: 16px;
+    gap: 16px;
 
-  .name {
-    font-size: 30px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    .name {
+        font-size: 30px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 12px;
 
-    svg {
-      transform: rotate(45deg) translateY(-8px);
-      width: 56px !important;
-      height: 56px !important;
+        svg {
+            transform: rotate(45deg) translateY(-8px);
+            width: 56px !important;
+            height: 56px !important;
+        }
+
+        span {
+            letter-spacing: -2px;
+        }
     }
-    span {
-      letter-spacing: -2px;
-    }
-  }
 }
 
 /* User menu styles */
 .user-menu {
-  position: relative;
-  display: flex;
-  align-items: center;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .user-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
 }
 
 .user-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .user-button svg {
-  width: 68px !important;
-  height: 68px !important;
-  fill: var(--primary-color);
+    width: 68px !important;
+    height: 68px !important;
+    fill: var(--primary-color);
 }
 
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: var(--dropdown-bg);
-  color: var(--dropdown-text);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-width: 180px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: all 0.2s ease;
-  z-index: 1000;
-  margin-top: 8px;
-  list-style: none;
-  padding: 8px 0;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--dropdown-bg);
+    color: var(--dropdown-text);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+    margin-top: 8px;
+    list-style: none;
+    padding: 8px 0;
 }
 
 .user-menu:hover .dropdown-menu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .dropdown-menu li a {
-  display: block;
-  padding: 12px 20px;
-  color: var(--dropdown-text);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background-color 0.2s;
-  font-size: 16px;
+    display: block;
+    padding: 12px 20px;
+    color: var(--dropdown-text);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s;
+    font-size: 16px;
 }
 
 .dropdown-menu li a:hover {
-  background-color: rgba(94, 131, 174, 0.1);
+    background-color: rgba(94, 131, 174, 0.1);
 }
 
 .separator {
-  height: 1px;
-  background-color: rgba(42, 42, 42, 0.1);
-  margin: 6px 12px;
+    height: 1px;
+    background-color: rgba(42, 42, 42, 0.1);
+    margin: 6px 12px;
 }
 
 .group_3 {
-  /* Removed old svg styles as they are now in user-button */
+    /* Removed old svg styles as they are now in user-button */
 }
 
 /* Rest of the styles */
 .menu {
-  ul {
-    display: flex;
-    gap: 48px;
-    list-style: none;
-  }
+    ul {
+        display: flex;
+        gap: 48px;
+        list-style: none;
+    }
 }
 
 .burger_menu path {
-  stroke: var(--primary-color);
+    stroke: var(--primary-color);
 }
 
 .wrapper {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
 }
 
 @media screen and (max-width: 720px) {
-  header {
-    min-height: 80px;
-    height: auto;
+    header {
+        min-height: 80px;
+        height: auto;
 
-    .group_1 .name span {
-      display: none !important;
+        .group_1 .name span {
+            display: none !important;
+        }
+
+        .group_2 {
+            display: none !important;
+        }
     }
 
-    .group_2 {
-      display: none !important;
+    /* Adjust user menu for mobile */
+    .user-button svg {
+        width: 48px !important;
+        height: 48px !important;
     }
-  }
-
-  /* Adjust user menu for mobile */
-  .user-button svg {
-    width: 48px !important;
-    height: 48px !important;
-  }
 }
 
 /* ====================== Dark Theme ====================== */
@@ -251,4 +252,63 @@ header {
 /* Hover effect for theme item */
 .dropdown-menu li .theme-toggle:hover {
     background-color: rgba(94, 131, 174, 0.1);
+}
+
+/* Стили для Toast-уведомлений */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    min-width: 280px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Цвета для разных типов */
+.toast-success { background-color: #28a745; }
+.toast-error { background-color: #dc3545; }
+.toast-warning { background-color: #ffc107; color: #333; }
+.toast-info { background-color: #17a2b8; }
+
+.toast-close {
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 15px;
+    font-size: 18px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.toast-close:hover { opacity: 1; }
+
+.author-watermark {
+    position: fixed;
+    bottom: 5px;
+    right: 10px;
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.2); /* Еле заметный серый цвет */
+    pointer-events: none; /* Чтобы плашка не мешала кликать на элементы под ней */
+    z-index: 9999;
 }

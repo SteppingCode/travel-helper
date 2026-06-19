@@ -11,12 +11,23 @@ class Trip(BaseModel):
     user_id: int
 
 
-class User(BaseModel):
+class UserCreate(BaseModel):
     fullname: str
     email: str
     phone: str
     city: Optional[str] = None
     country: str
+    password: str
+
+
+class User(BaseModel):
+    id: int
+    fullname: str
+    email: str
+    phone: str
+    city: Optional[str] = None
+    country: str
+    hashed_password: str
 
 
 class Place(BaseModel):

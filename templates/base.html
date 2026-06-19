@@ -64,24 +64,117 @@
                     </svg>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="{{ url_for('profile_page') }}">Мой профиль</a></li>
-                    <li><a href="{{ url_for('budget_page') }}">Мой бюджет</a></li>
-                    <li><a href="{{ url_for('read_my_trips') }}">Мои путешествия</a></li>
-                    <li><a href="{{ url_for('checklists') }}">Чек-листы</a></li>
-                    <li class="separator"></li>
-                    <li>
-                        <a href="#" id="theme-toggle" class="theme-toggle">
-                            <span class="theme-text">Тёмная тема</span>
-                        </a>
-                    </li>
-                    <li class="separator"></li>
-                    <li><a href="#">Выйти</a></li>
+                    {% if user %}
+                        <li style="padding: 10px 20px; font-weight: bold;">
+                            Привет, {{ user.fullname }}!
+                        </li>
+                        <li class="separator"></li>
+                        <li><a href="{{ url_for('profile_page') }}">Мой профиль</a></li>
+                        <li><a href="{{ url_for('budget_page') }}">Мой бюджет</a></li>
+                        <li><a href="{{ url_for('read_my_trips') }}">Мои путешествия</a></li>
+                        <li><a href="{{ url_for('checklists') }}">Чек-листы</a></li>
+                        <li class="separator"></li>
+                        <li>
+                            <a href="#" id="theme-toggle" class="theme-toggle">
+                                <span class="theme-text">Тёмная тема</span>
+                            </a>
+                        </li>
+                        <li class="separator"></li>
+                        <li><a href="{{ url_for('logout') }}">Выйти</a></li>
+                    {% else %}
+                        <li style="padding: 15px; width: 220px;">
+                            <form action="/login" method="POST"
+                                  style="display: flex; flex-direction: column; gap: 10px;">
+                                <h4 style="margin: 0; text-align: center;">Вход</h4>
+
+                                <input type="email" name="email" placeholder="Email" required
+                                       style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;" autocomplete="off">
+
+                                <input type="password" name="password" placeholder="Пароль" required
+                                       style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;">
+
+                                <button type="submit"
+                                        style="padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 5px;">
+                                    Войти
+                                </button>
+                            </form>
+                            <div style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
+                                <a href="/register" style="color: #007bff; text-decoration: none; font-weight: bold;">Нет аккаунта?</a>
+                            </div>
+                        </li>
+                        <li class="separator"></li>
+                        <li>
+                            <a href="#" id="theme-toggle" class="theme-toggle">
+                                <span class="theme-text">Тёмная тема</span>
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </div>
 </header>
 <div class="wrapper">{% block content %}{% endblock %}</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<div class="author-watermark">
+    {% block author %}
+        <span>Разработано: Степин Е.А.</span>
+    {% endblock %}
+</div>
+
+<script>
+// Функция для вызова уведомления вручную (если понадобится)
+function showToast(type, message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+
+    toast.innerHTML = `
+        <span>${message}</span>
+        <span class="toast-close" onclick="this.parentElement.remove()">&times;</span>
+    `;
+
+    container.appendChild(toast);
+
+    // Плавное появление
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+
+    // Удаление через 4 секунды
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300); // Ждем завершения анимации исчезновения
+    }, 4000);
+}
+
+// Утилиты для работы с Cookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function eraseCookie(name) {
+    document.cookie = name + '=; Max-Age=0; path=/;';
+}
+
+// Проверяем наличие уведомлений от сервера при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    const toastCookie = getCookie('toast_msg');
+    if (toastCookie) {
+        // Декодируем строку, чтобы кириллица и пробелы отображались корректно
+        const decoded = decodeURIComponent(toastCookie);
+        const [type, ...msgParts] = decoded.split('|');
+        const message = msgParts.join('|');
+
+        showToast(type, message);
+        eraseCookie('toast_msg'); // Удаляем cookie, чтобы не показать снова
+    }
+});
+</script>
 
 <script>
     // Theme switcher
@@ -103,7 +196,7 @@
 
     // Load saved theme
     const savedTheme = localStorage.getItem('theme') ||
-                      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     setTheme(savedTheme);
 
     // Toggle handler

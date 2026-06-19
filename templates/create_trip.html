@@ -2,7 +2,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>Создайте свою поездку</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles/style.css') }}">
-{% endblock %} {% block content %}
+{% endblock %}
+{% block author %}
+    <span>Разработано: Панасенков Д.М.</span>
+{% endblock %}
+{% block content %}
     <main class="main-container">
         <div class="hero-card"
              style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('{{ url_for('static', path='assets/background.jpg') }}');">

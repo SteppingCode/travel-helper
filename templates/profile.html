@@ -1,7 +1,11 @@
 {% extends 'base.html' %} {% block head %}
     <title>Профиль | TravelPlanner</title>
     <link rel="stylesheet" href="{{ url_for('static', path='styles/profile.css') }}">
-{% endblock %} {% block content %}
+{% endblock %}
+{% block author %}
+    <span>Разработано: Ващенко Е.А.</span>
+{% endblock %}
+{% block content %}
     <div class="content">
         <!-- ЛЕВАЯ КОЛОНКА -->
         <div class="sidebar-card">

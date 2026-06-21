@@ -3,7 +3,7 @@ from sqlite3 import Error
 from pathlib import Path
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from database.database import Database, initialize_database
-from utils import get_db, get_entity_from_db, set_flash_message, render_template
+from utils import get_db, set_flash_message, render_template, get_records
 from fastapi import FastAPI, Form, Request, HTTPException, Depends, status, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from models import *
@@ -90,7 +90,12 @@ async def read_root(
 ):
     context = None
     if user:
-        trips = get_entity_from_db("trips", request.state.user["id"])
+        trips = get_records(
+            table="trips",
+            where="user_id = ?",
+            params=(request.state.user["id"],),
+            order_by="created_at DESC"
+        )
         context = {"trips": trips}
     return render_template(request, "index.html", context)
 
@@ -101,7 +106,11 @@ async def places(
         q: Optional[str] = "",
         db: Database = Depends(get_db)
 ):
-    places = get_entity_from_db("places")
+    places = get_records(
+        table="places",
+        order_by="rating DESC",
+        check_image_type="place"
+    )
     filtered_places = places
     if q and q.strip():  # Защита от пустой строки
         q_lower = q.lower().strip()
@@ -295,8 +304,15 @@ async def read_my_trips(
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
-    trips = get_entity_from_db("trips", request.state.user["id"])
-    return render_template(request, "trips.html", {"trips": trips})
+    trips = get_records(
+        table="trips",
+        where="user_id = ?",
+        params=(current_user["id"],),
+        order_by="created_at DESC",
+        check_image_type="trip"
+    )
+    nearest_trip = trips[0]
+    return render_template(request, "trips.html", {"trips": trips, "nearest_trip": nearest_trip})
 
 
 @app.get("/create", response_class=HTMLResponse, tags=["Auth"])
@@ -318,6 +334,7 @@ async def create_trip(
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
+
     try:
         trip = Trip(name=trip_name, city=destination, country="TEST", date_from=trip_date.isoformat(),
                     date_to="2999-01-01", user_id=1)
@@ -430,12 +447,8 @@ async def admin_create_place(
         admin_user: dict = Depends(get_admin_user)
 ):
     # 1. Сохраняем "Место" в таблицу places
-    db.execute(
-        """INSERT INTO places (city, country, rating, description, subtitle, created_at)
-           VALUES (?, ?, ?, ?, ?, ?)""",
-        (city, country, rating, description, subtitle, datetime.now()),
-        commit=True
-    )
+    place = Place(city=city, country=country, rating=rating, description=description, subtitle=subtitle)
+    db.add("places", place.model_dump())
     place_id = db.cursor.lastrowid
 
     # 2. Сохраняем обложку (hero_image) с типом связки 'place'
@@ -451,17 +464,14 @@ async def admin_create_place(
     form_data = await request.form()
 
     for i in range(1, 4):
-        heading = form_data.get(f"attr_heading_{i}")
+        heading: str = form_data.get(f"attr_heading_{i}")
         attr_desc = form_data.get(f"attr_description_{i}")
         attr_file = form_data.get(f"attr_image_{i}")  # Это UploadFile
 
         # Если админ заполнил хотя бы заголовок достопримечательности
         if heading and heading.strip():
-            db.execute(
-                "INSERT INTO attractions (place_id, heading, description, created_at) VALUES (?, ?, ?, ?)",
-                (place_id, heading, attr_desc or "", datetime.now()),
-                commit=True
-            )
+            attraction = Attraction(place_id=place_id, heading=heading, description=description)
+            db.add("attractions", attraction.model_dump())
             attraction_id = db.cursor.lastrowid
 
             # Если к достопримечательности прикреплено фото — привязываем его

@@ -84,8 +84,10 @@
                         {% for card in trips %}
                             <article class="trip-card">
                                 <div class="trip-preview">
-                                    <img src="/media/trip/{{ card.id }}"
-                                         alt="">
+                                    {% if card.has_image %}
+                                        <img src="/media/trip/{{ card.id }}"
+                                             alt="">
+                                    {% endif %}
                                 </div>
                                 <div class="trip-info">
                                     <strong>{{ card.name }}</strong>

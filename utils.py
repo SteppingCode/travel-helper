@@ -27,20 +27,47 @@ def check_image_exists(entity_type: str, entity_id: int) -> Row | None:
     return result
 
 
-def get_entity_from_db(table_name: str, user_id: int | None = None) -> list[Row] | None:
+def get_records(
+        table: str,
+        where: str | None = None,
+        params: tuple | list | None = None,
+        order_by: str | None = None,
+        limit: int | None = None,
+        fetch_one: bool = False,
+        check_image_type: str | None = None  # Укажите тип ('place', 'user' и т.д.), если нужно проверить картинку
+) -> dict | list[dict] | None:
+    """
+    Универсальная функция для получения любых данных из БД.
+    Возвращает словарь (если fetch_one=True), список словарей или None.
+    """
     db = Database()
-    if user_id:
-        entity = db.select(table_name, where="user_id = ?", params=(user_id,))
-    else:
-        entity = db.select(table_name)
+    try:
+        result = db.select(
+            table=table,
+            where=where,
+            params=params,
+            order_by=order_by,
+            limit=limit,
+            fetch_one=fetch_one
+        )
 
-    entity_list = []
-    for e in entity:
-        e_dict = dict(e)  # Convert sqlite3.Row to dict
-        e_dict["has_image"] = check_image_exists(table_name[0:-1], e["id"])
-        entity_list.append(e_dict)
+        if not result:
+            return None if fetch_one else []
 
-    return entity_list
+        def process_row(row: Row) -> dict:
+            data = dict(row)
+            if check_image_type:
+                image_exists = check_image_exists(check_image_type, data["id"])
+                data["has_image"] = True if image_exists else False
+            return data
+
+        if fetch_one:
+            return process_row(result)
+
+        return [process_row(row) for row in result]
+
+    finally:
+        db.close()
 
 
 def set_flash_message(response: Response, type: str, message: str) -> Response:

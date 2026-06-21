@@ -9,34 +9,49 @@
 {% block content %}
     <main class="main-container">
         <div class="hero-card"
-             style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('{{ url_for('static', path='assets/background.jpg') }}');">
+             style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('{{ url_for('static', path='images/background.jpg') }}');">
 
             <h2>Создайте свою идеальную поездку! <i class="fa-solid fa-route"></i></h2>
 
-            <form action="/create_trip" method="POST" class="grid-form">
+            <form action="/create_route" method="POST" class="grid-form">
 
-                <div class="input-field">
+                <div class="input-field input-name">
                     <i class="fa-solid fa-pen icon"></i>
                     <input type="text" name="trip_name" placeholder="Название поездки..." required>
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </div>
 
-                <div class="input-field" onclick="this.querySelector('input').showPicker()">
+                <div class="input-field input-date" onclick="this.querySelector('input').showPicker()">
                     <i class="fa-solid fa-calendar-days icon"></i>
                     <input type="date" name="trip_date" placeholder="Выбор даты...">
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </div>
 
-                <div class="input-field">
+                <div class="input-field input-destination">
                     <i class="fa-solid fa-location-dot icon"></i>
                     <input type="text" name="destination" placeholder="Пункт назначения..." required>
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </div>
 
-                <div class="input-field">
+                <div class="input-field input-budget">
                     <i class="fa-solid fa-dollar-sign icon"></i>
                     <input type="number" name="budget" placeholder="Бюджет...">
                     <i class="fa-solid fa-chevron-down arrow"></i>
+                </div>
+
+                <div class="upload-zone" id="drop-zone">
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                    <input type="hidden" name="image_base64" id="image-base64">
+
+                    <div class="upload-content" id="upload-content">
+                        <i class="fa-solid fa-camera-retro upload-icon"></i>
+                        <h3>Загрузите фото для поездки</h3>
+                        <p>Перетащите или нажмите</p>
+                    </div>
+                    <div class="preview-container" id="preview-container" style="display: none;">
+                        <img id="image-preview" src="" alt="Превью">
+                        <div class="change-photo-badge">Изменить фото</div>
+                    </div>
                 </div>
 
                 <div class="button-container">
@@ -49,4 +64,48 @@
             </form>
         </div>
     </main>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const imageBase64 = document.getElementById('image-base64');
+        const uploadContent = document.getElementById('upload-content');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        function handleFiles(files) {
+            const file = files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    uploadContent.style.display = 'none';
+                    previewContainer.style.display = 'block';
+                    imageBase64.value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 {% endblock %}

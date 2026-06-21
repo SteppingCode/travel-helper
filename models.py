@@ -36,6 +36,13 @@ class Place(BaseModel):
     country: str
     rating: Optional[float] = None
     description: str
+    subtitle: Optional[str] = None
+
+
+class Attraction(BaseModel):
+    place_id: int
+    heading: str
+    description: str
 
 
 class Tag(BaseModel):

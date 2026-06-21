@@ -70,17 +70,24 @@ class Database:
         return self.cursor.rowcount
 
     def select(
-        self,
-        table: str,
-        columns: str = "*",
-        where: str | None = None,
-        params: tuple | list | None = None,
-        fetch_one: bool = False,
+            self,
+            table: str,
+            columns: str = "*",
+            where: str | None = None,
+            params: tuple | list | None = None,
+            order_by: str | None = None,
+            limit: int | None = None,
+            fetch_one: bool = False,
     ):
         """Select rows from a table."""
         sql = f"SELECT {columns} FROM {table}"
         if where:
             sql += f" WHERE {where}"
+        if order_by:
+            sql += f" ORDER BY {order_by}"
+        if limit:
+            sql += f" LIMIT {limit}"
+
         self.cursor.execute(sql, params or ())
         return self.cursor.fetchone() if fetch_one else self.cursor.fetchall()
 

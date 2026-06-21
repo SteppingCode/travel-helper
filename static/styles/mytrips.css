@@ -259,3 +259,9 @@
         grid-template-columns: 1fr;
     }
 }
+
+[data-theme="dark"] {
+    .page-top h1, .details-info h2 {
+        color: var(--text-color);
+    }
+}

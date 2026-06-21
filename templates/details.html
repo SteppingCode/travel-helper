@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelPlanner — Детали путешествия</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}?v=modals_fix">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <i class="fa-solid fa-bars burger-menu"></i>
+            <div class="logo">
+                <i class="fa-solid fa-plane"></i> TravelPlanner
+            </div>
+        </div>
+        <nav class="nav-links navbar-menu">
+            <a href="/">Главная</a>
+            <a href="/details" class="active">Мои путешествия</a>
+            <a href="/create">Создать поездку</a>
+            <a href="#">Места</a>
+        </nav>
+        <div class="nav-right">
+            <i class="fa-solid fa-circle-user profile-icon"></i>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="details-card">
+
+            <div class="details-info">
+                <h2>Детали вашего путешествия <i class="fa-solid fa-earth-americas title-icon"></i></h2>
+                <p class="subtitle">Подробная информация о поездке с местами и чек-листом</p>
+
+                <div class="menu-list">
+                    <div class="menu-item" onclick="openModal('place')">
+                        <div class="item-left">
+                            <div class="item-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <h3>Места поездки</h3>
+                                <p id="menu-places-desc">{% if nearest_trip and nearest_trip.places_count %}Добавлено локаций: {{ nearest_trip.places_count }}{% else %}Все локации и достопримечательности{% endif %}</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right item-arrow"></i>
+                    </div>
+
+                    <div class="menu-item" onclick="openModal('task')">
+                        <div class="item-left">
+                            <div class="item-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                            <div>
+                                <h3>Чек-лист</h3>
+                                <p id="menu-tasks-desc">{% if nearest_trip and nearest_trip.tasks_count %}Задач в списке: {{ nearest_trip.tasks_count }}{% else %}Список дел и важных вещей{% endif %}</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right item-arrow"></i>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-left">
+                            <div class="item-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                            <div>
+                                <h3>Даты поездки</h3>
+                                <p>{% if nearest_trip %}{{ nearest_trip.formatted_date }}{% else %}Нет активных дат{% endif %}</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right item-arrow"></i>
+                    </div>
+
+                    <div class="menu-item" onclick="openModal('member')">
+                        <div class="item-left">
+                            <div class="item-icon"><i class="fa-solid fa-user-group"></i></div>
+                            <div>
+                                <h3>Участники</h3>
+                                <p id="menu-members-desc">{% if nearest_trip %}{{ nearest_trip.members_count }} путешественника{% else %}1 путешественник{% endif %}</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right item-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            {% if nearest_trip %}
+                <div class="details-preview" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('{{ nearest_trip.trip_image or url_for('static', path='images/background.jpg') }}'); background-size: cover; background-position: center;">
+                    <div class="preview-overlay">
+                        <h2>{{ nearest_trip.trip_name }}</h2>
+                        <p class="preview-date">
+                            <i class="fa-solid fa-calendar-day"></i> {{ nearest_trip.formatted_date }}
+                            {% if nearest_trip.days_left is not none %}
+                                <span class="separator">•</span>
+                                <i class="fa-solid fa-hourglass-half"></i> До поездки: {{ nearest_trip.days_left }} дн.
+                            {% endif %}
+                        </p>
+                        <p class="preview-desc">Направление: {{ nearest_trip.destination }}. {% if nearest_trip.budget %}Бюджет: {{ nearest_trip.budget }} руб.{% endif %}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="details-preview" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ url_for('static', path='images/background.jpg') }}'); background-size: cover; background-position: center;">
+                    <div class="preview-overlay">
+                        <h2>Время планировать! <i class="fa-solid fa-compass"></i></h2>
+                        <p class="preview-date">У вас пока нет активных поездок</p>
+                        <p class="preview-desc">Зайдите в раздел «Создать поездку», чтобы добавить первый маршрут.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    <div class="routes-wrapper">
+        <hr>
+        <div class="routes-title">Созданные маршруты</div>
+
+        <div class="routes-grid">
+            {% if trips %}
+                {% for trip in trips %}
+                    <div class="custom-preview-card"
+                         style="{% if trip.trip_image %} background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('{{ trip.trip_image }}'); background-size: cover; background-position: center; {% else %} background: linear-gradient(135deg, #668bb7, #5579a3); {% endif %}">
+
+                        <div class="custom-overlay">
+                            <h3>{{ trip.trip_name }}</h3>
+                            <p class="custom-route-date"><i class="fa-solid fa-location-dot"></i> {{ trip.destination }}</p>
+                            <p class="custom-route-date"><i class="fa-solid fa-calendar-day"></i> {{ trip.trip_date }}</p>
+                            {% if trip.budget %}
+                                <p class="custom-route-budget"><i class="fa-solid fa-ruble-sign"></i> {{ trip.budget }} руб.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-routes">Вы еще не создали ни одного маршрута.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event, 'modalOverlay')">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal(null, 'modalOverlay')"></i>
+            <div class="modal-title" id="modalTitle">Заголовок</div>
+
+            <div class="modal-input-row">
+                <input type="text" id="modalInput" placeholder="Введите значение...">
+                <button class="modal-add-btn" onclick="submitModalItem()">Добавить</button>
+            </div>
+
+            <ul class="modal-list" id="modalList">
+            </ul>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="alertOverlay" onclick="closeModal(event, 'alertOverlay')">
+        <div class="modal-box alert-box" onclick="event.stopPropagation()">
+            <div class="alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+            <div class="modal-title" style="justify-content: center; margin-bottom: 10px;">Действие невозможно</div>
+            <div class="alert-text">Сначала создайте хотя бы одну поездку, чтобы добавлять к ней чек-листы, участников или места отдыха!</div>
+            <button class="alert-btn" onclick="closeModal(null, 'alertOverlay')">Хорошо</button>
+        </div>
+    </div>
+
+    <script>
+        const currentTripId = {% if nearest_trip %}{{ nearest_trip.id }}{% else %}null{% endif %};
+        let currentModalType = '';
+
+        const config = {
+            place: { title: 'Достопримечательности', icon: 'fa-location-dot', placeholder: 'Например, Биг-Бен...' },
+            task: { title: 'Список дел (Чек-лист)', icon: 'fa-clipboard-list', placeholder: 'Например, Купить билеты...' },
+            member: { title: 'Участники поездки', icon: 'fa-user-group', placeholder: 'Имя участника...' }
+        };
+
+        async function openModal(type) {
+            if (!currentTripId) {
+                document.getElementById('alertOverlay').classList.add('active');
+                return;
+            }
+            currentModalType = type;
+
+            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid ${config[type].icon}"></i> ${config[type].title}`;
+            document.getElementById('modalInput').placeholder = config[type].placeholder;
+            document.getElementById('modalInput').value = '';
+
+            await updateModalList();
+
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal(e, id) {
+            if (!e || e.target === document.getElementById(id)) {
+                document.getElementById(id).classList.remove('active');
+            }
+        }
+
+        async function updateModalList() {
+            const response = await fetch(`/api/trip/${currentTripId}/data`);
+            const data = await response.json();
+            const listEl = document.getElementById('modalList');
+            listEl.innerHTML = '';
+
+            if (currentModalType === 'place') {
+                data.places.forEach(p => {
+                    listEl.innerHTML += `
+                        <li>
+                            <div class="item-content"><i class="fa-solid fa-map-pin"></i> ${p.place_name}</div>
+                            <button class="delete-btn" onclick="deleteItem('place', ${p.id})"><i class="fa-solid fa-trash-can"></i></button>
+                        </li>`;
+                });
+                document.getElementById('menu-places-desc').textContent = `Добавлено локаций: ${data.places.length}`;
+            } else if (currentModalType === 'task') {
+                data.tasks.forEach(t => {
+                    listEl.innerHTML += `
+                        <li>
+                            <div class="item-content"><i class="fa-regular fa-square-check"></i> ${t.task_name}</div>
+                            <button class="delete-btn" onclick="deleteItem('task', ${t.id})"><i class="fa-solid fa-trash-can"></i></button>
+                        </li>`;
+                });
+                document.getElementById('menu-tasks-desc').textContent = `Задач в списке: ${data.tasks.length}`;
+            } else if (currentModalType === 'member') {
+                listEl.innerHTML = `
+                    <li>
+                        <div class="item-content"><i class="fa-solid fa-user-shield"></i> Организатор (Вы)</div>
+                    </li>`;
+                data.members.forEach(m => {
+                    listEl.innerHTML += `
+                        <li>
+                            <div class="item-content"><i class="fa-solid fa-user"></i> ${m.member_name}</div>
+                            <button class="delete-btn" onclick="deleteItem('member', ${m.id})"><i class="fa-solid fa-trash-can"></i></button>
+                        </li>`;
+                });
+                document.getElementById('menu-members-desc').textContent = `${data.members.length + 1} путешественника`;
+            }
+        }
+
+        async function submitModalItem() {
+            const inputEl = document.getElementById('modalInput');
+            const val = inputEl.value.trim();
+            if (!val) return;
+
+            const response = await fetch(`/api/trip/${currentTripId}/add_item`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: currentModalType, value: val })
+            });
+
+            if (response.ok) {
+                inputEl.value = '';
+                await updateModalList();
+            }
+        }
+
+        async function deleteItem(type, id) {
+            const response = await fetch(`/api/trip/delete_item/${type}/${id}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                await updateModalList();
+            }
+        }
+    </script>
+</body>
+</html>

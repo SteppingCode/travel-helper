@@ -21,13 +21,14 @@ class UserCreate(BaseModel):
 
 
 class User(BaseModel):
-    id: int
     fullname: str
     email: str
     phone: str
     city: Optional[str] = None
     country: str
     hashed_password: str
+    is_admin: bool = False
+    email_notifications: bool = False
 
 
 class Place(BaseModel):

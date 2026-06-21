@@ -67,9 +67,17 @@
                     {% if user %}
                         <li style="padding: 10px 20px; font-weight: bold;">
                             Привет, {{ user.fullname }}!
+                            {% if user.is_admin %}
+                                <div style="font-size: 11px; color: #dc3545;">(Admin)</div>
+                            {% endif %}
                         </li>
                         <li class="separator"></li>
                         <li><a href="{{ url_for('profile_page') }}">Мой профиль</a></li>
+                        {% if user.is_admin %}
+                            <li class="separator"></li>
+                            <li><a href="/admin/places/new" style="color: #dc3545;">+ Добавить место</a></li>
+                            <li class="separator"></li>
+                        {% endif %}
                         <li><a href="{{ url_for('budget_page') }}">Мой бюджет</a></li>
                         <li><a href="{{ url_for('read_my_trips') }}">Мои путешествия</a></li>
                         <li><a href="{{ url_for('checklists') }}">Чек-листы</a></li>
@@ -88,7 +96,8 @@
                                 <h4 style="margin: 0; text-align: center;">Вход</h4>
 
                                 <input type="email" name="email" placeholder="Email" required
-                                       style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;" autocomplete="off">
+                                       style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;"
+                                       autocomplete="off">
 
                                 <input type="password" name="password" placeholder="Пароль" required
                                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;">
@@ -99,7 +108,8 @@
                                 </button>
                             </form>
                             <div style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
-                                <a href="/register" style="color: #007bff; text-decoration: none; font-weight: bold;">Нет аккаунта?</a>
+                                <a href="/register" style="color: #007bff; text-decoration: none; font-weight: bold;">Нет
+                                    аккаунта?</a>
                             </div>
                         </li>
                         <li class="separator"></li>
@@ -125,55 +135,55 @@
 </div>
 
 <script>
-// Функция для вызова уведомления вручную (если понадобится)
-function showToast(type, message) {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    // Функция для вызова уведомления вручную (если понадобится)
+    function showToast(type, message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
 
-    toast.innerHTML = `
+        toast.innerHTML = `
         <span>${message}</span>
         <span class="toast-close" onclick="this.parentElement.remove()">&times;</span>
     `;
 
-    container.appendChild(toast);
+        container.appendChild(toast);
 
-    // Плавное появление
-    requestAnimationFrame(() => {
-        toast.classList.add('show');
-    });
+        // Плавное появление
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
 
-    // Удаление через 4 секунды
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300); // Ждем завершения анимации исчезновения
-    }, 4000);
-}
-
-// Утилиты для работы с Cookie
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-function eraseCookie(name) {
-    document.cookie = name + '=; Max-Age=0; path=/;';
-}
-
-// Проверяем наличие уведомлений от сервера при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    const toastCookie = getCookie('toast_msg');
-    if (toastCookie) {
-        // Декодируем строку, чтобы кириллица и пробелы отображались корректно
-        const decoded = decodeURIComponent(toastCookie);
-        const [type, ...msgParts] = decoded.split('|');
-        const message = msgParts.join('|');
-
-        showToast(type, message);
-        eraseCookie('toast_msg'); // Удаляем cookie, чтобы не показать снова
+        // Удаление через 4 секунды
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300); // Ждем завершения анимации исчезновения
+        }, 4000);
     }
-});
+
+    // Утилиты для работы с Cookie
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function eraseCookie(name) {
+        document.cookie = name + '=; Max-Age=0; path=/;';
+    }
+
+    // Проверяем наличие уведомлений от сервера при загрузке страницы
+    document.addEventListener('DOMContentLoaded', () => {
+        const toastCookie = getCookie('toast_msg');
+        if (toastCookie) {
+            // Декодируем строку, чтобы кириллица и пробелы отображались корректно
+            const decoded = decodeURIComponent(toastCookie);
+            const [type, ...msgParts] = decoded.split('|');
+            const message = msgParts.join('|');
+
+            showToast(type, message);
+            eraseCookie('toast_msg'); // Удаляем cookie, чтобы не показать снова
+        }
+    });
 </script>
 
 <script>

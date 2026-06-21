@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS places (
     country VARCHAR(100) NOT NULL,
     rating FLOAT,
     description TEXT NOT NULL,
+    subtitle VARCHAR(200),
     created_at DATETIME NOT NULL
 );

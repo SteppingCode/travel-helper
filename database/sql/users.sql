@@ -6,5 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     city TEXT,
     country TEXT NOT NULL,
     hashed_password TEXT NOT NULL,
+    is_admin BOOLEAN NOT NULL DEFAULT 0,
+    email_notifications BOOLEAN NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL
 );

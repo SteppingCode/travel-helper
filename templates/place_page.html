@@ -1,5 +1,5 @@
 {% extends 'base.html' %}{% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', path='styles/detail.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles/place_page.css') }}">
     <title>{{ place.city }} — {{ place.country }}</title>
 {% endblock %}
 {% block author %}
@@ -12,6 +12,8 @@
                 alt=""
                 class="hero-image"
         >
+    {% else %}
+        <div class="hero-image hero-gradient"></div>
     {% endif %}
 
     <div class="container">
@@ -22,17 +24,10 @@
         {% endif %}
 
         <!-- Галерея: используем поля из объединённого place -->
-        {#  <div class="gallery">#}
-        {#    {% if place.gallery_1 %}#}
-        {#      <img src="{{ url_for('static', path=place.gallery_1) }}" alt="{{ place.name_photo_1 or 'Фото' }}">#}
-        {#    {% endif %}#}
-        {#    {% if place.gallery_2 %}#}
-        {#      <img src="{{ url_for('static', path=place.gallery_2) }}" alt="{{ place.items_heading_2 or 'Фото' }}">#}
-        {#    {% endif %}#}
-        {#    {% if place.gallery_3 %}#}
-        {#      <img src="{{ url_for('static', path=place.gallery_3) }}" alt="{{ place.items_heading_3 or 'Фото' }}">#}
-        {#    {% endif %}#}
-        {#  </div>#}
+        {% if place.has_image %}
+            <div class="gallery">
+            </div>
+        {% endif %}
 
         <!-- Описание -->
         <div class="description">

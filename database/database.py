@@ -3,6 +3,7 @@ import os.path
 import sqlite3
 from datetime import datetime
 from os import makedirs, path
+
 from models import *
 
 """
@@ -106,21 +107,28 @@ if __name__ == "__main__":
     from PIL.Image import open
     db = Database()
 
-    # trip1 = Trip(name="Trip 2", city="New York", country="USA", date_from="2020-01-01", date_to="2020-12-31", user_id=2)
+    # trip1 = Trip(name="Отдых в Сочи", city="Сочи", country="Россия", date_from="2026-06-21", date_to="2020-09-21", user_id=1)
     # db.add("trips", trip1.model_dump())
     #
-    # place1 = Place(city="TEST2", country="TEST2", rating=5.0, description="TEST2")
+    # trip2 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=1)
+    # db.add("trips", trip2.model_dump())
+    #
+    # trip3 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=2)
+    # db.add("trips", trip3.model_dump())
+
+    # place1 = Place(city="Санкт-Петербург", country="Россия", rating=5.0, description="Санкт-Петербу́рг — второй по численности населения город России. Город федерального значения. Административный центр Северо-Западного федерального округа. Основан 16 мая 1703 года царём Петром I. В 1714—1728 и 1732—1918 годах был столицей Российского государства.")
     # db.add("places", place1.model_dump())
     #
-    # image_path = "../uploads/sochi.jpg"
-    # file_size = os.path.getsize(image_path)
-    # width, height = open(image_path).size
-    # image1 = Image(file_path="sochi.jpg", original_name="sochi.jpg", mime_type="image/jpeg", file_size=file_size, width=width, height=height)
-    # db.add("images", image1.model_dump())
-    # db.add("images_links", {"image_id": 1, "entity_type": "place", "entity_id": 1})
+    # place2 = Place(city="Москва", country="Россия", rating=4.9, description="Москва́ — столица России, город федерального значения, административный центр Центрального федерального округа и центр Московской области, в состав которой не входит. Мегаполис; крупнейший по численности населения город России и её субъект — 13 274 285 человек, что делает Москву 22-й среди городов мира по численности населения. Центр Московской городской агломерации.")
+    # db.add("places", place2.model_dump())
     #
-    # entity_type = "trip"
-    # entity_id = 1
-    # result = db.execute(f"select file_path from images inner join images_links on images.id = images_links.image_id where entity_type = ? and entity_id = ?", (entity_type, entity_id))
-    # for r in result:
-    #     print(*r)
+    # images = ["sochi.jpg", "tokyo.jpg"]
+    # for image in images:
+    #     UPLOAD_DIR = "../uploads/"
+    #     file_size = os.path.getsize(UPLOAD_DIR + image)
+    #     width, height = open(UPLOAD_DIR + image).size
+    #     image_type = open(UPLOAD_DIR + image).get_format_mimetype()
+    #     image = Image(file_path=image, original_name=image, mime_type=image_type, file_size=file_size, width=width, height=height)
+    #     db.add("images", image.model_dump())
+
+    # db.add("images_links", {"image_id": 2, "entity_type": "trip", "entity_id": 3})

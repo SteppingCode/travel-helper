@@ -27,9 +27,12 @@ def check_image_exists(entity_type: str, entity_id: int) -> Row | None:
     return result
 
 
-def get_entity_from_db(table_name: str) -> list | None:
+def get_entity_from_db(table_name: str, user_id: int | None = None) -> list[Row] | None:
     db = Database()
-    entity = db.select(table_name)
+    if user_id:
+        entity = db.select(table_name, where="user_id = ?", params=(user_id,))
+    else:
+        entity = db.select(table_name)
 
     entity_list = []
     for e in entity:
@@ -51,7 +54,7 @@ def set_flash_message(response: Response, type: str, message: str) -> Response:
     response.set_cookie(
         key="toast_msg",
         value=encoded_msg,
-        max_age=10,  # Cookie живет всего 10 секунд (хватит для редиректа)
+        max_age=10,
         path="/",
         samesite="lax"
     )

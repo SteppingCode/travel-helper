@@ -90,3 +90,15 @@ def get_optional_user(request: Request, db: Database = Depends(get_db)):
 
     user = db.select("users", where="email = ?", params=(email,), fetch_one=True)
     return dict(user) if user else None
+
+
+# Зависимость проверки на администратора
+def get_admin_user(request: Request, current_user: dict = Depends(get_current_user)):
+    # В SQLite BOOLEAN хранится как 0 или 1, поэтому get("is_admin") вернет 1 (True) для админов
+    if not current_user.get("is_admin"):
+        # Если это не админ, выбрасываем ошибку 403
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Доступ запрещен. Требуются права администратора."
+        )
+    return current_user

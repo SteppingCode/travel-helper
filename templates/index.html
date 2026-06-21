@@ -34,7 +34,7 @@
                 воспоминания
             </p>
             <div class="hero-actions">
-                <a href="#" class="btn btn-primary">
+                <a href="{{ url_for('create_page') }}" class="btn btn-primary">
                     <svg
                             width="48px"
                             height="48px"
@@ -82,21 +82,19 @@
                 <div class="trip-grid">
                     {% if trips %}
                         {% for card in trips %}
-                            <a href="{{ url_for('get_trip', trip_id=card.id) }}">
-                                <article class="trip-card">
-                                    <div class="trip-preview">
-                                        {% if card.has_image %}
-                                            <img src="{{ url_for('get_image', entity_type='trip', entity_id=card.id) }}"
-                                                 alt="">
-                                        {% endif %}
-                                    </div>
-                                    <div class="trip-info">
-                                        <strong>{{ card.name }}</strong>
-                                        <span>{{ card.city }}, {{ card.country }}</span>
-                                        <small>{{ card.date_from }} - {{ card.date_to }}</small>
-                                    </div>
-                                </article>
-                            </a>
+                            <article class="trip-card">
+                                <div class="trip-preview">
+                                    {% if card.has_image %}
+                                        <img src="{{ url_for('get_image', entity_type='trip', entity_id=card.id) }}"
+                                             alt="">
+                                    {% endif %}
+                                </div>
+                                <div class="trip-info">
+                                    <strong>{{ card.name }}</strong>
+                                    <span>{{ card.city }}, {{ card.country }}</span>
+                                    <small>{{ card.date_from }} <strong>-</strong> {{ card.date_to }}</small>
+                                </div>
+                            </article>
                         {% endfor %}
                     {% else %}
                         Тут ничего нет.

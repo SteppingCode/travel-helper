@@ -71,11 +71,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     position: relative;
     transition: all 0.3s;
-    cursor: default;
 
     .avatar-svg {
         width: 64px;
@@ -375,7 +373,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+
+    path {
+        stroke: var(--text-color);
+    }
 }
 
 .refresh-btn:hover {

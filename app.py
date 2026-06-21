@@ -1,11 +1,9 @@
 from datetime import datetime
 from sqlite3 import Error
-from io import BytesIO
 from pathlib import Path
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
-from starlette.responses import StreamingResponse
 from database.database import Database, initialize_database
-from utils import get_db, check_image_exists, get_entity_from_db, set_flash_message, render_template
+from utils import get_db, get_entity_from_db, set_flash_message, render_template
 from fastapi import FastAPI, Form, Request, HTTPException, Depends, status, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from models import *
@@ -124,30 +122,92 @@ async def get_place(
         place_id: int,
         db: Database = Depends(get_db)
 ):
+    # 1. Получаем основную информацию о месте
     place = db.select("places", where="id = ?", params=(place_id,), fetch_one=True)
-    place = dict(place)
-    place["has_image"] = check_image_exists("place", place["id"])
-    return render_template(request, "place_page.html", {"place": place})
+    if not place:
+        raise HTTPException(status_code=404, detail="Место не найдено")
+
+    # 2. Получаем ID изображений для галереи
+    gallery_links = db.execute(
+        "SELECT image_id FROM images_links WHERE entity_type = 'gallery' AND entity_id = ?",
+        (place_id,)
+    ).fetchall()
+    gallery_images = [row["image_id"] for row in gallery_links]
+
+    # 3. Получаем достопримечательности
+    attractions = db.select("attractions", where="place_id = ?", params=(place_id,))
+
+    return render_template(request, "place_page.html", {
+        "place": place,
+        "gallery_images": gallery_images,
+        "attractions": attractions
+    })
 
 
-@app.get("/get_image/{entity_type}/{entity_id}", tags=["Public"])
-async def get_image(
+@app.get("/media/{entity_type}/{entity_id}", tags=["Media"])
+async def get_universal_image(
         entity_type: str,
         entity_id: int,
+        index: int = 0,  # Позволяет выбирать 1-ю, 2-ю или 3-ю картинку для галерей
         db: Database = Depends(get_db)
-) -> StreamingResponse:
-    result = check_image_exists(entity_type, entity_id)
+):
+    """
+    Универсальный роут для получения ОДНОГО изображения сущности.
+    Примеры путей:
+      - /media/place/5         (главное фото места №5)
+      - /media/user/12         (аватар пользователя №12)
+      - /media/gallery/5?index=1  (вторая фотография из галереи места №5)
+    """
+    # Приводим к нижнему регистру и убираем "s" на конце, если случайно передали во множественном числе
+    entity_type = entity_type.lower().rstrip('s')
 
-    if not result:
-        raise HTTPException(status_code=404)
+    # Ищем все изображения, привязанные к этому объекту, сортируя по дате добавления
+    query = """
+            SELECT i.file_path, i.mime_type
+            FROM images i
+                     JOIN images_links il ON i.id = il.image_id
+            WHERE il.entity_type = ? \
+              AND il.entity_id = ?
+            ORDER BY il.created_at ASC \
+            """
+    images = db.execute(query, (entity_type, entity_id)).fetchall()
 
-    image_path = result["file_path"]
-    mimetype = result["mime_type"]
+    # Если изображения найдены и запрашиваемый индекс корректен
+    if images and 0 <= index < len(images):
+        img = images[index]
+        file_path = UPLOAD_DIR / img["file_path"]
+        if file_path.exists():
+            return FileResponse(file_path, media_type=img["mime_type"])
 
-    with open(path.join(UPLOAD_DIR, image_path), "rb") as image_file:
-        data = image_file.read()
+    # --- УМНЫЕ ЗАГЛУШКИ (FALLBACKS) ---
+    # Если картинка в базе или на диске отсутствует, отдаем дефолтные изображения из static
+    if entity_type in ["user", "avatar"]:
+        default_avatar = Path("static/assets/default-avatar.png")
+        if default_avatar.exists():
+            return FileResponse(default_avatar, media_type="image/png")
 
-    return StreamingResponse(BytesIO(data), media_type=mimetype)
+    # Заглушка по умолчанию для мест, поездок и достопримечательностей
+    default_placeholder = Path("static/images/placeholder.jpg")
+    if default_placeholder.exists():
+        return FileResponse(default_placeholder, media_type="image/jpeg")
+
+    # Если даже заглушек нет в папке static, отдаем 404
+    raise HTTPException(status_code=404, detail="Изображение не найдено")
+
+
+@app.get("/media/id/{image_id}", tags=["Media"])
+async def get_image_by_id(image_id: int, db: Database = Depends(get_db)):
+    """
+    Дополнительный роут: получение картинки напрямую по её уникальному ID из таблицы images.
+    Полезно, когда бэкенд уже прислал список ID картинок в галерее.
+    """
+    img = db.execute("SELECT file_path, mime_type FROM images WHERE id = ?", (image_id,)).fetchone()
+    if img:
+        file_path = UPLOAD_DIR / img["file_path"]
+        if file_path.exists():
+            return FileResponse(file_path, media_type=img["mime_type"])
+
+    raise HTTPException(status_code=404, detail="Изображение по ID не найдено")
 
 @app.get("/login", tags=["Public"])
 async def login_redirect(

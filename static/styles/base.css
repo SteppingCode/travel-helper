@@ -11,6 +11,10 @@ Used color scheme:
     --text-color: rgba(42, 42, 42, 0.75);
     --dropdown-bg: #f9f5ed;
     --dropdown-text: #2a2a2a;
+    --danger: #E13743;
+    --success: #638341;
+    --warning: #ACAE15;
+    --radius: 16px;
 }
 
 html {
@@ -218,6 +222,13 @@ header {
 
 [data-theme="dark"] header {
     background-color: var(--secondary-color);
+
+    .header-content {
+        color: var(--text-color);
+    }
+    .header-content svg {
+        fill: var(--text-color);
+    }
 }
 
 [data-theme="dark"] .dropdown-menu {
@@ -272,7 +283,7 @@ header {
     color: #fff;
     font-family: inherit;
     font-size: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     opacity: 0;
     transform: translateX(100%);
     transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -287,10 +298,22 @@ header {
 }
 
 /* Цвета для разных типов */
-.toast-success { background-color: #28a745; }
-.toast-error { background-color: #dc3545; }
-.toast-warning { background-color: #ffc107; color: #333; }
-.toast-info { background-color: #17a2b8; }
+.toast-success {
+    background-color: #28a745;
+}
+
+.toast-error {
+    background-color: #dc3545;
+}
+
+.toast-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.toast-info {
+    background-color: #17a2b8;
+}
 
 .toast-close {
     cursor: pointer;
@@ -301,7 +324,9 @@ header {
     transition: opacity 0.2s;
 }
 
-.toast-close:hover { opacity: 1; }
+.toast-close:hover {
+    opacity: 1;
+}
 
 .author-watermark {
     position: fixed;

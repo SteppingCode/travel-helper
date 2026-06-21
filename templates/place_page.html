@@ -6,68 +6,43 @@
     <span>Разработано: Суворова Е.А.</span>
 {% endblock %}
 {% block content %}
-    {% if place.has_image %}
-        <img
-                src="{{ url_for('get_image', entity_type='place', entity_id=place.id) }}"
-                alt=""
-                class="hero-image"
-        >
-    {% else %}
-        <div class="hero-image hero-gradient"></div>
-    {% endif %}
+    <div class="hero-image hero-gradient">
+        <img src="/media/place/{{ place.id }}"
+             alt="{{ place.city }}" class="hero-image">
+    </div>
 
     <div class="container">
-        <!-- Заголовок и подзаголовок -->
         <h1 class="destination-title">{{ place.city }}, {{ place.country }}</h1>
-        {% if place.description_subtitle %}
-            <p class="destination-subtitle">{{ place.description_subtitle }}</p>
+        {% if place.subtitle %}
+            <p class="destination-subtitle">{{ place.subtitle }}</p>
         {% endif %}
 
-        <!-- Галерея: используем поля из объединённого place -->
-        {% if place.has_image %}
+        {% if gallery_images %}
             <div class="gallery">
+                {% for image_id in gallery_images %}
+                    <img src="/media/gallery/{{ place.id }}?index={{ loop.index - 1 }}" alt="Галерея">
+                {% endfor %}
             </div>
         {% endif %}
 
-        <!-- Описание -->
         <div class="description">
             <h2>О месте</h2>
             <p>{{ place.description }}</p>
         </div>
 
-        <!-- Достопримечательности -->
-        <div class="attractions">
-            <h2>Основные достопримечательности</h2>
-
-            {% if place.items_heading_1 %}
-                <div class="attraction-item">
-                    <img src="{{ url_for('static', path=place.items_photo_1) }}" alt="{{ place.items_heading_1 }}">
-                    <div class="attraction-content">
-                        <h3>{{ place.items_heading_1 }}</h3>
-                        <p>{{ place.items_description_1 }}</p>
+        {% if attractions %}
+            <div class="attractions">
+                <h2>Основные достопримечательности</h2>
+                {% for attr in attractions %}
+                    <div class="attraction-item">
+                        <img src="/media/attraction/{{ attr.id }}" alt="{{ attr.heading }}">
+                        <div class="attraction-content">
+                            <h3>{{ attr.heading }}</h3>
+                            <p>{{ attr.description }}</p>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-
-            {% if place.items_heading_2 %}
-                <div class="attraction-item">
-                    <img src="{{ url_for('static', path=place.items_photo_2) }}" alt="{{ place.items_heading_2 }}">
-                    <div class="attraction-content">
-                        <h3>{{ place.items_heading_2 }}</h3>
-                        <p>{{ place.items_description_2 }}</p>
-                    </div>
-                </div>
-            {% endif %}
-
-            {% if place.items_heading_3 %}
-                <div class="attraction-item">
-                    <img src="{{ url_for('static', path=place.items_photo_3) }}" alt="{{ place.items_heading_3 }}">
-                    <div class="attraction-content">
-                        <h3>{{ place.items_heading_3 }}</h3>
-                        <p>{{ place.items_description_3 }}</p>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

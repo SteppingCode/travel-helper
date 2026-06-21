@@ -23,23 +23,36 @@
         <div class="places-grid">
             {% if places %}
                 {% for p in places %}
-                    <a href="{{ url_for('get_place', place_id=p.id) }}">
-                        <div class="place-card">
-                            <div class="place-preview">
-                                {% if p.has_image %}
-                                    <img src="{{ url_for('get_image', entity_type='place', entity_id=p.id) }}"
-                                         alt="{{ p.city }}">
-                                {% endif %}
+                    <div class="place-card-wrapper">
+                        <a href="{{ url_for('get_place', place_id=p.id) }}"
+                           style="text-decoration: none; color: inherit;">
+                            <div class="place-card">
+                                <div class="place-preview">
+                                    {% if p.has_image %}
+                                        <img src="/media/place/{{ p.id }}"
+                                             alt="{{ p.city }}">
+                                    {% endif %}
+                                </div>
+                                <div class="place-info">
+                                    <div class="place-name">{{ p.city }}</div>
+                                    <div class="place-name_country">{{ p.country }}</div>
+                                    {% if p.rating %}
+                                        <div class="place-rating">★{{ p.rating }}</div>
+                                    {% endif %}
+                                    <div class="place-description">{{ p.descriptions }}</div>
+                                </div>
                             </div>
-                            <div class="place-info">
-                                <div class="place-name">{{ p.city }}</div>
-                                <div class="place-name_country">{{ p.country }}</div>
-                                <div class="place-rating">★{{ p.rating }}</div>
-                                <div class="place-description">{{ p.descriptions }}</div>
-                                <div class="tags">{{ p.tags }}</div>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+
+                        {% if user and user.is_admin %}
+                            <form action="/admin/places/delete/{{ p.id }}" method="POST" style="margin: 0;">
+                                <button type="submit" class="admin-delete-btn" title="Удалить место"
+                                        onclick="return confirm('Вы уверены, что хотите удалить это место?');">
+                                    🗑️
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
                 {% endfor %}
             {% else %}
                 <p style="grid-column: 1 / -1; text-align: center; font-size: 18px; color: #666;">

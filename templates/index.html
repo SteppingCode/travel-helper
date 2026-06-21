@@ -84,10 +84,8 @@
                         {% for card in trips %}
                             <article class="trip-card">
                                 <div class="trip-preview">
-                                    {% if card.has_image %}
-                                        <img src="{{ url_for('get_image', entity_type='trip', entity_id=card.id) }}"
-                                             alt="">
-                                    {% endif %}
+                                    <img src="/media/trip/{{ card.id }}"
+                                         alt="">
                                 </div>
                                 <div class="trip-info">
                                     <strong>{{ card.name }}</strong>

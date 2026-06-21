@@ -88,6 +88,11 @@
     background: #ffffff;
     color: #2a2a2a;
     cursor: pointer;
+
+    svg {
+        width: 48px;
+        height: 48px;
+    }
 }
 
 .icon-button.active {
@@ -265,3 +270,41 @@
         color: var(--text-color);
     }
 }
+
+/* Базовые настройки сетки (когда нажата кнопка svg_cells) */
+.cards-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Скрываем список, показываем плитку по умолчанию */
+.cards-list:not(.list-view) .trip-list-template { display: none; }
+.cards-list:not(.list-view) .trip-grid-template {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Текст снизу */
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    min-height: 400px;
+}
+
+.custom-overlay {
+    padding: 20px;
+    color: white;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+}
+
+/* Настройки режима списка (когда нажата кнопка svg_list) */
+.cards-list.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* В режиме списка скрываем плитку и показываем стандартный article */
+.cards-list.list-view .trip-grid-template { display: none; }
+.cards-list.list-view .trip-list-template { display: grid; }

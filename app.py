@@ -3,7 +3,7 @@ from sqlite3 import Error
 from pathlib import Path
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from database.database import Database, initialize_database
-from utils import get_db, set_flash_message, render_template, get_records
+from utils import get_db, set_flash_message, render_template, get_records, check_image_exists
 from fastapi import FastAPI, Form, Request, HTTPException, Depends, status, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from models import *
@@ -13,11 +13,11 @@ from os import path
 from typing import List, Optional
 import shutil
 import uuid
+from config import Config
 
 app = FastAPI()
 
-UPLOAD_DIR = Path("uploads")
-UPLOAD_DIR.mkdir(exist_ok=True)
+Config.UPLOAD_DIR.mkdir(exist_ok=True)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -26,33 +26,33 @@ async def save_uploaded_photo(file: UploadFile, entity_type: str, entity_id: int
     if not file or not file.filename:
         return
 
+
     # Генерируем уникальное имя файла
     file_extension = path.splitext(file.filename)[1]
     unique_filename = f"{uuid.uuid4()}{file_extension}"
-    file_path = UPLOAD_DIR / unique_filename
+    file_path = Config.UPLOAD_DIR / unique_filename
 
     # Сохраняем физически на диск
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # В реальном коде здесь можно вытащить размеры через PIL,
-    # пока ставим заглушки, как в вашей модели Image
-    db.execute(
-        """INSERT INTO images (file_path, original_name, mime_type, file_size, width, height, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?)""",
-        (unique_filename, file.filename, file.content_type, 0, 0, 0, datetime.now()),
-        commit=True
-    )
+    from PIL.Image import open as o
+    file_size = path.getsize(Config.UPLOAD_DIR / unique_filename)
+    width, height = o(Config.UPLOAD_DIR / unique_filename).size
+    image_type = o(Config.UPLOAD_DIR / unique_filename).get_format_mimetype()
+
+    image = Image(file_path=unique_filename, original_name=file.filename, mime_type=image_type, file_size=file_size, width=width, height=height)
+    db.add("images", image.model_dump())
 
     # Получаем id последней картинки
     image_id = db.cursor.lastrowid
 
     # Связываем картинку полиморфно через таблицу картинок
-    db.execute(
-        "INSERT INTO images_links (image_id, entity_type, entity_id, created_at) VALUES (?, ?, ?, ?)",
-        (image_id, entity_type, entity_id, datetime.now()),
-        commit=True
-    )
+    db.add("images_links", {
+        "image_id": image_id,
+        "entity_type": entity_type,
+        "entity_id": entity_id
+    })
 
 
 @app.on_event("startup")
@@ -81,6 +81,7 @@ async def add_user_to_request(
 
     response = await call_next(request)
     return response
+
 
 @app.get("/", response_class=HTMLResponse, tags=["Public"])
 async def read_root(
@@ -184,7 +185,7 @@ async def get_universal_image(
     # Если изображения найдены и запрашиваемый индекс корректен
     if images and 0 <= index < len(images):
         img = images[index]
-        file_path = UPLOAD_DIR / img["file_path"]
+        file_path = Config.UPLOAD_DIR / img["file_path"]
         if file_path.exists():
             return FileResponse(file_path, media_type=img["mime_type"])
 
@@ -212,11 +213,12 @@ async def get_image_by_id(image_id: int, db: Database = Depends(get_db)):
     """
     img = db.execute("SELECT file_path, mime_type FROM images WHERE id = ?", (image_id,)).fetchone()
     if img:
-        file_path = UPLOAD_DIR / img["file_path"]
+        file_path = Config.UPLOAD_DIR / img["file_path"]
         if file_path.exists():
             return FileResponse(file_path, media_type=img["mime_type"])
 
     raise HTTPException(status_code=404, detail="Изображение по ID не найдено")
+
 
 @app.get("/login", tags=["Public"])
 async def login_redirect(
@@ -224,6 +226,7 @@ async def login_redirect(
 ):
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     return set_flash_message(response, "warning", "Войдите в профиль для просмотра страницы")
+
 
 @app.post("/login", tags=["Public"])
 async def login(
@@ -288,7 +291,8 @@ async def register(
         return set_flash_message(response, "success", "Успешная регистрация! Теперь вы можете войти.")
     except Error as err:
         print(f"Database Error: {err}")
-        return render_template(request, "register.html", {"error": "Произошла ошибка при регистрации. Попробуйте позже."})
+        return render_template(request, "register.html",
+                               {"error": "Произошла ошибка при регистрации. Попробуйте позже."})
 
 
 @app.get("/logout", tags=["Auth"])
@@ -304,15 +308,103 @@ async def read_my_trips(
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
-    trips = get_records(
+    RU_MONTHS = ["", "янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"]
+    trips_raw = get_records(
         table="trips",
         where="user_id = ?",
         params=(current_user["id"],),
-        order_by="created_at DESC",
+        order_by="date_from ASC",
         check_image_type="trip"
     )
-    nearest_trip = trips[0]
+
+    today = datetime.now().date()
+    trips = []
+    nearest_trip = None
+    min_days_left = float('inf')
+
+    for t in trips_raw:
+        try:
+            d_from = datetime.fromisoformat(t["date_from"].split("T")[0]).date()
+            d_to = datetime.fromisoformat(t["date_to"].split("T")[0]).date()
+
+            t[
+                "formatted_date"] = f"{d_from.day} {RU_MONTHS[d_from.month]} - {d_to.day} {RU_MONTHS[d_to.month]} {d_to.year}"
+            days_left = (d_from - today).days
+
+            if days_left > 0:
+                t["status"] = "Запланировано"
+                t["days_left"] = days_left
+                # Ищем самую ближайшую запланированную поездку
+                if days_left < min_days_left:
+                    min_days_left = days_left
+                    nearest_trip = t
+            elif d_from <= today <= d_to:
+                t["status"] = "В процессе"
+                t["days_left"] = 0
+                if nearest_trip is None or nearest_trip["status"] != "В процессе":
+                    nearest_trip = t
+            else:
+                t["status"] = "Завершено"
+                t["days_left"] = None
+
+        except Exception as e:
+            t["formatted_date"] = "Даты не указаны"
+            t["status"] = "Неизвестно"
+            t["days_left"] = None
+
+        try:
+            t["places_count"] = db.execute("SELECT COUNT(*) FROM trip_places WHERE trip_id = ?", (t["id"],)).fetchone()[0]
+        except:
+            t["places_count"] = 0
+
+        try:
+            t["tasks_count"] = db.execute("SELECT COUNT(*) FROM trip_tasks WHERE trip_id = ?", (t["id"],)).fetchone()[0]
+        except:
+            t["tasks_count"] = 0
+
+        try:
+            t["members_count"] = \
+                db.execute("SELECT COUNT(*) FROM trip_members WHERE trip_id = ?", (t["id"],)).fetchone()[0] + 1
+        except:
+            t["members_count"] = 1
+
+        trips.append(t)
+
+    # Если запланированных нет, берем последнюю завершенную как "ближайшую" (история)
+    if not nearest_trip and trips:
+        nearest_trip = trips[-1]
+
     return render_template(request, "trips.html", {"trips": trips, "nearest_trip": nearest_trip})
+
+
+# app.py
+@app.get("/trip/{trip_id}", response_class=HTMLResponse, tags=["Auth"])
+async def trip_page(request: Request, trip_id: int, db: Database = Depends(get_db),
+                             current_user: dict = Depends(get_current_user)):
+    # 1. Получаем поездку и проверяем права
+    trip = db.select("trips", where="id = ? AND user_id = ?", params=(trip_id, current_user["id"]), fetch_one=True)
+    if not trip:
+        raise HTTPException(status_code=404, detail="Путешествие не найдено или нет доступа")
+
+    # Форматирование дат (как мы делали ранее)
+    trip = dict(trip)
+    trip["has_image"] = check_image_exists("trip", trip["id"])
+
+    return render_template(request, "trip_details.html", {"trip": trip})
+
+
+@app.post("/trip/add_db_place/{place_id}", tags=["Auth"])
+async def link_place_to_trip(request: Request, place_id: int, trip_id: int = Form(...), db: Database = Depends(get_db),
+                             current_user: dict = Depends(get_current_user)):
+    # Проверяем, принадлежит ли поездка пользователю
+    trip = db.select("trips", where="id = ? AND user_id = ?", params=(trip_id, current_user["id"]), fetch_one=True)
+    if not trip:
+        return set_flash_message(RedirectResponse(url=f"/place/{place_id}", status_code=303), "error", "Ошибка доступа")
+
+    # Добавляем связь
+    db.add("trip_places", {"trip_id": trip_id, "place_id": place_id})
+    return set_flash_message(RedirectResponse(url=f"/trip/{trip_id}", status_code=303), "success",
+                             "Место успешно добавлено в маршрут!")
 
 
 @app.get("/create", response_class=HTMLResponse, tags=["Auth"])
@@ -328,29 +420,24 @@ async def create_page(
 async def create_trip(
         request: Request,
         trip_name: str = Form(...),
-        trip_date: str = Form(...),
-        destination: str = Form(...),
+        trip_from: str = Form(...),
+        trip_to: str = Form(...),
+        country_destination: str = Form(...),
+        city_destination: str = Form(...),
         budget: Optional[float] = Form(None),
         db: Database = Depends(get_db),
+        preview: UploadFile = File(...),
         current_user: dict = Depends(get_current_user)
 ):
-
     try:
         trip = Trip(name=trip_name, city=destination, country="TEST", date_from=trip_date.isoformat(),
-                    date_to="2999-01-01", user_id=1)
+                    date_to="2999-01-01", user_id=request.state.user['id'], budget=budget)
         db.add("trips", trip.model_dump())
+        trip_id = db.cursor.lastrowid
+        await save_uploaded_photo(preview, "trip", trip_id, db)
     except Error as err:
         print(err)
     return RedirectResponse(url="/details", status_code=303)
-
-
-@app.get("/profile", tags=["Auth"])
-async def profile_page(
-        request: Request,
-        db: Database = Depends(get_db),
-        current_user: dict = Depends(get_current_user)
-):
-    return render_template(request, "profile.html")
 
 
 @app.get("/budget", tags=["Auth"])
@@ -362,66 +449,126 @@ async def budget_page(
     return render_template(request, "budget.html")
 
 
-@app.get("/checklists", tags=["Auth"])
-async def checklists(
+@app.get("/profile", tags=["Auth"])
+async def profile_page(
         request: Request,
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
-    checklists = {
-        'Документы и бронирования': [
-            {'text': 'Проверить паспорт и визу', 'done': False, 'user_data': ''},
-            {'text': 'Купить авиабилеты', 'done': False, 'user_data': ''},
-            {'text': 'Забронировать отель', 'done': False, 'user_data': ''},
-            {'text': 'Зарегистрироваться на рейс онлайн', 'done': False, 'user_data': ''},
-            {'text': 'Распечатать посадочные талоны', 'done': False, 'user_data': ''},
-            {'text': 'Проверить ограничения по багажу', 'done': False, 'user_data': ''}
-        ],
-        'Аптечка и здоровье': [
-            {'text': 'Аптечка первой помощи', 'done': False, 'user_data': ''},
-            {'text': 'Лекарства по рецепту', 'done': False, 'user_data': ''},
-            {'text': 'Обезболивающие', 'done': False, 'user_data': ''},
-            {'text': 'Средства от аллергии', 'done': False, 'user_data': ''}
-        ],
-        'Защита и гигиена': [
-            {'text': 'Солнцезащитный крем', 'done': False, 'user_data': ''},
-            {'text': 'Репелленты от насекомых', 'done': False, 'user_data': ''},
-            {'text': 'Одежда по погоде', 'done': False, 'user_data': ''},
-            {'text': 'Удобная обувь', 'done': False, 'user_data': ''},
-            {'text': 'Туалетные принадлежности', 'done': False, 'user_data': ''}
-        ],
-        'Техника и зарядка': [
-            {'text': 'Зарядные устройства', 'done': False, 'user_data': ''},
-            {'text': 'Адаптеры для розеток', 'done': False, 'user_data': ''},
-            {'text': 'Фотоаппарат или камера', 'done': False, 'user_data': ''}
-        ],
-        'Важные документы (с собой)': [
-            {'text': 'Паспорт', 'done': False, 'user_data': ''},
-            {'text': 'Виза или разрешение на въезд', 'done': False, 'user_data': ''},
-            {'text': 'Копии документов', 'done': False, 'user_data': ''},
-            {'text': 'Страховой полис', 'done': False, 'user_data': ''},
-            {'text': 'Водительские права', 'done': False, 'user_data': ''},
-            {'text': 'Бронь отеля', 'done': False, 'user_data': ''}
-        ],
-        'Перед выходом из дома': [
-            {'text': 'Выключить электроприборы', 'done': False, 'user_data': ''},
-            {'text': 'Закрыть окна и двери', 'done': False, 'user_data': ''},
-            {'text': 'Полить растения', 'done': False, 'user_data': ''},
-            {'text': 'Организовать уход за питомцами', 'done': False, 'user_data': ''},
-            {'text': 'Перенаправить почту', 'done': False, 'user_data': ''},
-            {'text': 'Проверить замки', 'done': False, 'user_data': ''}
-        ]
-    }
-    return render_template(request, "checklists.html", {"checklists": checklists})
+    return render_template(request, "profile.html")
+
+
+# --- ПРОФИЛЬ ---
+@app.post("/profile", tags=["Auth"])
+async def update_profile(
+        request: Request,
+        email: str = Form(...),
+        phone: str = Form(...),
+        city: Optional[str] = Form(None),
+        budget: Optional[float] = Form(None),
+        email_alerts: Optional[str] = Form(None),
+        avatar: UploadFile = File(None),
+        remove_avatar: str = Form("0"),
+        db: Database = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
+    is_email = 1 if email_alerts == 'on' else 0
+
+    db.update("users", {
+        "email": email,
+        "phone": phone,
+        "city": city,
+        "budget": budget,
+        "email_notifications": is_email,
+    }, where="id = ?", params=(current_user["id"],))
+
+    user_avatar_id = db.execute(
+        "SELECT i.id FROM images i INNER JOIN images_links il ON il.image_id = i.id WHERE il.entity_type = 'user' AND il.entity_id = ?",
+        (request.state.user["id"],)).fetchone()
+
+    if remove_avatar == "1":
+        db.remove("images", "id = ?", (*user_avatar_id,))
+        db.update("users", {"has_avatar": 0}, "id = ?", (request.state.user["id"],))
+    elif avatar and avatar.filename:
+        db.remove("images", "id = ?", (*user_avatar_id,))
+        await save_uploaded_photo(avatar, "user", current_user["id"], db)
+        db.update("users", {"has_avatar": 1}, "id = ?", (request.state.user["id"],))
+
+    return RedirectResponse(url="/profile", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.get("/checklists", tags=["Auth"])
+async def checklists_page(request: Request, db: Database = Depends(get_db),
+                          current_user: dict = Depends(get_current_user)):
+    # 1. Получаем все поездки пользователя
+    trips = db.select("trips", where="user_id = ?", params=(current_user["id"],), order_by="date_from ASC")
+
+    trips_data = []
+    for trip in trips:
+        trip_id = trip["id"]
+        # 2. Ищем чек-листы для КОНКРЕТНОЙ поездки
+        existing = db.select("checklists", where="user_id = ? AND trip_id = ?", params=(request.state.user["id"], trip_id))
+
+        # 3. Если их нет, генерируем базовый набор
+        # if not existing:
+        #     for cat, items in Config.DEFAULT_CHECKLISTS.items():
+        #         for text in items:
+        #             db.add("checklists", {
+        #                 "user_id": request.state.user["id"],
+        #                 "trip_id": trip_id,
+        #                 "category": cat,
+        #                 "item_text": text,
+        #                 "is_done": 0,
+        #                 "user_data": ""
+        #             })
+        #     existing = db.select("checklists", where="user_id = ? AND trip_id = ?",
+        #                          params=(request.state.user["id"], trip_id))
+
+        # 4. Группируем по категориям для удобного вывода в Jinja
+        checklists = {}
+        for row in existing:
+            cat = row["category"]
+            if cat not in checklists:
+                checklists[cat] = []
+            checklists[cat].append({
+                "id": row["id"], "text": row["item_text"], "done": bool(row["is_done"]), "user_data": row["user_data"]
+            })
+
+        trips_data.append({
+            "trip": dict(trip),
+            "checklists": checklists
+        })
+
+    return render_template(request, "checklists.html", {"trips_data": trips_data})
+
+
+@app.post("/checklists", tags=["Auth"])
+async def save_checklists(request: Request, db: Database = Depends(get_db),
+                          current_user: dict = Depends(get_current_user)):
+    form_data = await request.form()
+
+    # Получаем все ID чек-листов пользователя
+    items = db.select("checklists", columns="id", where="user_id = ?", params=(current_user["id"],))
+
+    # Обновляем каждый (если чекбокс нажат, он вернет 'on', иначе None)
+    for item in items:
+        item_id = item["id"]
+        is_done = 1 if form_data.get(f"item_{item_id}_done") == "on" else 0
+        user_data = form_data.get(f"item_{item_id}_data", "")
+
+        db.execute(
+            "UPDATE checklists SET is_done = ?, user_data = ? WHERE id = ? AND user_id = ?",
+            (is_done, user_data, item_id, current_user["id"]), commit=True
+        )
+
+    return RedirectResponse(url="/checklists", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @app.get("/reset", tags=["Auth"])
-async def reset(
-        request: Request,
-        db: Database = Depends(get_db),
-        current_user: dict = Depends(get_current_user)
-):
-    pass
+async def reset_checklists(db: Database = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    # Удаляем чек-листы пользователя. При следующем заходе на страницу они пересоздадутся чистыми!
+    db.remove("checklists", where="user_id = ?", params=(current_user["id"],))
+    return RedirectResponse(url="/checklists", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @app.get("/admin/places/new", tags=["Admin"])
@@ -484,12 +631,99 @@ async def admin_create_place(
 
 @app.post("/admin/places/delete/{place_id}", tags=["Admin"])
 async def delete_place(
-    place_id: int,
-    db: Database = Depends(get_db),
-    admin_user: dict = Depends(get_admin_user)
+        place_id: int,
+        db: Database = Depends(get_db),
+        admin_user: dict = Depends(get_admin_user)
 ):
     db.remove("places", where="id = ?", params=(place_id,))
     return RedirectResponse(url="/places", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.get("/api/user/trips", tags=["Auth"])
+async def api_get_user_trips(
+        request: Request,
+        db: Database = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
+    return get_records("trips", where="user_id = ?", params=(request.state.user["id"],))
+
+
+# 1. Получение всех данных конкретного путешествия (для JS)
+@app.get("/api/trip/{trip_id}/data", tags=["Auth"])
+async def api_get_trip_data(
+        trip_id: int,
+        db: Database = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
+    # Места (объединяем кастомные названия и названия из БД)
+    places_query = """
+                   SELECT tp.id, COALESCE(p.city, tp.custom_name) as place_name
+                   FROM trip_places tp
+                            LEFT JOIN places p ON tp.place_id = p.id
+                   WHERE tp.trip_id = ? \
+                   """
+    places = [dict(row) for row in db.execute(places_query, (trip_id,)).fetchall()]
+
+    # Чек-листы, участники и теги
+    tasks = db.select("trip_tasks", columns="id, task_name, is_done", where="trip_id = ?", params=(trip_id,))
+    members = db.select("trip_members", columns="id, member_name", where="trip_id = ?", params=(trip_id,))
+    tags = db.select("trip_tags", columns="id, tag_name", where="trip_id = ?", params=(trip_id,))
+
+    return {
+        "places": [dict(t) for t in places],
+        "tasks": [dict(t) for t in tasks],
+        "members": [dict(m) for m in members],
+        "tags": [dict(t) for t in tags]
+    }
+
+
+# 2. Добавление кастомного элемента из модалки
+@app.post("/api/trip/{trip_id}/add_item", tags=["Auth"])
+async def api_add_trip_item(
+        trip_id: int,
+        item: AddItemRequest,
+        db: Database = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
+    # Проверка владельца поездки (безопасность)
+    trip = db.select("trips", where="id = ? AND user_id = ?", params=(trip_id, current_user["id"]), fetch_one=True)
+    if not trip:
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+
+    table_map = {
+        "place": ("trip_places", {"trip_id": trip_id, "custom_name": item.value}),
+        "task": ("trip_tasks", {"trip_id": trip_id, "task_name": item.value}),
+        "member": ("trip_members", {"trip_id": trip_id, "member_name": item.value}),
+        "tag": ("trip_tags", {"trip_id": trip_id, "tag_name": item.value}),
+    }
+
+    if item.type not in table_map:
+        raise HTTPException(status_code=400, detail="Неверный тип")
+
+    table, data = table_map[item.type]
+
+    # Бизнес-правило: Не более 10 участников (1 организатор + 9 добавленных)
+    if item.type == "member":
+        count = db.execute("SELECT COUNT(*) FROM trip_members WHERE trip_id = ?", (trip_id,)).fetchone()[0]
+        if count >= 9:
+            raise HTTPException(status_code=400, detail="Достигнут лимит: максимум 10 участников")
+
+    db.add(table, data)
+    return {"status": "ok"}
+
+
+# 3. Удаление элемента
+@app.delete("/api/trip/delete_item/{item_type}/{item_id}", tags=["Auth"])
+async def api_delete_trip_item(
+        item_type: str,
+        item_id: int,
+        db: Database = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
+    table_map = {"place": "trip_places", "task": "trip_tasks", "member": "trip_members", "tag": "trip_tags"}
+    if item_type in table_map:
+        db.remove(table_map[item_type], where="id = ?", params=(item_id,))
+    return {"status": "ok"}
 
 
 @app.get('/favicon.ico', include_in_schema=False)

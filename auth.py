@@ -10,7 +10,7 @@ from jwt.exceptions import PyJWTError
 # --- Configuration (Move SECRET_KEY to an environment variable in production!) ---
 SECRET_KEY = "your-super-secret-key-change-me"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

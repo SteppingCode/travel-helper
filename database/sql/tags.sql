@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS tags (
     text VARCHAR(100) NOT NULL,
     trip_id INTEGER NOT NULL,
     created_at DATETIME NOT NULL,
-    FOREIGN KEY (trip_id) REFERENCES trips(id)
+    FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
 );

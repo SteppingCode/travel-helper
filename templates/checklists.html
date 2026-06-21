@@ -11,48 +11,66 @@
         <p class="subtitle">Подготовься к поездке со всем необходимым</p>
 
         <form method="POST" id="checklistForm">
-            <div class="checklist-grid">
-                {% for category, items in checklists.items() %}
-                    <div class="category-card" data-category="{{ category }}">
-                        <div class="category-title">
-                            {{ category }}
-                            <span class="settings-icon" id="settings-{{ loop.index }}">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235E83AE'%3E%3Cpath d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E"
-                             alt="settings">
-                    </span>
-                        </div>
-                        {% for item in items %}
-                            <div class="checklist-item" data-category="{{ category }}" data-index="{{ idx }}">
-                                <div class="item-main">
-                                    <div class="icon-placeholder"></div>
-                                    <input type="checkbox"
-                                           name="{{ category }}_{{ loop.index }}_done"
-                                           id="check_{{ category }}_{{ loop.index }}"
-                                           {% if item.done %}checked{% endif %}
-                                           onchange="handleCheckboxChange(this)">
-                                    <label for="check_{{ category }}_{{ loop.index }}"
-                                           class="item-text {% if item.done %}done{% endif %}">
-                                        {{ item.text }}
-                                    </label>
+            {% if trips_data %}
+                {% for trip_item in trips_data %}
+                    <div style="background: #5E83AE; color: white; padding: 15px 20px; border-radius: 8px; margin: 40px 0 20px 0; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 1.2rem;">🛫 {{ trip_item.trip.name }} ({{ trip_item.trip.city }})</h2>
+                        <span style="font-size: 0.9rem; opacity: 0.8;">До: {{ trip_item.trip.date_from.split('T')[0] }}</span>
+                    </div>
+
+                    <div class="checklist-grid">
+                        {% for category, items in trip_item.checklists.items() %}
+                            <div class="category-card" data-category="{{ category }}">
+                                <div class="category-title">
+                                    {{ category }}
+                                    <span class="settings-icon" id="settings-{{ trip_item.trip.id }}-{{ loop.index }}">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235E83AE'%3E%3Cpath d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E"
+                                     alt="settings">
+                            </span>
                                 </div>
-                                <div class="user-data-input">
-                                    <input type="text"
-                                           name="{{ category }}_{{ loop.index }}_data"
-                                           value="{{ item.user_data }}"
-                                           placeholder="Введите свои данные..."
-                                           oninput="handleUserDataChange(this)">
-                                </div>
+
+                                {% for item in items %}
+                                    <div class="checklist-item">
+                                        <div class="item-main">
+                                            <div class="icon-placeholder"></div>
+                                            <input type="checkbox"
+                                                   name="item_{{ item.id }}_done"
+                                                   id="check_{{ item.id }}"
+                                                   {% if item.done %}checked{% endif %}
+                                                   onchange="handleCheckboxChange(this)">
+                                            <label for="check_{{ item.id }}"
+                                                   class="item-text {% if item.done %}done{% endif %}">
+                                                {{ item.text }}
+                                            </label>
+                                        </div>
+                                        <div class="user-data-input">
+                                            <input type="text"
+                                                   name="item_{{ item.id }}_data"
+                                                   value="{{ item.user_data }}"
+                                                   placeholder="Введите свои данные..."
+                                                   oninput="handleUserDataChange(this)">
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
                         {% endfor %}
                     </div>
                 {% endfor %}
-            </div>
 
-            <div class="button-group">
-                <button type="submit" class="btn btn-save">💾 Сохранить изменения</button>
-                <a href="{{ url_for('reset') }}" class="btn btn-reset" onclick="return confirm('Сбросить все данные?')">🔄
-                    Сбросить чек-лист</a>
-            </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-save">💾 Сохранить изменения</button>
+                    <a href="{{ url_for('reset_checklists') }}" class="btn btn-reset"
+                       onclick="return confirm('Сбросить данные всех чек-листов?')">🔄 Сбросить всё</a>
+                </div>
+
+            {% else %}
+                <div style="text-align: center; padding: 50px 20px; background: white; border-radius: 12px; margin-top: 30px;">
+                    <h2 style="color: #333;">У вас пока нет запланированных поездок</h2>
+                    <p style="color: #666; margin-bottom: 20px;">Создайте свое первое путешествие, чтобы начать
+                        заполнять чек-листы!</p>
+                    <a href="/create" class="btn btn-save" style="text-decoration: none;">+ Создать поездку</a>
+                </div>
+            {% endif %}
         </form>
     </div>
 

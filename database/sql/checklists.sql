@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS checklists (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    trip_id INTEGER NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    item_text VARCHAR(200) NOT NULL,
+    is_done BOOLEAN NOT NULL DEFAULT 0,
+    user_data VARCHAR(255) DEFAULT '',
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
+);

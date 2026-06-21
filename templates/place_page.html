@@ -30,6 +30,37 @@
             <p>{{ place.description }}</p>
         </div>
 
+        {% if user %}
+            <div class="add-to-trip-card"
+                 style="background: #f1f8ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
+                <h3><i class="fa-solid fa-plus-circle"></i> Добавить в мое путешествие</h3>
+
+                <form action="/trip/add_db_place/{{ place.id }}" method="POST"
+                      style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                    <select name="trip_id" required style="padding: 10px; border-radius: 4px; flex-grow: 1;">
+                        <option value="" disabled selected>Загрузка ваших поездок...</option>
+                    </select>
+                    <button type="submit" class="alert-btn" style="padding: 10px 20px;">Добавить</button>
+                </form>
+            </div>
+
+            <script>
+                // Загружаем список поездок пользователя для выпадающего списка
+                document.addEventListener('DOMContentLoaded', async () => {
+                    // Мы используем тот же роут, что и для /mytrips, но возвращающий JSON (создайте короткий API для этого)
+                    const res = await fetch('/api/user/trips');
+                    if (res.ok) {
+                        const trips = await res.json();
+                        const select = document.querySelector('select[name="trip_id"]');
+                        select.innerHTML = '<option value="" disabled selected>Выберите путешествие...</option>';
+                        trips.forEach(t => {
+                            select.innerHTML += `<option value="${t.id}">${t.name} (${t.city})</option>`;
+                        });
+                    }
+                });
+            </script>
+        {% endif %}
+
         {% if attractions %}
             <div class="attractions">
                 <h2>Основные достопримечательности</h2>

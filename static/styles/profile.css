@@ -60,6 +60,7 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    gap: 8px;
 }
 
 .avatar-image {
@@ -67,13 +68,13 @@
     height: 120px;
     background: linear-gradient(135deg, #5E83AE 0%, #F9F5ED 100%);
     border-radius: 50%;
-    margin: 0 auto 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     position: relative;
     transition: all 0.3s;
+    overflow: hidden;
 
     .avatar-svg {
         width: 64px;
@@ -99,15 +100,11 @@
 .profile-name {
     font-size: 1.5rem;
     font-weight: 700;
-    /*color: #F9F5ED;*/
-    margin-bottom: 0.25rem;
 }
 
 .profile-email {
-    /*color: #5E83AE;*/
     font-size: 0.85rem;
     font-weight: 500;
-    margin-bottom: 1.5rem;
 }
 
 .budget-block {

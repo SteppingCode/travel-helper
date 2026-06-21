@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS images (
     file_size BIGINT,
     width INT,
     height INT,
-    created_at TIMESTAMP
+    created_at DATETIME NOT NULL
 );

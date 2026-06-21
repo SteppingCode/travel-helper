@@ -82,19 +82,22 @@
                 <div class="trip-grid">
                     {% if trips %}
                         {% for card in trips %}
-                            <article class="trip-card">
-                                <div class="trip-preview">
-                                    {% if card.has_image %}
-                                        <img src="/media/trip/{{ card.id }}"
-                                             alt="">
-                                    {% endif %}
-                                </div>
-                                <div class="trip-info">
-                                    <strong>{{ card.name }}</strong>
-                                    <span>{{ card.city }}, {{ card.country }}</span>
-                                    <small>{{ card.date_from }} <strong>-</strong> {{ card.date_to }}</small>
-                                </div>
-                            </article>
+
+                            <a href="{{ url_for('trip_page', trip_id=card.id) }}">
+                                <article class="trip-card">
+                                    <div class="trip-preview">
+                                        {% if card.has_image %}
+                                            <img src="/media/trip/{{ card.id }}"
+                                                 alt="">
+                                        {% endif %}
+                                    </div>
+                                    <div class="trip-info">
+                                        <strong>{{ card.name }}</strong>
+                                        <span>{{ card.city }}, {{ card.country }}</span>
+                                        <small>{{ card.date_from }} <strong>-</strong> {{ card.date_to }}</small>
+                                    </div>
+                                </article>
+                            </a>
                         {% endfor %}
                     {% else %}
                         Тут ничего нет.

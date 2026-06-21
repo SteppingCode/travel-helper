@@ -9,15 +9,7 @@ class Trip(BaseModel):
     date_from: str
     date_to: str
     user_id: int
-
-
-class UserCreate(BaseModel):
-    fullname: str
-    email: str
-    phone: str
-    city: Optional[str] = None
-    country: str
-    password: str
+    budget: Optional[float] = None
 
 
 class User(BaseModel):
@@ -29,6 +21,7 @@ class User(BaseModel):
     hashed_password: str
     is_admin: bool = False
     email_notifications: bool = False
+    budget: Optional[float] = None
 
 
 class Place(BaseModel):
@@ -67,3 +60,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+
+class AddItemRequest(BaseModel):
+    type: str  # 'place', 'task', 'member', 'tag'
+    value: str

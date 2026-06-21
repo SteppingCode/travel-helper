@@ -114,22 +114,15 @@ if __name__ == "__main__":
     from PIL.Image import open
     db = Database()
 
-    # trip1 = Trip(name="Отдых в Сочи", city="Сочи", country="Россия", date_from="2026-06-21", date_to="2020-09-21", user_id=1)
-    # db.add("trips", trip1.model_dump())
-    #
-    # trip2 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=1)
-    # db.add("trips", trip2.model_dump())
-    #
-    # trip3 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=2)
-    # db.add("trips", trip3.model_dump())
+    trip1 = Trip(name="Отдых в Сочи", city="Сочи", country="Россия", date_from="2026-06-21", date_to="2020-09-21", user_id=1)
+    db.add("trips", trip1.model_dump())
 
-    # place1 = Place(city="Санкт-Петербург", country="Россия", rating=5.0, description="Санкт-Петербу́рг — второй по численности населения город России. Город федерального значения. Административный центр Северо-Западного федерального округа. Основан 16 мая 1703 года царём Петром I. В 1714—1728 и 1732—1918 годах был столицей Российского государства.")
-    # db.add("places", place1.model_dump())
-    #
-    # place2 = Place(city="Москва", country="Россия", rating=4.9, description="Москва́ — столица России, город федерального значения, административный центр Центрального федерального округа и центр Московской области, в состав которой не входит. Мегаполис; крупнейший по численности населения город России и её субъект — 13 274 285 человек, что делает Москву 22-й среди городов мира по численности населения. Центр Московской городской агломерации.")
-    # db.add("places", place2.model_dump())
-    #
-    # images = ["sochi.jpg", "tokyo.jpg"]
+    trip2 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=1)
+    db.add("trips", trip2.model_dump())
+
+    trip3 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=1)
+    db.add("trips", trip3.model_dump())
+
     # for image in images:
     #     UPLOAD_DIR = "../uploads/"
     #     file_size = os.path.getsize(UPLOAD_DIR + image)

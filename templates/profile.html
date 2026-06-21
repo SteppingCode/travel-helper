@@ -32,8 +32,8 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number" id="leftTotalTrips">
-                        {% if user.total_trips and user.total_trips != '' %}
-                            {{ user.total_trips }}
+                        {% if trips_count %}
+                            {{ trips_count }}
                         {% else %}
                             <span class="stat-number-placeholder">—</span>
                         {% endif %}
@@ -42,8 +42,8 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="leftCompletedTrips">
-                        {% if user.completed_trips and user.completed_trips != '' %}
-                            {{ user.completed_trips }}
+                        {% if trip_completed %}
+                            {{ trip_completed }}
                         {% else %}
                             <span class="stat-number-placeholder">—</span>
                         {% endif %}
@@ -52,8 +52,8 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="leftPlacesVisited">
-                        {% if user.places_visited and user.places_visited != '' %}
-                            {{ user.places_visited }}
+                        {% if places_visited %}
+                            {{ places_visited }}
                         {% else %}
                             <span class="stat-number-placeholder">—</span>
                         {% endif %}
@@ -99,63 +99,13 @@
         <div class="main-content">
             <div class="top-bar">
                 <h2>Настройки профиля</h2>
-                <!-- Значок настроек -->
-                <div class="settings-indicator-wrapper">
-                    {% if user.profile_edited %}
-                        <div class="settings-indicator" id="settingsIndicator">
-                            <span class="settings-icon">⚙️</span>
-                            <span class="settings-tooltip">Изменения сохранены</span>
-                            <button class="settings-dropdown-btn" onclick="toggleSettingsMenu(event)">▼</button>
-
-                            <!-- Выпадающее меню настроек -->
-                            <div class="settings-dropdown-menu" id="settingsDropdownMenu">
-                                <div class="settings-dropdown-header">Что вы хотите сделать?</div>
-                                <button class="settings-option" onclick="editProfileOnly()">
-                                    <span class="settings-option-icon">✏️</span>
-                                    <span>Редактировать профиль</span>
-                                </button>
-                                <button class="settings-option" onclick="editPhotoOnly()">
-                                    <span class="settings-option-icon">📷</span>
-                                    <span>Изменить фото</span>
-                                </button>
-                                <button class="settings-option" onclick="editChecklistOnly()">
-                                    <span class="settings-option-icon">✅</span>
-                                    <span>Редактировать чек-лист</span>
-                                </button>
-                                <button class="settings-option danger" onclick="resetAllSettings()">
-                                    <span class="settings-option-icon">🔄</span>
-                                    <span>Сбросить все изменения</span>
-                                </button>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-                <button class="refresh-btn" onclick="refreshData()" title="Обновить данные">
+                <button class="refresh-btn" onclick="location.reload()" title="Обновить данные">
                     <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                          xmlns="http://www.w3.org/2000/svg">
                         <path d="M21 3V8M21 8H16M21 8L18 5.29168C16.4077 3.86656 14.3051 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.2832 21 19.8675 18.008 20.777 14"
                               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                 </button>
-
-                <div class="profile-menu">
-                    <button class="menu-icon">
-                        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 18L20 18" stroke-width="2" stroke-linecap="round"></path>
-                            <path d="M4 12L20 12" stroke-width="2" stroke-linecap="round"></path>
-                            <path d="M4 6L20 6" stroke-width="2" stroke-linecap="round"></path>
-                        </svg>
-                    </button>
-                    <ul class="dropdown-menu" id="dropdownMenu">
-                        <li><a href="#"
-                               onclick="document.querySelector('form').scrollIntoView({behavior: 'smooth'}); return false;">✏️
-                            Редактировать профиль</a></li>
-                        <li><a href="#" onclick="showNotifications(); return false;">🔔 Уведомления</a></li>
-                        <li><a href="#" onclick="showPrivacy(); return false;">🔒 Конфиденциальность</a></li>
-                        <li><a href="#" onclick="showHelp(); return false;">❓ Помощь</a></li>
-                    </ul>
-                </div>
             </div>
 
             <form id="profileForm" method="POST" enctype="multipart/form-data"
@@ -171,7 +121,7 @@
                             <input type="file" name="avatar" id="avatarInput" class="photo-input" accept="image/*"
                                    onchange="previewAvatar(this)">
                         </label>
-                        {% if user.avatar %}
+                        {% if user.has_avatar %}
                             <button type="button" class="remove-photo" onclick="removeAvatar()">🗑️ Удалить фото
                             </button>
                         {% endif %}
@@ -192,7 +142,8 @@
 
                     <div class="field-group">
                         <label>Город</label>
-                        <input type="text" name="city" id="cityInput" value="{{ user.city }}"
+                        <input type="text" name="city" id="cityInput"
+                               value="{% if user.city %}{{ user.city }}{% endif %}"
                                placeholder="Ваш город">
                     </div>
 

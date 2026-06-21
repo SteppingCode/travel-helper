@@ -9,11 +9,11 @@
 {% block content %}
     <main class="main-container">
         <div class="hero-card"
-             style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('{{ url_for('static', path='images/background.jpg') }}');">
+             style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('{{ url_for('static', path='assets/background.jpg') }}');">
 
             <h2>Создайте свою идеальную поездку! <i class="fa-solid fa-route"></i></h2>
 
-            <form action="/create_route" method="POST" class="grid-form">
+            <form action="/create_trip" method="POST" class="grid-form">
 
                 <div class="input-field input-name">
                     <i class="fa-solid fa-pen icon"></i>
@@ -23,13 +23,25 @@
 
                 <div class="input-field input-date" onclick="this.querySelector('input').showPicker()">
                     <i class="fa-solid fa-calendar-days icon"></i>
-                    <input type="date" name="trip_date" placeholder="Выбор даты...">
+                    <input type="date" name="trip_from" placeholder="Выбор даты...">
+                    From
+                </div>
+
+                <div class="input-field input-date" onclick="this.querySelector('input').showPicker()">
+                    <i class="fa-solid fa-calendar-days icon"></i>
+                    <input type="date" name="trip_to" placeholder="Выбор даты...">
+                    To
+                </div>
+
+                <div class="input-field input-destination">
+                    <i class="fa-solid fa-location-dot icon"></i>
+                    <input type="text" name="country_destination" placeholder="Страна назначения..." required>
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </div>
 
                 <div class="input-field input-destination">
                     <i class="fa-solid fa-location-dot icon"></i>
-                    <input type="text" name="destination" placeholder="Пункт назначения..." required>
+                    <input type="text" name="city_destination" placeholder="Город назначения..." required>
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </div>
 
@@ -41,7 +53,7 @@
 
                 <div class="upload-zone" id="drop-zone">
                     <input type="file" id="file-input" accept="image/*" style="display: none;">
-                    <input type="hidden" name="image_base64" id="image-base64">
+                    <input type="hidden" name="preview" id="image-base64">
 
                     <div class="upload-content" id="upload-content">
                         <i class="fa-solid fa-camera-retro upload-icon"></i>

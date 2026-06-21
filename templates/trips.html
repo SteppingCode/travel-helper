@@ -170,93 +170,75 @@
                 </div>
                 <div class="view-buttons">
                     <button class="icon-button" type="button" aria-label="Список">
-                        <svg
-                                viewBox="0 0 76 76"
-                                xmlns="http://www.w3.org/2000/svg"
-                                xml:space="preserve"
-                        >
-            <path
-                    fill-opacity="1"
-                    stroke-width="0.2"
-                    stroke-linejoin="round"
-                    d="M 19,19L 36,19L 36,36L 19,36L 19,19 Z M 19,40L 36,40L 36,57L 19,57L 19,40 Z M 40,57L 40,40L 57,40L 57,57L 40,57 Z M 40,36L 40,19L 57,19L 57,36L 40,36 Z "></path>
-          </svg>
+                        <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+                        <path
+                                fill-opacity="1"
+                                stroke-width="0.2"
+                                stroke-linejoin="round"
+                                d="M 19,19L 36,19L 36,36L 19,36L 19,19 Z M 19,40L 36,40L 36,57L 19,57L 19,40 Z M 40,57L 40,40L 57,40L 57,57L 40,57 Z M 40,36L 40,19L 57,19L 57,36L 40,36 Z "></path>
+                        </svg>
                     </button>
                 </div>
             </div>
 
-            <div class="cards-list">
+            <div class="cards-list" id="tripsContainer">
                 {% for card in trips %}
-                    <article class="trip-card">
-                        <div class="card-image card-image-large">
-                            {% if card.has_image %}
-                                <img class="card-image"
-                                     src="/media/trip/{{ card.id }}" alt="">
-                            {% endif %}
-                        </div>
-                        <div class="card-info">
-                            <div class="card-main">
-                                <h2>{{ card.name }}</h2>
-                                <span class="status-pill">Запланировано</span>
-                            </div>
-                            <div class="card-details">
-                                <div class="detail-item">
-                                    <svg
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                    >
-                                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                    <span>{{ card.city }}, {{ card.country }}</span>
+                    <div class="trip-card-wrapper js-trip-card"
+                         data-status="{{ card.status }}"
+                         data-search="{{ card.name | lower }} {{ card.city | lower }} {{ card.country | lower }}">
+
+                        <a href="{{ url_for('trip_page', trip_id=card.id) }}">
+                            <article class="trip-card trip-list-template">
+                                <div class="card-image card-image-large">
+                                    {% if card.has_image %}
+                                        <img class="card-image" src="/media/trip/{{ card.id }}" alt="{{ card.name }}">
+                                    {% endif %}
                                 </div>
-                                <div class="detail-item">
-                                    <svg
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                    >
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                                    </svg>
-                                    <span>{{ card.date_from }} <strong>-</strong> {{ card.date_to }}</span>
+                                <div class="card-info">
+                                    <div class="card-main">
+                                        <h2>{{ card.name }}</h2>
+                                        <span class="status-pill status-{{ card.status | replace(' ', '-') }}">{{ card.status }}</span>
+                                    </div>
+                                    <div class="card-details">
+                                        <div class="detail-item">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            <span>{{ card.city }}, {{ card.country }}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fa-solid fa-calendar"></i>
+                                            <span>{{ card.formatted_date }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </a>
+
+                        <a href="{{ url_for('trip_page', trip_id=card.id) }}">
+                            <div class="custom-preview-card trip-grid-template"
+                                 style="{% if card.has_image %} background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('/media/trip/{{ card.id }}'); background-size: cover; background-position: center; {% else %} background: linear-gradient(135deg, #668bb7, #5579a3); {% endif %}">
+                                <div class="custom-overlay">
+                                    <h3>{{ card.name }}</h3>
+                                    <p class="custom-route-date"><i
+                                            class="fa-solid fa-location-dot"></i> {{ card.city }}, {{ card.country }}
+                                    </p>
+                                    <p class="custom-route-date"><i
+                                            class="fa-solid fa-calendar-day"></i> {{ card.formatted_date }}</p>
+                                    {% if card.budget %}
+                                        <p class="custom-route-budget"><i
+                                                class="fa-solid fa-ruble-sign"></i> {{ card.budget }} руб.</p>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div class="card-actions">
-                                <button
-                                        class="icon-button delete-button"
-                                        type="button"
-                                        aria-label="Удалить"
-                                >
-                                    <svg
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                                d="M18 6L17.1991 18.0129C17.129 19.065 17.0939 19.5911 16.8667 19.99C16.6666 20.3412 16.3648 20.6235 16.0011 20.7998C15.588 21 15.0607 21 14.0062 21H9.99377C8.93927 21 8.41202 21 7.99889 20.7998C7.63517 20.6235 7.33339 20.3412 7.13332 19.99C6.90607 19.5911 6.871 19.065 6.80086 18.0129L6 6M4 6H20M16 6L15.7294 5.18807C15.4671 4.40125 15.3359 4.00784 15.0927 3.71698C14.8779 3.46013 14.6021 3.26132 14.2905 3.13878C13.9376 3 13.523 3 12.6936 3H11.3064C10.477 3 10.0624 3 9.70951 3.13878C9.39792 3.26132 9.12208 3.46013 8.90729 3.71698C8.66405 4.00784 8.53292 4.40125 8.27064 5.18807L8 6M14 10V17M10 10V17"
-                                                stroke="#000000"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </article>
+                        </a>
+
+                    </div>
                 {% endfor %}
             </div>
+
+            <div id="loadMoreContainer" style="text-align: center; margin-top: 20px; display: none;">
+                <button id="loadMoreBtn" class="alert-btn" style="padding: 10px 30px;">Смотреть дальше</button>
+            </div>
+
         </section>
     </div>
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event, 'modalOverlay')">
@@ -284,7 +266,6 @@
             <button class="alert-btn" onclick="closeModal(null, 'alertOverlay')">Хорошо</button>
         </div>
     </div>
-
     <script>
         const currentTripId = {% if nearest_trip %}{{ nearest_trip.id }}{% else %}null{% endif %};
         let currentModalType = '';
@@ -386,5 +367,99 @@
                 await updateModalList();
             }
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.querySelector('.search-box input');
+            const tabs = document.querySelectorAll('.status-tabs .tab');
+            const cards = Array.from(document.querySelectorAll('.js-trip-card'));
+            const viewBtn = document.querySelector('.view-buttons .icon-button');
+            const cardsList = document.getElementById('tripsContainer');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+
+            const ITEMS_PER_PAGE = 6;
+            let currentPage = 1;
+            let currentStatus = 'Все';
+            let searchQuery = '';
+
+            // 1. ФУНКЦИЯ ОБНОВЛЕНИЯ ОТОБРАЖЕНИЯ (Core Render Logic)
+            function renderCards() {
+                // Фильтруем
+                const filteredCards = cards.filter(card => {
+                    const matchStatus = currentStatus === 'Все' || card.dataset.status === currentStatus;
+                    const matchSearch = card.dataset.search.includes(searchQuery);
+                    return matchStatus && matchSearch;
+                });
+
+                // Скрываем все
+                cards.forEach(card => card.style.display = 'none');
+
+                // Показываем с учетом пагинации
+                const visibleCards = filteredCards.slice(0, currentPage * ITEMS_PER_PAGE);
+                visibleCards.forEach(card => card.style.display = 'block');
+
+                // Логика кнопки "Смотреть дальше"
+                if (filteredCards.length > visibleCards.length) {
+                    loadMoreContainer.style.display = 'block';
+                } else {
+                    loadMoreContainer.style.display = 'none';
+                }
+            }
+
+            // 2. ОБРАБОТЧИКИ СОБЫТИЙ
+            // Поиск
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                currentPage = 1; // Сбрасываем пагинацию при новом поиске
+                renderCards();
+            });
+
+            // Табы статусов
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentStatus = e.target.textContent.trim();
+                    currentPage = 1;
+                    renderCards();
+                });
+            });
+
+            // Кнопка "Смотреть дальше"
+            loadMoreBtn.addEventListener('click', () => {
+                currentPage++;
+                renderCards();
+            });
+
+            svg_list = `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 6.00067L21 6.00139M8 12.0007L21 12.0015M8 18.0007L21 18.0015M3.5 6H3.51M3.5 12H3.51M3.5 18H3.51M4 6C4 6.27614 3.77614 6.5 3.5 6.5C3.22386 6.5 3 6.27614 3 6C3 5.72386 3.22386 5.5 3.5 5.5C3.77614 5.5 4 5.72386 4 6ZM4 12C4 12.2761 3.77614 12.5 3.5 12.5C3.22386 12.5 3 12.2761 3 12C3 11.7239 3.22386 11.5 3.5 11.5C3.77614 11.5 4 11.7239 4 12ZM4 18C4 18.2761 3.77614 18.5 3.5 18.5C3.22386 18.5 3 18.2761 3 18C3 17.7239 3.22386 17.5 3.5 17.5C3.77614 17.5 4 17.7239 4 18Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </path>
+            </svg>
+            `
+            svg_cells = `
+            <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+                <path
+                        fill-opacity="1"
+                        stroke-width="0.2"
+                        stroke-linejoin="round"
+                        d="M 19,19L 36,19L 36,36L 19,36L 19,19 Z M 19,40L 36,40L 36,57L 19,57L 19,40 Z M 40,57L 40,40L 57,40L 57,57L 40,57 Z M 40,36L 40,19L 57,19L 57,36L 40,36 Z ">
+                </path>
+            </svg>
+            `
+            viewBtn.addEventListener('click', () => {
+                cardsList.classList.toggle('list-view');
+
+                // Смена иконки
+                const isListView = cardsList.classList.contains('list-view');
+                viewBtn.innerHTML = isListView
+                    ? svg_list // Иконка списка
+                    : svg_cells;  // Иконка сетки
+            });
+
+            // Первичный рендер при загрузке
+            renderCards();
+        });
     </script>
 {% endblock %}

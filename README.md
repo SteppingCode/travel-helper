@@ -63,7 +63,7 @@ A comprehensive web application for planning, managing, and organizing your trav
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/travel-helper.git
+   git clone https://github.com/SteppingCode/travel-helper.git
    cd travel-helper
    ```
 
@@ -261,7 +261,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙋 Support & Contact
 
-- 📧 Email: [your-email@example.com]
+- 📧 Email: steppingcode.github@gmail.com
 - 🐛 Issues: Report bugs via GitHub Issues
 - 💬 Discussions: Use GitHub Discussions for feature requests
 

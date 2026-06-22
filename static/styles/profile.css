@@ -6,26 +6,6 @@
     padding: 24px 32px 40px;
 }
 
-.menu-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    border-radius: 12px;
-    transition: all 0.2s;
-
-    path {
-        stroke: var(--text-color);
-    }
-}
-
-.menu-icon:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
 .dropdown-menu[id=dropdownMenu] {
     top: 0 !important;
     right: 0 !important;
@@ -223,57 +203,17 @@
     margin-bottom: 1.5rem;
 }
 
-/* Индикатор настроек */
-.settings-indicator-wrapper {
-    position: relative;
-    display: inline-block;
-}
 
 .settings-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #5E83AE;
-    padding: 8px 16px;
-    border-radius: 40px;
-    animation: slideIn 0.5s ease;
+    display: none;
+    width: 32px;
+    height: 32px;
+    background: none;
     position: relative;
     cursor: pointer;
-}
 
-.settings-indicator .settings-icon {
-    font-size: 20px;
-    animation: rotate 3s infinite linear;
-}
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideOut {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-20px);
+    path {
+        fill: var(--text-color);
     }
 }
 
@@ -496,18 +436,10 @@
     align-items: center;
     gap: 14px;
     font-weight: 500;
-    /*color: #F9F5ED;*/
 }
 
 .setting-icon {
-    width: 32px;
-    height: 32px;
     background: rgba(94, 131, 174, 0.25);
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
 }
 
 .switch {

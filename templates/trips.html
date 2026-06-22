@@ -107,10 +107,10 @@
 
                 {% if nearest_trip %}
                     <div class="details-preview"
-                         style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)
+                         style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4))
                                  {% if nearest_trip.has_image %}
-                                     , url('{{ url_for('get_universal_image', entity_type='trip', entity_id=nearest_trip.id) }}')
-                                 {% endif %}); background-size: cover; background-position: center;">
+                                     , url('/media/trip/{{ nearest_trip.id }}')
+                                 {% endif %}; background-size: cover; background-position: center;">
                         <div class="preview-overlay">
                             <h2>{{ nearest_trip.name }}</h2>
                             <p class="preview-date">
@@ -131,7 +131,7 @@
                     </div>
                 {% else %}
                     <div class="details-preview"
-                         style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ url_for('static', path='images/background.jpg') }}'); background-size: cover; background-position: center;">
+                         style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ url_for('static', path='assets/background.jpg') }}'); background-size: cover; background-position: center;">
                         <div class="preview-overlay">
                             <h2>Время планировать! <i class="fa-solid fa-compass"></i></h2>
                             <p class="preview-date">У вас пока нет активных поездок</p>
@@ -192,7 +192,7 @@
                              data-status="{{ card.status }}"
                              data-search="{{ card.name | lower }} {{ card.city | lower }} {{ card.country | lower }}">
 
-                            <a href="{{ url_for('trip_page', trip_id=card.id) }}">
+                            <a href="{{ url_for('trip_page', trip_id=card.id) }}" style="text-decoration: none">
                                 <article class="trip-card trip-list-template">
                                     <div class="card-image card-image-large">
                                         {% if card.has_image %}
@@ -379,18 +379,46 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Получаем элементы DOM
             const searchInput = document.querySelector('.search-box input');
             const tabs = document.querySelectorAll('.status-tabs .tab');
             const cards = Array.from(document.querySelectorAll('.js-trip-card'));
             const viewBtn = document.querySelector('.view-buttons .icon-button');
             const cardsList = document.getElementById('tripsContainer');
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
-            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            const svg_list = `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 6.00067L21 6.00139M8 12.0007L21 12.0015M8 18.0007L21 18.0015M3.5 6H3.51M3.5 12H3.51M3.5 18H3.51M4 6C4 6.27614 3.77614 6.5 3.5 6.5C3.22386 6.5 3 6.27614 3 6C3 5.72386 3.22386 5.5 3.5 5.5C3.77614 5.5 4 5.72386 4 6ZM4 12C4 12.2761 3.77614 12.5 3.5 12.5C3.22386 12.5 3 12.2761 3 12C3 11.7239 3.22386 11.5 3.5 11.5C3.77614 11.5 4 11.7239 4 12ZM4 18C4 18.2761 3.77614 18.5 3.5 18.5C3.22386 18.5 3 18.2761 3 18C3 17.7239 3.22386 17.5 3.5 17.5C3.77614 17.5 4 17.7239 4 18Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </path>
+            </svg>
+            `
+            const svg_cells = `
+            <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+                <path
+                        fill-opacity="1"
+                        stroke-width="0.2"
+                        stroke-linejoin="round"
+                        d="M 19,19L 36,19L 36,36L 19,36L 19,19 Z M 19,40L 36,40L 36,57L 19,57L 19,40 Z M 40,57L 40,40L 57,40L 57,57L 40,57 Z M 40,36L 40,19L 57,19L 57,36L 40,36 Z ">
+                </path>
+            </svg>
+            `
+
+            // Инициализация из localStorage или значения по умолчанию
+            let currentStatus = localStorage.getItem('tripStatus') || 'Все';
+            let searchQuery = localStorage.getItem('tripSearch') || '';
+            let isListView = localStorage.getItem('tripViewMode') === 'list';
 
             const ITEMS_PER_PAGE = 6;
             let currentPage = 1;
-            let currentStatus = 'Все';
-            let searchQuery = '';
+
+            if (isListView) {
+                cardsList.classList.add('list-view');
+                viewBtn.innerHTML = svg_list; // Переменная svg_list из вашего исходного кода
+            } else {
+                viewBtn.innerHTML = svg_cells; // Переменная svg_cells из вашего исходного кода
+            }
+
+            // Восстановление поискового запроса
+            searchInput.value = searchQuery;
 
             // 1. ФУНКЦИЯ ОБНОВЛЕНИЯ ОТОБРАЖЕНИЯ (Core Render Logic)
             function renderCards() {
@@ -420,55 +448,97 @@
             // Поиск
             searchInput.addEventListener('input', (e) => {
                 searchQuery = e.target.value.toLowerCase().trim();
-                currentPage = 1; // Сбрасываем пагинацию при новом поиске
+                localStorage.setItem('tripSearch', searchQuery);
+                currentPage = 1;
                 renderCards();
             });
 
-            // Табы статусов
             tabs.forEach(tab => {
                 tab.addEventListener('click', (e) => {
                     tabs.forEach(t => t.classList.remove('active'));
                     e.target.classList.add('active');
+
                     currentStatus = e.target.textContent.trim();
+                    localStorage.setItem('tripStatus', currentStatus);
+
                     currentPage = 1;
                     renderCards();
                 });
             });
 
-            // Кнопка "Смотреть дальше"
-            loadMoreBtn.addEventListener('click', () => {
-                currentPage++;
-                renderCards();
-            });
-
-            svg_list = `
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 6.00067L21 6.00139M8 12.0007L21 12.0015M8 18.0007L21 18.0015M3.5 6H3.51M3.5 12H3.51M3.5 18H3.51M4 6C4 6.27614 3.77614 6.5 3.5 6.5C3.22386 6.5 3 6.27614 3 6C3 5.72386 3.22386 5.5 3.5 5.5C3.77614 5.5 4 5.72386 4 6ZM4 12C4 12.2761 3.77614 12.5 3.5 12.5C3.22386 12.5 3 12.2761 3 12C3 11.7239 3.22386 11.5 3.5 11.5C3.77614 11.5 4 11.7239 4 12ZM4 18C4 18.2761 3.77614 18.5 3.5 18.5C3.22386 18.5 3 18.2761 3 18C3 17.7239 3.22386 17.5 3.5 17.5C3.77614 17.5 4 17.7239 4 18Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </path>
-            </svg>
-            `
-            svg_cells = `
-            <svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
-                <path
-                        fill-opacity="1"
-                        stroke-width="0.2"
-                        stroke-linejoin="round"
-                        d="M 19,19L 36,19L 36,36L 19,36L 19,19 Z M 19,40L 36,40L 36,57L 19,57L 19,40 Z M 40,57L 40,40L 57,40L 57,57L 40,57 Z M 40,36L 40,19L 57,19L 57,36L 40,36 Z ">
-                </path>
-            </svg>
-            `
             viewBtn.addEventListener('click', () => {
                 cardsList.classList.toggle('list-view');
+                const currentIsList = cardsList.classList.contains('list-view');
 
-                // Смена иконки
-                const isListView = cardsList.classList.contains('list-view');
-                viewBtn.innerHTML = isListView
-                    ? svg_list // Иконка списка
-                    : svg_cells;  // Иконка сетки
+                localStorage.setItem('tripViewMode', currentIsList ? 'list' : 'grid');
+                viewBtn.innerHTML = currentIsList ? svg_list : svg_cells;
             });
 
             // Первичный рендер при загрузке
             renderCards();
+        });
+    </script>
+    <script type="application/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            // Безопасный выбор элементов (проверка на существование)
+            const searchInput = document.querySelector('.search-box input');
+            const tabs = document.querySelectorAll('.status-tabs .tab');
+            const viewBtn = document.querySelector('.view-buttons .icon-button');
+            const tripsContainer = document.getElementById('tripsContainer');
+
+            // 1. Восстановление поискового запроса
+            const savedSearch = localStorage.getItem('tripSearch');
+            if (savedSearch && searchInput) {
+                searchInput.value = savedSearch;
+                // Триггерим событие, чтобы сработал существующий код фильтрации
+                searchInput.dispatchEvent(new Event('input', {bubbles: true}));
+            }
+
+            // Сохранение при вводе
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    localStorage.setItem('tripSearch', e.target.value.trim());
+                });
+            }
+
+            // 2. Восстановление активного Таба (Статуса)
+            const savedStatus = localStorage.getItem('tripStatus');
+            if (savedStatus && tabs.length > 0) {
+                tabs.forEach(tab => {
+                    if (tab.textContent.trim() === savedStatus) {
+                        // Имитируем клик пользователя по сохраненному табу
+                        tab.click();
+                    }
+                });
+            }
+
+            // Сохранение при клике на таб
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    localStorage.setItem('tripStatus', e.target.textContent.trim());
+                });
+            });
+
+            // 3. Восстановление вида (Сетка / Список)
+            const savedViewMode = localStorage.getItem('tripViewMode'); // 'grid' или 'list'
+            if (savedViewMode && viewBtn && tripsContainer) {
+                const isCurrentList = tripsContainer.classList.contains('list-view');
+
+                // Если сохраненный режим отличается от текущего дефолтного — переключаем его кликом
+                if ((savedViewMode === 'list' && !isCurrentList) || (savedViewMode === 'grid' && isCurrentList)) {
+                    viewBtn.click();
+                }
+            }
+
+            // Сохранение режима отображения при клике на кнопку смены вида
+            if (viewBtn && tripsContainer) {
+                viewBtn.addEventListener('click', () => {
+                    setTimeout(() => {
+                        const currentIsList = tripsContainer.classList.contains('list-view');
+                        localStorage.setItem('tripViewMode', currentIsList ? 'list' : 'grid');
+                    }, 50); // Микро-таймаут, чтобы дождаться отработки основного переключателя классов
+                });
+            }
         });
     </script>
 {% endblock %}

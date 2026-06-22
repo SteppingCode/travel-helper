@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS budget (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    general FLOAT NOT NULL,
-    average FLOAT NOT NULL,
-    planned FLOAT NOT NULL,
-    created_at DATETIME NOT NULL
-);

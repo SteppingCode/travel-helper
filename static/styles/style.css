@@ -62,7 +62,7 @@
     border-radius: 24px;
     padding: 45px 60px;
     color: #4a4a4a;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    /*box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);*/
     display: flex;
     flex-direction: column;
 }
@@ -78,10 +78,11 @@
 }
 
 .grid-form {
-    display: grid;
+    display: flex;
     grid-template-columns: 1fr 1fr;
     gap: 24px 40px;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .input-field {
@@ -95,24 +96,8 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
-.input-name {
-    grid-column: 1;
-    grid-row: 1;
-}
-
-.input-date {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.input-destination {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.input-budget {
-    grid-column: 2;
-    grid-row: 2;
+.input-name, .input-budget {
+    flex-grow: 1;
 }
 
 .input-field i, .input-field img {
@@ -167,10 +152,11 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    height: 170px;
+    min-height: 170px;
     transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     width: 100%;
+    height: 320px;
 }
 
 .upload-zone.dragover, .upload-zone:hover {
@@ -227,10 +213,9 @@
 }
 
 .button-container {
-    grid-column: span 2;
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    flex-grow: 1;
 }
 
 .submit-btn {
@@ -245,6 +230,7 @@
     text-align: center;
     box-shadow: 0 6px 20px rgba(102, 139, 183, 0.35);
     transition: background 0.2s, transform 0.1s;
+    width: 100%;
 }
 
 .submit-btn:hover {

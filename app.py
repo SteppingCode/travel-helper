@@ -1,6 +1,8 @@
 from datetime import datetime, date
 from sqlite3 import Error
 from pathlib import Path
+from urllib import response
+
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from database.database import Database, initialize_database
 from utils import get_db, set_flash_message, render_template, get_records
@@ -440,8 +442,8 @@ async def read_my_trips(
             t["places_count"] = 0
 
         try:
-            t["tasks_count"] = db.execute("SELECT COUNT(*) FROM trip_tasks WHERE trip_id = ?",
-                                          (t["id"],)).fetchone()[0]
+            t["tasks_count"] = db.execute("SELECT COUNT(*) FROM checklists WHERE trip_id = ? AND user_id = ?",
+                                          (t["id"], request.state.user['id'])).fetchone()[0]
         except:
             t["tasks_count"] = 0
 
@@ -533,8 +535,8 @@ async def create_trip(
         country_destination: str = Form(...),
         city_destination: str = Form(...),
         budget: Optional[float] = Form(None),
+        preview: UploadFile = File(None),
         db: Database = Depends(get_db),
-        preview: UploadFile = File(...),
         current_user: dict = Depends(get_current_user)
 ):
     try:
@@ -554,18 +556,63 @@ async def create_trip(
     except Error as err:
         print(err)
     return RedirectResponse(
-        url="/details",
+        url="/mytrips",
         status_code=303
     )
 
 
-@app.get("/budget", tags=["Auth"])
+@app.get("/budget", response_class=HTMLResponse)
 async def budget_page(
         request: Request,
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
-    return render_template(request, "budget.html")
+    user_id = current_user["id"]
+
+    # 1. Получаем общий бюджет самого пользователя
+    user_row = db.select("users", "budget", where="id = ?", params=(user_id,), fetch_one=True)
+    total_budget = user_row["budget"] if user_row and user_row["budget"] else 0.0
+
+    # 2. Получаем все поездки пользователя
+    user_trips = db.select("trips", where="user_id = ?", params=(user_id,))
+
+    # 3. Расчет статистических показателей
+    trip_budgets = [t["budget"] for t in user_trips if t["budget"] is not None]
+
+    planned_budget = sum(trip_budgets)
+    avg_budget = planned_budget / len(trip_budgets) if trip_budgets else 0.0
+
+    # Потрачено — сумма бюджетов завершенных (completed = 1) поездок
+    spent_budget = sum([t["budget"] for t in user_trips if t["budget"] is not None and t["completed"] == 1])
+
+    trips_data = []
+    for t in user_trips:
+        trip_budget = t["budget"] or 0.0
+        print(trip_budget)
+        # Вычисляем, какую долю общих средств занимает эта поездка
+        percent = (trip_budget / total_budget * 100) if total_budget > 0 else 0
+        print(percent)
+        print(min(100, round(percent)))
+
+        trips_data.append({
+            "name": t["name"],
+            "budget": f"{trip_budget:,.0f}".replace(",", " "),
+            "percent": min(100, round(percent))
+        })
+
+    # Форматируем вывод чисел (например: 150000 -> 150 000)
+    context = {
+        "request": request,
+        "user": current_user,
+        "total_budget": f"{total_budget:,.0f}".replace(",", " "),
+        "avg_budget": f"{avg_budget:,.0f}".replace(",", " "),
+        "planned_budget": f"{planned_budget:,.0f}".replace(",", " "),
+        "spent_budget": f"{spent_budget:,.0f}".replace(",", " "),
+        "trips": trips_data
+    }
+
+    # Возвращаем отрендеренный шаблон (используя Jinja2)
+    return render_template(request, "budget.html", context)
 
 
 @app.get("/profile", tags=["Auth"])
@@ -615,7 +662,11 @@ async def update_profile(
         await save_uploaded_photo(avatar, "user", request.state.user["id"], db)
         db.update("users", {"has_avatar": 1}, "id = ?", (request.state.user["id"],))
 
-    return RedirectResponse(url="/profile", status_code=status.HTTP_303_SEE_OTHER)
+    response = RedirectResponse(
+        url="/profile",
+        status_code=status.HTTP_303_SEE_OTHER
+    )
+    return set_flash_message(response, "success", "Профиль успешно сохранен!")
 
 
 @app.get("/checklists", tags=["Auth"])
@@ -794,9 +845,9 @@ async def api_get_user_trips(
     )
 
 
-# 1. Получение всех данных конкретного путешествия (для JS)
 @app.get("/api/trip/{trip_id}/data", tags=["Auth"])
 async def api_get_trip_data(
+        request: Request,
         trip_id: int,
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
@@ -810,9 +861,11 @@ async def api_get_trip_data(
     places = [dict(row) for row in db.execute(places_query, (trip_id,)).fetchall()]
 
     # Чек-листы, участники и теги
-    tasks = db.select("trip_tasks", columns="id, task_name, is_done", where="trip_id = ?", params=(trip_id,))
+    tasks = db.select("checklists", where="trip_id = ? AND user_id = ?", params=(trip_id, request.state.user['id']))
     members = db.select("trip_members", columns="id, member_name", where="trip_id = ?", params=(trip_id,))
     tags = db.select("trip_tags", columns="id, tag_name", where="trip_id = ?", params=(trip_id,))
+
+    # print(places, tasks, members, tags)
 
     return {
         "places": [dict(t) for t in places],
@@ -822,7 +875,6 @@ async def api_get_trip_data(
     }
 
 
-# 2. Добавление кастомного элемента из модалки
 @app.post("/api/trip/{trip_id}/add_item", tags=["Auth"])
 async def api_add_trip_item(
         request: Request,
@@ -846,7 +898,7 @@ async def api_add_trip_item(
 
     table_map = {
         "place": ("trip_places", {"trip_id": trip_id, "custom_name": item.value}),
-        "task": ("trip_tasks", {"trip_id": trip_id, "task_name": item.value}),
+        "task": ("checklists", {"user_id": request.state.user['id'], "trip_id": trip_id, "category": item.value, "item_text": item.value}),
         "member": ("trip_members", {"trip_id": trip_id, "member_name": item.value}),
         "tag": ("trip_tags", {"trip_id": trip_id, "tag_name": item.value}),
     }
@@ -874,7 +926,6 @@ async def api_add_trip_item(
     }
 
 
-# 3. Удаление элемента
 @app.delete("/api/trip/delete_item/{item_type}/{item_id}", tags=["Auth"])
 async def api_delete_trip_item(
         request: Request,
@@ -883,7 +934,7 @@ async def api_delete_trip_item(
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
-    table_map = {"place": "trip_places", "task": "trip_tasks", "member": "trip_members", "tag": "trip_tags"}
+    table_map = {"place": "trip_places", "task": "checklists", "member": "trip_members", "tag": "trip_tags"}
     if item_type in table_map:
         db.remove(table_map[item_type], where="id = ?", params=(item_id,))
     return {"status": "ok"}

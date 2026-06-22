@@ -7,9 +7,10 @@
 {% endblock %}
 {% block content %}
     <div class="hero-image hero-gradient">
-        {% if place %}
+        {% if place.has_image %}
         <img src="/media/place/{{ place.id }}"
              alt="{{ place.city }}" class="hero-image">
+        {% endif %}
     </div>
 
     <div class="container">
@@ -33,7 +34,7 @@
 
         {% if user %}
             <div class="add-to-trip-card"
-                 style="background: #f1f8ff; padding: 20px; border-radius: 8px; margin-top: 30px;">
+                 style="margin-top: 30px; margin-bottom: 30px;">
                 <h3><i class="fa-solid fa-plus-circle"></i> Добавить в мое путешествие</h3>
 
                 <form action="/trip/add_db_place/{{ place.id }}" method="POST"

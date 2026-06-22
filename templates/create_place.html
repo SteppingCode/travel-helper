@@ -1,100 +1,171 @@
 {% extends "base.html" %}
-
 {% block head %}
     <title>Админ-панель: Добавить место</title>
     <style>
-        .admin-container { max-width: 900px; margin: 40px auto; padding: 20px; font-family: Arial, sans-serif; }
-        .form-section { background: var(--card-bg, #ffffff); border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .form-section h3 { margin-top: 0; margin-bottom: 15px; color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-        .form-group label { font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #555; }
-        .form-group input[type="text"], .form-group input[type="number"], .form-group textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .attraction-block { background: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; border-radius: 4px; margin-bottom: 15px; }
-        .btn-submit { background: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.2s; }
-        .btn-submit:hover { background: #218838; }
-        .file-hint { font-size: 12px; color: #777; margin-top: 3px; }
+        .content {
+            display: flex;
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            padding: 24px 32px 40px;
+            gap: 40px;
+            flex-direction: column;
+        }
+
+        .form-section {
+            background: var(--dropdown-bg, #ffffff);
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .form-group input[type="text"], .form-group input[type="number"], .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .attraction-block {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #218838;
+        }
+
+        .file-hint {
+            font-size: 12px;
+            color: #777;
+            margin-top: 3px;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
-<div class="admin-container">
-    <h2>Добавление нового туристического места</h2>
-    
-    <form action="/admin/places/create" method="POST" enctype="multipart/form-data" autocomplete="off">
-        
-        <div class="form-section">
-            <h3>1. Основная информация</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="city">Город *</label>
-                    <input type="text" id="city" name="city" required placeholder="Например: Сочи">
-                </div>
-                <div class="form-group">
-                    <label for="country">Страна *</label>
-                    <input type="text" id="country" name="country" required placeholder="Например: Россия">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="subtitle">Подзаголовок (Subtitle)</label>
-                    <input type="text" id="subtitle" name="subtitle" placeholder="Краткое описание в две строки">
-                </div>
-                <div class="form-group">
-                    <label for="rating">Рейтинг места</label>
-                    <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" placeholder="4.8">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="description">Полное описание места *</label>
-                <textarea id="description" name="description" rows="5" required placeholder="Подробный текст о локации..."></textarea>
-            </div>
-        </div>
+    <div class="content">
+        <h2>Добавление нового туристического места</h2>
 
-        <div class="form-section">
-            <h3>2. Фотографии места</h3>
-            <div class="form-group">
-                <label for="hero_image">Главное изображение (Hero Image) *</label>
-                <input type="file" id="hero_image" name="hero_image" accept="image/*" required>
-                <span class="file-hint">Основная обложка страницы высокого разрешения</span>
-            </div>
-            
-            <div class="form-group">
-                <label>Галерея изображений (до 3-х штук)</label>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <input type="file" name="gallery_images" accept="image/*">
-                    <input type="file" name="gallery_images" accept="image/*">
-                    <input type="file" name="gallery_images" accept="image/*">
-                </div>
-                <span class="file-hint">Дополнительные слайды для галереи места</span>
-            </div>
-        </div>
+        <form action="/admin/places/create" method="POST" enctype="multipart/form-data" autocomplete="off">
 
-        <div class="form-section">
-            <h3>3. Достопримечательности (до 3-х объектов)</h3>
-            
-            {% for i in range(1, 4) %}
-            <div class="attraction-block">
-                <strong style="display:block; margin-bottom: 10px; color: #007bff;">Объект №{{ i }}</strong>
-                <div class="form-group">
-                    <label>Название достопримечательности</label>
-                    <input type="text" name="attr_heading_{{ i }}" placeholder="Например: Красная Поляна">
+            <div class="form-section">
+                <h3>1. Основная информация</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">Город *</label>
+                        <input type="text" id="city" name="city" required placeholder="Например: Сочи">
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Страна *</label>
+                        <input type="text" id="country" name="country" required placeholder="Например: Россия">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea name="attr_description_{{ i }}" rows="3" placeholder="Описание этой достопримечательности..."></textarea>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="subtitle">Подзаголовок (Subtitle)</label>
+                        <input type="text" id="subtitle" name="subtitle" placeholder="Краткое описание в две строки">
+                    </div>
+                    <div class="form-group">
+                        <label for="rating">Рейтинг места</label>
+                        <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" placeholder="4.8">
+                    </div>
                 </div>
+
                 <div class="form-group">
-                    <label>Фотография объекта</label>
-                    <input type="file" name="attr_image_{{ i }}" accept="image/*">
+                    <label for="description">Полное описание места *</label>
+                    <textarea id="description" name="description" rows="5" required
+                              placeholder="Подробный текст о локации..."></textarea>
                 </div>
             </div>
-            {% endfor %}
-        </div>
 
-        <button type="submit" class="btn-submit">Сохранить место в базу данных</button>
-    </form>
-</div>
+            <div class="form-section">
+                <h3>2. Фотографии места</h3>
+                <div class="form-group">
+                    <label for="hero_image">Главное изображение (Hero Image) *</label>
+                    <input type="file" id="hero_image" name="hero_image" accept="image/*" required>
+                    <span class="file-hint">Основная обложка страницы высокого разрешения</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Галерея изображений (до 3-х штук)</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <input type="file" name="gallery_images" accept="image/*">
+                        <input type="file" name="gallery_images" accept="image/*">
+                        <input type="file" name="gallery_images" accept="image/*">
+                    </div>
+                    <span class="file-hint">Дополнительные слайды для галереи места</span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>3. Достопримечательности (до 3-х объектов)</h3>
+
+                {% for i in range(1, 4) %}
+                    <div class="attraction-block">
+                        <strong style="display:block; margin-bottom: 10px; color: #007bff;">Объект №{{ i }}</strong>
+                        <div class="form-group">
+                            <label>Название достопримечательности</label>
+                            <input type="text" name="attr_heading_{{ i }}" placeholder="Например: Красная Поляна">
+                        </div>
+                        <div class="form-group">
+                            <label>Описание</label>
+                            <textarea name="attr_description_{{ i }}" rows="3"
+                                      placeholder="Описание этой достопримечательности..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Фотография объекта</label>
+                            <input type="file" name="attr_image_{{ i }}" accept="image/*">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn-submit">Сохранить место в базу данных</button>
+        </form>
+    </div>
 {% endblock %}

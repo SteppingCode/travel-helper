@@ -13,7 +13,7 @@
 
             <h2>Создайте свою идеальную поездку! <i class="fa-solid fa-route"></i></h2>
 
-            <form action="/create_trip" method="POST" class="grid-form">
+            <form action="/create_trip" method="post" enctype="multipart/form-data" class="grid-form">
 
                 <div class="input-field input-name">
                     <i class="fa-solid fa-pen icon"></i>
@@ -23,13 +23,13 @@
 
                 <div class="input-field input-date" onclick="this.querySelector('input').showPicker()">
                     <i class="fa-solid fa-calendar-days icon"></i>
-                    <input type="date" name="trip_from" placeholder="Выбор даты...">
+                    <input type="date" name="trip_from" placeholder="Выбор даты..." required>
                     From
                 </div>
 
                 <div class="input-field input-date" onclick="this.querySelector('input').showPicker()">
                     <i class="fa-solid fa-calendar-days icon"></i>
-                    <input type="date" name="trip_to" placeholder="Выбор даты...">
+                    <input type="date" name="trip_to" placeholder="Выбор даты..." required>
                     To
                 </div>
 
@@ -46,14 +46,13 @@
                 </div>
 
                 <div class="input-field input-budget">
-                    <i class="fa-solid fa-dollar-sign icon"></i>
+                    <i class="fas fa-ruble-sign"></i>
                     <input type="number" name="budget" placeholder="Бюджет...">
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </div>
 
                 <div class="upload-zone" id="drop-zone">
-                    <input type="file" id="file-input" accept="image/*" style="display: none;">
-                    <input type="hidden" name="preview" id="image-base64">
+                    <input type="file" id="file-input" name="preview" accept="image/*" style="display: none;" required>
 
                     <div class="upload-content" id="upload-content">
                         <i class="fa-solid fa-camera-retro upload-icon"></i>

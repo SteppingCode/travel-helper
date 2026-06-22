@@ -3,13 +3,19 @@
     <title>{{ trip.name }} - Детали</title>
     <link
             rel="stylesheet"
-            href="{{ url_for('static', path="styles/trip_details.css") }}"
+            href="{{ url_for('static', path='styles/trip_details.css') }}"
     />
     <link
-        rel="stylesheet"
-        href="{{ url_for('static', path='styles/style.css') }}"
+            rel="stylesheet"
+            href="{{ url_for('static', path='styles/style.css') }}"
+    />
+
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
     <style>
+        /* Динамический фон баннера */
         .header-banner::before {
             content: "";
             position: absolute;
@@ -17,214 +23,413 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: {% if trip . has_image %} url('/media/trip/{{ trip.id }} ')
-            {% else %} url("{{ url_for('static', path='assets/background.jpg') }} ")
+            background-image: {% if trip.has_image %} url("/media/trip/{{ trip.id }}")
+            {% else %} url("{{ url_for('static', path='assets/background.jpg') }}")
             {% endif %};
             background-size: cover;
             background-position: center;
-            opacity: 0.4;
+            opacity: 0.25;
             z-index: 1;
+        }
+
+        /* Стили для реализации макета с эскиза */
+        .header-banner {
+            position: relative;
+            background: #2c3e50;
+            border-radius: 16px;
+            padding: 30px 40px;
+            color: #ffffff;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .header-left p {
+            font-size: 1.1rem;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Карточка Бюджета в правой части шапки */
+        .header-budget {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 220px;
+        }
+
+        .budget-icon {
+            font-size: 2rem;
+            color: #f1c40f;
+        }
+
+        .budget-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .budget-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .budget-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        /* Новая 3-колоночная сетка */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            align-items: start;
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+            justify-content: space-between;
+            border: 1px solid rgba(94, 131, 174, 0.1);
+        }
+
+        .panel h3 {
+            font-size: 1.25rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f4f8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 flex-grow;
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .data-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        .data-list li:hover {
+            background: #f1f5f9;
+        }
+
+        .item-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #334155;
+        }
+
+        /* Чекбоксы для колонки Чек-лист */
+        .todo-checkbox {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Встроенные формы добавления внизу карточек */
+        .panel-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f4f8;
+        }
+
+        .panel-form input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .panel-form input:focus {
+            border-color: #5e83ae;
+        }
+
+        .panel-form button {
+            background: #5e83ae;
+            color: white;
+            border: none;
+            padding: 0 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .panel-form button:hover {
+            background: #4a6e96;
+        }
+
+        .tags-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .tag-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Адаптивность для мобильных экранов */
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-budget {
+                width: 100%;
+            }
         }
     </style>
 {% endblock %}
 
 {% block content %}
     <div class="trip-dashboard">
+
         <div class="header-banner">
             <div class="header-content">
-                <h1>{{ trip.name }}</h1>
-                <p><i class="fa-solid fa-location-dot"></i> {{ trip.city }}, {{ trip.country }}</p>
-                <div id="tags-container" style="margin-top: 10px;"></div>
+                <div class="header-left">
+                    <h1>{{ trip.name }}</h1>
+                    <p class="trip-location">
+                        <i class="fa-solid fa-location-dot"></i> {{ trip.city }}, {{ trip.country }}
+                    </p>
+                    <p class="trip-dates">
+                        <i class="fa-solid fa-calendar-days"></i> {{ trip.date_from }} — {{ trip.date_to }}
+                    </p>
+                    <div id="tags-container" class="tags-list">
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-budget">
+                        <i class="fa-solid fa-wallet budget-icon"></i>
+                        <div class="budget-info">
+                            <span class="budget-label">Бюджет</span>
+                            <span class="budget-value">
+                                {% if trip.budget %}{{ "{:,.0f}".format(trip.budget) }} ₽{% else %}0 ₽{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="dashboard-grid">
-            <div class="panel">
-                <h3>Маршрут (Места)</h3>
-                <ul class="data-list" id="places-list"></ul>
-                <button class="alert-btn" style="margin-top:10px; font-size:12px;" onclick="openModal('place')">+
-                    Добавить место
-                </button>
+
+            <div class="panel" id="panel-places">
+                <div>
+                    <h3><i class="fa-solid fa-map-location-dot"></i> Места</h3>
+                    <ul class="data-list" id="places-list">
+                    </ul>
+                </div>
+                <div class="panel-form">
+                    <input type="text" id="input-place" placeholder="Добавить место...">
+                    <button onclick="addItemDirect('place', 'input-place')">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="panel">
-                <h3>Задачи и Чек-лист</h3>
-                <ul class="data-list" id="tasks-list"></ul>
-                <button class="alert-btn" style="margin-top:10px; font-size:12px;" onclick="openModal('task')">+
-                    Добавить задачу
-                </button>
+            <div class="panel" id="panel-tasks">
+                <div>
+                    <h3><i class="fa-solid fa-list-check"></i> Чек-лист</h3>
+                    <ul class="data-list" id="tasks-list">
+                    </ul>
+                </div>
+                <div class="panel-form">
+                    <input type="text" id="input-task" placeholder="Добавить задачу...">
+                    <button onclick="addItemDirect('task', 'input-task')">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="panel">
-                <h3>Участники (Макс 10)</h3>
-                <ul class="data-list" id="members-list"></ul>
-                <button class="alert-btn" style="margin-top:10px; font-size:12px;" onclick="openModal('member')">+
-                    Добавить участника
-                </button>
+            <div class="panel" id="panel-members">
+                <div>
+                    <h3><i class="fa-solid fa-users"></i> Участники</h3>
+                    <ul class="data-list" id="members-list">
+                    </ul>
+                </div>
+                <div class="panel-form">
+                    <input type="text" id="input-member" placeholder="Добавить участника...">
+                    <button onclick="addItemDirect('member', 'input-member')">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
             </div>
 
-            <div class="panel">
-                <h3>Теги путешествия</h3>
-                <ul class="data-list" id="tags-list"></ul>
-                <button class="alert-btn" style="margin-top:10px; font-size:12px;" onclick="openModal('tag')">+ Добавить
-                    тег
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event, 'modalOverlay')">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeModal(null, 'modalOverlay')"></i>
-            <div class="modal-title" id="modalTitle">Заголовок</div>
-
-            <div class="modal-input-row">
-                <input type="text" id="modalInput" placeholder="Введите значение...">
-                <button class="modal-add-btn" onclick="submitModalItem()">Добавить</button>
-            </div>
-
-            <ul class="modal-list" id="modalList">
-            </ul>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="alertOverlay" onclick="closeModal(event, 'alertOverlay')">
-        <div class="modal-box alert-box" onclick="event.stopPropagation()">
-            <div class="alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
-            <div class="modal-title" style="justify-content: center; margin-bottom: 10px;">Действие невозможно</div>
-            <div class="alert-text">Сначала создайте хотя бы одну поездку, чтобы добавлять к ней чек-листы, участников
-                или места отдыха!
-            </div>
-            <button class="alert-btn" onclick="closeModal(null, 'alertOverlay')">Хорошо</button>
         </div>
     </div>
 
     <script>
-        const currentTripId = {{ trip.id }};
-        let currentModalType = '';
-        const config = {
-            place: {title: 'Достопримечательности', icon: 'fa-location-dot', placeholder: 'Например, Биг-Бен...'},
-            task: {
-                title: 'Список дел (Чек-лист)',
-                icon: 'fa-clipboard-list',
-                placeholder: 'Например, Купить билеты...'
-            },
-            member: {title: 'Участники поездки', icon: 'fa-user-group', placeholder: 'Имя участника...'}
-        };
+        const currentTripId = "{{ trip.id }}";
 
-        // Функция обновления списков на странице
+        // Функция для загрузки и обновления всех списков на странице
         async function updateDashboardLists() {
-            const res = await fetch(`/api/trip/${currentTripId}/data`);
-            const data = await res.json();
-
-            // Рендер мест
-            document.getElementById('places-list').innerHTML = data.places.map(p =>
-                `<li><span><i class="fa-solid fa-map-pin"></i> ${p.place_name}</span> <i class="fa-solid fa-trash" style="cursor:pointer; color:red;" onclick="deleteItem('place', ${p.id})"></i></li>`
-            ).join('');
-
-            // Рендер участников (включая владельца)
-            document.getElementById('members-list').innerHTML = `<li><span><i class="fa-solid fa-crown"></i> Вы (Организатор)</span></li>` +
-                data.members.map(m => `<li><span><i class="fa-solid fa-user"></i> ${m.member_name}</span> <i class="fa-solid fa-trash" style="cursor:pointer; color:red;" onclick="deleteItem('member', ${m.id})"></i></li>`).join('');
-
-            // Рендер тегов
-            document.getElementById('tags-container').innerHTML = data.tags.map(t => `<span class="tag-badge">${t.tag_name}</span>`).join('');
-            document.getElementById('tags-list').innerHTML = data.tags.map(t =>
-                `<li><span># ${t.tag_name}</span> <i class="fa-solid fa-trash" style="cursor:pointer; color:red;" onclick="deleteItem('tag', ${t.id})"></i></li>`
-            ).join('');
-
-            // Рендер чек-листа
-            document.getElementById('tasks-list').innerHTML = data.tasks.map(t =>
-                `<li><span><i class="fa-regular fa-square"></i> ${t.task_name}</span> <i class="fa-solid fa-trash" style="cursor:pointer; color:red;" onclick="deleteItem('task', ${t.id})"></i></li>`
-            ).join('');
-        }
-
-        // Те же функции deleteItem и submitModalItem, что и в trips.html, с вызовом updateDashboardLists() в конце
-        async function openModal(type) {
-            if (!currentTripId) {
-                document.getElementById('alertOverlay').classList.add('active');
-                return;
-            }
-            currentModalType = type;
-
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid ${config[type].icon}"></i> ${config[type].title}`;
-            document.getElementById('modalInput').placeholder = config[type].placeholder;
-            document.getElementById('modalInput').value = '';
-
-            await updateModalList();
-
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-
-        function closeModal(e, id) {
-            if (!e || e.target === document.getElementById(id)) {
-                document.getElementById(id).classList.remove('active');
-            }
-        }
-
-        async function updateModalList() {
             const response = await fetch(`/api/trip/${currentTripId}/data`);
-            const data = await response.json();
-            const listEl = document.getElementById('modalList');
-            listEl.innerHTML = '';
+            if (!response.ok) return;
 
-            if (currentModalType === 'place') {
+            const data = await response.json();
+
+            // 1. Обновление списка мест
+            const placesContainer = document.getElementById('places-list');
+            placesContainer.innerHTML = '';
+            if (data.places && data.places.length > 0) {
                 data.places.forEach(p => {
-                    listEl.innerHTML += `
+                    placesContainer.innerHTML += `
                         <li>
-                            <div class="item-content"><i class="fa-solid fa-map-pin"></i> ${p.place_name}</div>
-                            <button class="delete-btn" onclick="deleteItem('place', ${p.id})"><i class="fa-solid fa-trash-can"></i></button>
+                            <div class="item-content"><i class="fa-solid fa-location-arrow"></i> ${p.place_name || p.city}</div>
+                            <button class="delete-btn" onclick="deleteItemDirect('place', ${p.id})"><i class="fa-solid fa-trash-can"></i></button>
                         </li>`;
                 });
-                {#document.getElementById('menu-places-desc').textContent = `Добавлено локаций: ${data.places.length}`;#}
-            } else if (currentModalType === 'task') {
+            } else {
+                placesContainer.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem; padding: 10px;">Список пуст</p>';
+            }
+
+            // 2. Обновление чек-листа
+            const tasksContainer = document.getElementById('tasks-list');
+            tasksContainer.innerHTML = '';
+            if (data.tasks && data.tasks.length > 0) {
                 data.tasks.forEach(t => {
-                    listEl.innerHTML += `
+                    tasksContainer.innerHTML += `
                         <li>
-                            <div class="item-content"><i class="fa-regular fa-square-check"></i> ${t.task_name}</div>
-                            <button class="delete-btn" onclick="deleteItem('task', ${t.id})"><i class="fa-solid fa-trash-can"></i></button>
+                            <div class="item-content">
+                                <input type="checkbox" class="todo-checkbox" ${t.is_done ? 'checked' : ''} onchange="toggleTask(${t.id}, this.checked)">
+                                <span style="${t.is_done ? 'text-decoration: line-through; color: #94a3b8;' : ''}">${t.item_text}</span>
+                            </div>
+                            <button class="delete-btn" onclick="deleteItemDirect('task', ${t.id})"><i class="fa-solid fa-trash-can"></i></button>
                         </li>`;
                 });
-                {#document.getElementById('menu-tasks-desc').textContent = `Задач в списке: ${data.tasks.length}`;#}
-            } else if (currentModalType === 'member') {
-                listEl.innerHTML = `
-                    <li>
-                        <div class="item-content"><i class="fa-solid fa-user-shield"></i> Организатор (Вы)</div>
-                    </li>`;
+            } else {
+                tasksContainer.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem; padding: 10px;">Задач пока нет</p>';
+            }
+
+            // 3. Обновление списка участников
+            const membersContainer = document.getElementById('members-list');
+            membersContainer.innerHTML = '';
+            if (data.members && data.members.length > 0) {
                 data.members.forEach(m => {
-                    listEl.innerHTML += `
+                    membersContainer.innerHTML += `
                         <li>
                             <div class="item-content"><i class="fa-solid fa-user"></i> ${m.member_name}</div>
-                            <button class="delete-btn" onclick="deleteItem('member', ${m.id})"><i class="fa-solid fa-trash-can"></i></button>
+                            <button class="delete-btn" onclick="deleteItemDirect('member', ${m.id})"><i class="fa-solid fa-trash-can"></i></button>
                         </li>`;
                 });
-                {#document.getElementById('menu-members-desc').textContent = `${data.members.length + 1} путешественника`;#}
+            } else {
+                membersContainer.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem; padding: 10px;">Только вы</p>';
+            }
+
+            // 4. Обновление тегов в шапке
+            const tagsContainer = document.getElementById('tags-container');
+            tagsContainer.innerHTML = '';
+            if (data.tags && data.tags.length > 0) {
+                data.tags.forEach(t => {
+                    tagsContainer.innerHTML += `<span class="tag-badge"># ${t.tag_name}</span>`;
+                });
             }
         }
 
-        async function submitModalItem() {
-            const inputEl = document.getElementById('modalInput');
+        // Прямое добавление без открытия модальных окон
+        async function addItemDirect(type, inputId) {
+            const inputEl = document.getElementById(inputId);
             const val = inputEl.value.trim();
             if (!val) return;
 
             const response = await fetch(`/api/trip/${currentTripId}/add_item`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({type: currentModalType, value: val})
+                body: JSON.stringify({type: type, value: val})
             });
 
             if (response.ok) {
                 inputEl.value = '';
-                await updateModalList();
+                await updateDashboardLists();
+            } else {
+                const errData = await response.json();
+                alert(errData.detail || "Ошибка при добавлении");
             }
         }
 
-        async function deleteItem(type, id) {
+        // Прямое удаление элементов
+        async function deleteItemDirect(type, id) {
             const response = await fetch(`/api/trip/delete_item/${type}/${id}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
-                await updateModalList();
+                await updateDashboardLists();
             }
+        }
+
+        // Переключение статуса задачи (выполнено / не выполнено)
+        async function toggleTask(id, isDone) {
+            await fetch(`/api/trip/task/toggle/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({is_done: isDone})
+            });
+            await updateDashboardLists();
         }
 
         document.addEventListener('DOMContentLoaded', updateDashboardLists);

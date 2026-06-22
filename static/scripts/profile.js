@@ -1,44 +1,66 @@
-// Выпадающее меню
-function toggleMenu() {
-    const menu = document.getElementById('dropdownMenu');
-    menu.classList.toggle('show');
-}
+// Флаг наличия несохраненных изменений
+let isDirty = false;
 
-window.onclick = function(event) {
-    if (!event.target.matches('.menu-icon') && !event.target.closest('.menu-icon')) {
-        const dropdowns = document.getElementsByClassName('dropdown-menu');
-        for (let i = 0; i < dropdowns.length; i++) {
-            if (dropdowns[i].classList.contains('show')) {
-                dropdowns[i].classList.remove('show');
-            }
-        }
+// Отслеживаем изменения во всех полях формы
+document.querySelectorAll('#profileForm input').forEach(input => {
+    const unsavedChangesIcon = document.getElementById('settings-indicator');
+    input.addEventListener('input', () => {
+        isDirty = true;
+        unsavedChangesIcon.style.display = `block`;
+    });
+});
+
+
+window.addEventListener('beforeunload', (event) => {
+    if (isDirty) {
+        event.preventDefault();
     }
-}
+});
+
 
 function previewAvatar(input) {
     if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const avatarDiv = document.querySelector('.avatar-image');
-            avatarDiv.innerHTML = '<img src="' + e.target.result + '" alt="Avatar" class="avatar-img"></div>';
+        const file = input.files[0];
+
+        if (!file.type.startsWith('image/')) {
+            alert('Пожалуйста, выберите корректное изображение.');
+            return;
         }
-        reader.readAsDataURL(input.files[0]);
+
+        const avatarImg = document.querySelector('.avatar-img');
+        if (avatarImg) {
+            avatarImg.src = URL.createObjectURL(file);
+        }
+
+        const modal = document.getElementById('infoModal');
+        const modalTitle = document.getElementById('infoModalTitle');
+        const modalContent = document.getElementById('infoModalContent');
+
+        if (modal && modalTitle && modalContent) {
+            modalTitle.innerText = "🔄 Аватар обновлен в предпросмотре";
+            modalContent.innerHTML = `
+                <div style="color: #F9F5ED; text-align: center; font-family: inherit;">
+                    <p style="margin-bottom: 12px; font-weight: bold;">Вы успешно выбрали новое фото профиля!</p>
+                    <p style="font-size: 13px; opacity: 0.9;">Обратите внимание: чтобы изменения сохранились на сервере навсегда, обязательно нажмите кнопку <strong>"Сохранить изменения"</strong> внизу формы.</p>
+                </div>
+            `;
+            modal.style.display = `flex`;
+        }
     }
 }
+
+
+document.getElementById('profileForm').addEventListener('submit', () => {
+    isDirty = false;
+    const unsavedChangesIcon = document.getElementById('settings-indicator');
+    unsavedChangesIcon.style.display = `none`;
+});
+
 
 function removeAvatar() {
     document.getElementById('removeAvatarInput').value = '1';
     document.getElementById('avatarInput').value = '';
 }
-
-
-document.addEventListener('click', function(event) {
-    const menu = document.getElementById('settingsDropdownMenu');
-    const indicator = document.querySelector('.settings-indicator');
-    if (menu && indicator && !indicator.contains(event.target)) {
-        menu.classList.remove('show');
-    }
-});
 
 
 function formatValue(value) {
@@ -47,6 +69,7 @@ function formatValue(value) {
     }
     return value;
 }
+
 
 function showConfirmModal() {
     const email = document.getElementById('emailInput').value || 'Не указан';
@@ -67,9 +90,11 @@ function showConfirmModal() {
     document.getElementById('confirmModal').style.display = 'flex';
 }
 
+
 function closeConfirmModal() {
     document.getElementById('confirmModal').style.display = 'none';
 }
+
 
 function submitForm() {
     const form = document.getElementById('profileForm');
@@ -82,50 +107,6 @@ function closeInfoModal() {
     document.getElementById('infoModal').style.display = 'none';
 }
 
-function showNotification(message, type = 'info') {
-    const existing = document.querySelector('.notification');
-    if (existing) {
-        existing.remove();
-    }
-
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease forwards';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 3000);
-}
-
-window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('saved') === '1') {
-        const saveBtn = document.getElementById('saveButton');
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '✅ Изменения сохранены!';
-        saveBtn.classList.add('success');
-        showNotification('Профиль успешно сохранен!', 'success');
-
-        setTimeout(() => {
-            saveBtn.innerHTML = originalText;
-            saveBtn.classList.remove('success');
-            const newUrl = window.location.pathname;
-            window.history.pushState({}, document.title, newUrl);
-        }, 3000);
-    }
-
-    document.querySelectorAll('.confirm-modal').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.style.display = 'none';
-            }
-        });
-    });
-};
 
 function updateLeftColumn() {
     document.getElementById('leftEmail').textContent = document.getElementById('emailInput').value || 'Не указан';

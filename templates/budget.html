@@ -12,25 +12,25 @@
             <div class="budget_section1">
                 <div class="budget_section_1">
                     <div class="val">₽</div>
-                    <div class="many">395K</div>
+                    <div class="many">{{ total_budget }}</div>
                     <span class="inf">Общий бюджет</span>
                 </div>
 
                 <div class="budget_section_1">
                     <div class="val3">₽</div>
-                    <div class="many">132K</div>
+                    <div class="many">{{ avg_budget }}</div>
                     <span class="inf">Средний бюджет</span>
                 </div>
 
                 <div class="budget_section_1">
                     <div class="val1">₽</div>
-                    <div class="many">395K</div>
+                    <div class="many">{{ planned_budget }}</div>
                     <span class="inf">Запланировано</span>
                 </div>
 
                 <div class="budget_section_1">
                     <div class="val2">₽</div>
-                    <div class="many">0К</div>
+                    <div class="many">{{ spent_budget }}</div>
                     <span class="inf">Потрачено</span>
                 </div>
             </div>
@@ -97,36 +97,24 @@
             </div>
             <div class="budget-section">
                 <h2>Бюджет по путешествиям</h2>
-
-                <div class="trip-item">
-                    <div class="trip-info">
-                        <span class="trip-name">Летний отпуск в Париже</span>
-                        <span class="trip-amount">150 000 ₽</span>
+                {% if trips %}
+                    {% for trip in trips %}
+                        <div class="trip-item">
+                            <div class="trip-info">
+                                <span class="trip-name">{{ trip.name }}</span>
+                                <span class="trip-amount">{{ trip.budget }} ₽</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress"
+                                     style="width: {{ trip.percent }}%; background-color: #3b82f6;"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="trip-item">
+                        <span class="trip-name" style="color: #888;">У вас пока нет добавленных поездок с указанным бюджетом.</span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 75%; background-color: #3b82f6;"></div>
-                    </div>
-                </div>
-
-                <div class="trip-item">
-                    <div class="trip-info">
-                        <span class="trip-name">Уикенд в горах</span>
-                        <span class="trip-amount">45 000 ₽</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 40%; background-color: #3b82f6;"></div>
-                    </div>
-                </div>
-
-                <div class="trip-item">
-                    <div class="trip-info">
-                        <span class="trip-name">Путешествие по Японии</span>
-                        <span class="trip-amount">200 000 ₽</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 90%; background-color: #3b82f6;"></div>
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

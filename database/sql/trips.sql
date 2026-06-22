@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS trips (
     created_at DATETIME NOT NULL,
     user_id INTEGER NOT NULL,
     budget DECIMAL(12, 2) DEFAULT NULL,
+    completed BOOLEAN NOT NULL DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

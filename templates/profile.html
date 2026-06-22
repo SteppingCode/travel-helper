@@ -16,6 +16,12 @@
                 </div>
                 <div class="profile-name">Путешественник</div>
                 <div class="profile-email" id="leftEmail">{{ user.email }}</div>
+                <div class="profile-id" style="margin-top: 15px; text-align: center;">
+                    <span style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 4px;">Персональный ID</span>
+                    <div style="display: inline-block; padding: 6px 15px; background: #f0f4f8; border-radius: 6px; border: 1px dashed #5E83AE; font-family: monospace; color: #5E83AE; font-size: 14px; font-weight: bold; letter-spacing: 1.5px;">
+                        {{ user.personal_id }}
+                    </div>
+                </div>
             </div>
 
             <div class="budget-block">
@@ -99,7 +105,7 @@
         <div class="main-content">
             <div class="top-bar">
                 <h2>Настройки профиля</h2>
-                <button class="refresh-btn" onclick="location.reload()" title="Обновить данные">
+                <button class="refresh-btn" onclick="location.reload(true)" title="Обновить данные">
                     <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                          xmlns="http://www.w3.org/2000/svg">
                         <path d="M21 3V8M21 8H16M21 8L18 5.29168C16.4077 3.86656 14.3051 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.2832 21 19.8675 18.008 20.777 14"

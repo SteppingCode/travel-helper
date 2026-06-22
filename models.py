@@ -22,6 +22,7 @@ class User(BaseModel):
     is_admin: bool = False
     email_notifications: bool = False
     budget: Optional[float] = None
+    personal_id: str
 
 
 class Place(BaseModel):

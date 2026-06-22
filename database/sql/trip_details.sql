@@ -2,8 +2,8 @@
 CREATE TABLE IF NOT EXISTS trip_places (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     trip_id INTEGER NOT NULL,
-    place_id INTEGER, -- Может быть NULL, если место введено вручную
-    custom_name VARCHAR(200), -- Название, если place_id IS NULL
+    place_id INTEGER,
+    custom_name VARCHAR(200),
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
     FOREIGN KEY (place_id) REFERENCES places(id) ON DELETE SET NULL

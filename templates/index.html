@@ -71,7 +71,13 @@
                     <span class="stat-label">Завершено</span>
                 </article>
                 <article class="stat-card">
-                    <span class="stat-number">350K</span>
+                    <span class="stat-number">
+                        {% if user.budget %}
+                            {{ user.budget }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </span>
                     <span class="stat-label">Бюджет ₽</span>
                 </article>
             </section>

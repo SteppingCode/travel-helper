@@ -10,5 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     email_notifications BOOLEAN NOT NULL DEFAULT 0,
     budget DECIMAL(12, 2) DEFAULT NULL,
     has_avatar BOOLEAN NOT NULL DEFAULT 0,
+    personal_id TEXT UNIQUE NOT NULL,
     created_at DATETIME NOT NULL
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_personal_id ON users(personal_id);

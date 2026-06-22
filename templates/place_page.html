@@ -7,6 +7,7 @@
 {% endblock %}
 {% block content %}
     <div class="hero-image hero-gradient">
+        {% if place %}
         <img src="/media/place/{{ place.id }}"
              alt="{{ place.city }}" class="hero-image">
     </div>

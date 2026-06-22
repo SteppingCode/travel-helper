@@ -1,16 +1,19 @@
-import bcrypt
+import bcrypt, jwt
+
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from fastapi import HTTPException, status, Request, Depends
 from utils import get_db
 from database.database import Database
-import jwt
 from jwt.exceptions import PyJWTError
+from config import Config
+from secrets import choice
+from string import ascii_uppercase, digits
 
-# --- Configuration (Move SECRET_KEY to an environment variable in production!) ---
-SECRET_KEY = "your-super-secret-key-change-me"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 300
+
+SECRET_KEY = Config.SECRET_KEY
+ALGORITHM = Config.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = Config.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -27,6 +30,18 @@ def get_password_hash(password: str) -> str:
     hashed_password = bcrypt.hashpw(password_bytes, salt)
     # Возвращаем строку для сохранения в БД
     return hashed_password.decode('utf-8')
+
+
+def generate_unique_personal_id(db: Database, length=8) -> str:
+    """Генерирует уникальный буквенно-цифровой ID и проверяет его отсутствие в БД."""
+    while True:
+        # Генерируем случайную строку (например, "A1B2C3D4")
+        code = ''.join(choice(ascii_uppercase + digits) for _ in range(length))
+
+        existing = db.select("users", where="personal_id = ?", params=(code,), fetch_one=True)
+
+        if not existing:
+            return code
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):

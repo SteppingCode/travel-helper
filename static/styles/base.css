@@ -31,7 +31,6 @@ body {
     font-family: "Cal Sans", monospace;
     background-color: var(--primary-color);
     color: var(--text-color);
-    margin-bottom: 40px;
 }
 
 header {

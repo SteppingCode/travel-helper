@@ -88,10 +88,14 @@
                                 <div>
                                     <h3>Участники</h3>
                                     <p id="menu-members-desc">
-                                        {% if nearest_trip and nearest_trip.members_count %}
-                                            {{ nearest_trip.members_count }} путешественника
+                                        {% if nearest_trip %}
+                                            {% if nearest_trip.members_count %}
+                                                {{ nearest_trip.members_count }} путешественника
+                                            {% else %}
+                                                1 путешественник
+                                            {% endif %}
                                         {% else %}
-                                            1 путешественник
+                                            Нет участников
                                         {% endif %}
                                     </p>
                                 </div>
@@ -182,57 +186,62 @@
             </div>
 
             <div class="cards-list" id="tripsContainer">
-                {% for card in trips %}
-                    <div class="trip-card-wrapper js-trip-card"
-                         data-status="{{ card.status }}"
-                         data-search="{{ card.name | lower }} {{ card.city | lower }} {{ card.country | lower }}">
+                {% if trips %}
+                    {% for card in trips %}
+                        <div class="trip-card-wrapper js-trip-card"
+                             data-status="{{ card.status }}"
+                             data-search="{{ card.name | lower }} {{ card.city | lower }} {{ card.country | lower }}">
 
-                        <a href="{{ url_for('trip_page', trip_id=card.id) }}">
-                            <article class="trip-card trip-list-template">
-                                <div class="card-image card-image-large">
-                                    {% if card.has_image %}
-                                        <img class="card-image" src="/media/trip/{{ card.id }}" alt="{{ card.name }}">
-                                    {% endif %}
-                                </div>
-                                <div class="card-info">
-                                    <div class="card-main">
-                                        <h2>{{ card.name }}</h2>
-                                        <span class="status-pill status-{{ card.status | replace(' ', '-') }}">{{ card.status }}</span>
+                            <a href="{{ url_for('trip_page', trip_id=card.id) }}">
+                                <article class="trip-card trip-list-template">
+                                    <div class="card-image card-image-large">
+                                        {% if card.has_image %}
+                                            <img class="card-image" src="/media/trip/{{ card.id }}"
+                                                 alt="{{ card.name }}">
+                                        {% endif %}
                                     </div>
-                                    <div class="card-details">
-                                        <div class="detail-item">
-                                            <i class="fa-solid fa-location-dot"></i>
-                                            <span>{{ card.city }}, {{ card.country }}</span>
+                                    <div class="card-info">
+                                        <div class="card-main">
+                                            <h2>{{ card.name }}</h2>
+                                            <span class="status-pill status-{{ card.status | replace(' ', '-') }}">{{ card.status }}</span>
                                         </div>
-                                        <div class="detail-item">
-                                            <i class="fa-solid fa-calendar"></i>
-                                            <span>{{ card.formatted_date }}</span>
+                                        <div class="card-details">
+                                            <div class="detail-item">
+                                                <i class="fa-solid fa-location-dot"></i>
+                                                <span>{{ card.city }}, {{ card.country }}</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <i class="fa-solid fa-calendar"></i>
+                                                <span>{{ card.formatted_date }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </article>
-                        </a>
+                                </article>
+                            </a>
 
-                        <a href="{{ url_for('trip_page', trip_id=card.id) }}">
-                            <div class="custom-preview-card trip-grid-template"
-                                 style="{% if card.has_image %} background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('/media/trip/{{ card.id }}'); background-size: cover; background-position: center; {% else %} background: linear-gradient(135deg, #668bb7, #5579a3); {% endif %}">
-                                <div class="custom-overlay">
-                                    <h3>{{ card.name }}</h3>
-                                    <p class="custom-route-date"><i
-                                            class="fa-solid fa-location-dot"></i> {{ card.city }}, {{ card.country }}
-                                    </p>
-                                    <p class="custom-route-date"><i
-                                            class="fa-solid fa-calendar-day"></i> {{ card.formatted_date }}</p>
-                                    {% if card.budget %}
-                                        <p class="custom-route-budget"><i
-                                                class="fa-solid fa-ruble-sign"></i> {{ card.budget }} руб.</p>
-                                    {% endif %}
+                            <a href="{{ url_for('trip_page', trip_id=card.id) }}">
+                                <div class="custom-preview-card trip-grid-template"
+                                     style="{% if card.has_image %} background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('/media/trip/{{ card.id }}'); background-size: cover; background-position: center; {% else %} background: linear-gradient(135deg, #668bb7, #5579a3); {% endif %}">
+                                    <div class="custom-overlay">
+                                        <h3>{{ card.name }}</h3>
+                                        <p class="custom-route-date"><i
+                                                class="fa-solid fa-location-dot"></i> {{ card.city }}, {{ card.country }}
+                                        </p>
+                                        <p class="custom-route-date"><i
+                                                class="fa-solid fa-calendar-day"></i> {{ card.formatted_date }}</p>
+                                        {% if card.budget %}
+                                            <p class="custom-route-budget"><i
+                                                    class="fa-solid fa-ruble-sign"></i> {{ card.budget }} руб.</p>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
 
-                    </div>
-                {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    Тут ничего нет.
+                {% endif %}
             </div>
 
             <div id="loadMoreContainer" style="text-align: center; margin-top: 20px; display: none;">

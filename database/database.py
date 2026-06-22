@@ -1,14 +1,8 @@
-import glob
-import os.path
 import sqlite3
 from datetime import datetime
 from os import makedirs, path
+from glob import glob
 
-from models import *
-
-"""
-checklists
-"""
 
 def conn_db(db_path: str | None = None) -> sqlite3.Connection:
     """Connect to an SQLite database file."""
@@ -32,10 +26,10 @@ def cursor_db(connection: sqlite3.Connection) -> sqlite3.Cursor:
 
 class Database:
     """Lightweight SQLite database wrapper for basic CRUD operations."""
-
     def __init__(self, db_path: str | None = None):
         self.db = conn_db(db_path)
         self.cursor = cursor_db(self.db)
+
 
     def execute(self, sql: str, params: tuple | list | None = None, commit: bool = False):
         """Execute a SQL statement and optionally commit."""
@@ -43,6 +37,7 @@ class Database:
         if commit:
             self.db.commit()
         return self.cursor
+
 
     def add(self, table: str, data: dict) -> int:
         """Insert a row into the specified table and return the last row id."""
@@ -54,12 +49,14 @@ class Database:
         self.db.commit()
         return self.cursor.lastrowid # type: ignore
 
+
     def remove(self, table: str, where: str, params: tuple | list | None = None) -> int:
         """Delete rows matching the given WHERE clause."""
         sql = f"DELETE FROM {table} WHERE {where}"
         self.cursor.execute(sql, params or ())
         self.db.commit()
         return self.cursor.rowcount
+
 
     def update(self, table: str, data: dict, where: str, params: tuple | list | None = None) -> int:
         """Update rows in a table matching the WHERE clause."""
@@ -68,6 +65,7 @@ class Database:
         self.cursor.execute(sql, tuple(data.values()) + tuple(params or ()))
         self.db.commit()
         return self.cursor.rowcount
+
 
     def select(
             self,
@@ -91,6 +89,7 @@ class Database:
         self.cursor.execute(sql, params or ())
         return self.cursor.fetchone() if fetch_one else self.cursor.fetchall()
 
+
     def close(self):
         """Close the database connection."""
         self.db.close()
@@ -102,33 +101,9 @@ def initialize_database(db_path: str | None = None) -> None:
     try:
         base_dir = path.dirname(path.abspath(__file__))
         sql_path = path.join(base_dir, "sql", "*.sql")
-        for sql_file in sorted(glob.glob(sql_path)):
+        for sql_file in sorted(glob(sql_path)):
             with open(sql_file, "r", encoding="utf-8") as file:
                 connection.executescript(file.read())
         connection.commit()
     finally:
         connection.close()
-
-
-if __name__ == "__main__":
-    from PIL.Image import open
-    db = Database()
-
-    trip1 = Trip(name="Отдых в Сочи", city="Сочи", country="Россия", date_from="2026-06-21", date_to="2020-09-21", user_id=1)
-    db.add("trips", trip1.model_dump())
-
-    trip2 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=1)
-    db.add("trips", trip2.model_dump())
-
-    trip3 = Trip(name="Поездка в Японию", city="Токио", country="Япония", date_from="2026-12-31", date_to="2027-02-09", user_id=1)
-    db.add("trips", trip3.model_dump())
-
-    # for image in images:
-    #     UPLOAD_DIR = "../uploads/"
-    #     file_size = os.path.getsize(UPLOAD_DIR + image)
-    #     width, height = open(UPLOAD_DIR + image).size
-    #     image_type = open(UPLOAD_DIR + image).get_format_mimetype()
-    #     image = Image(file_path=image, original_name=image, mime_type=image_type, file_size=file_size, width=width, height=height)
-    #     db.add("images", image.model_dump())
-
-    # db.add("images_links", {"image_id": 2, "entity_type": "trip", "entity_id": 3})

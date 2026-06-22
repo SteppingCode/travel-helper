@@ -2,7 +2,8 @@ from fastapi import Response, Request
 from sqlite3 import Row
 from fastapi.templating import Jinja2Templates
 from database.database import Database
-import urllib.parse
+from urllib import parse
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -76,7 +77,7 @@ def set_flash_message(response: Response, type: str, message: str) -> Response:
     Допустимые типы: 'success', 'error', 'warning', 'info'
     """
     # Кодируем сообщение, чтобы пробелы и русский язык безопасно передались через HTTP заголовки
-    encoded_msg = urllib.parse.quote(f"{type}|{message}")
+    encoded_msg = parse.quote(f"{type}|{message}")
 
     response.set_cookie(
         key="toast_msg",

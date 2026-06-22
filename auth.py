@@ -117,3 +117,20 @@ def get_admin_user(request: Request, current_user: dict = Depends(get_current_us
             detail="Доступ запрещен. Требуются права администратора."
         )
     return current_user
+
+
+def check_access_trip(request: Request, trip_id: int, current_user: dict = Depends(get_current_user)) -> bool:
+    db = Database()
+    query = """
+            SELECT * \
+            FROM trips t \
+                     INNER JOIN trip_members tm ON t.id = tm.trip_id
+            WHERE tm.user_id = ? \
+              AND tm.trip_id = ? \
+            """
+
+    result = db.execute(query, (current_user["id"], trip_id)).fetchone()
+
+    if result:
+        return True
+    return False

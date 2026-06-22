@@ -280,13 +280,21 @@
         let currentModalType = '';
 
         const config = {
-            place: {title: 'Достопримечательности', icon: 'fa-location-dot', placeholder: 'Например, Биг-Бен...'},
+            place: {
+                title: 'Достопримечательности',
+                icon: 'fa-location-dot',
+                placeholder: 'Например, Биг-Бен...'
+            },
             task: {
                 title: 'Список дел (Чек-лист)',
                 icon: 'fa-clipboard-list',
                 placeholder: 'Например, Купить билеты...'
             },
-            member: {title: 'Участники поездки', icon: 'fa-user-group', placeholder: 'Имя участника...'}
+            member: {
+                title: 'Участники поездки',
+                icon: 'fa-user-group',
+                placeholder: 'Идентификатор пользователя...'
+            }
         };
 
         async function openModal(type) {
@@ -328,9 +336,16 @@
                 document.getElementById('menu-places-desc').textContent = `Добавлено локаций: ${data.places.length}`;
             } else if (currentModalType === 'task') {
                 data.tasks.forEach(t => {
+                    console.log(t)
                     listEl.innerHTML += `
                         <li>
-                            <div class="item-content"><i class="fa-regular fa-square-check"></i> ${t.task_name}</div>
+                            <div class="item-content">
+                                <i class="fa-regular fa-square-check"></i>
+                                ${t.category}
+                            </div>
+                            <div class="item-content">
+                                ${t.item_text}
+                            </div>
                             <button class="delete-btn" onclick="deleteItem('task', ${t.id})"><i class="fa-solid fa-trash-can"></i></button>
                         </li>`;
                 });

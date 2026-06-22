@@ -1,17 +1,15 @@
 from datetime import datetime, date
 from sqlite3 import Error
 from pathlib import Path
-from urllib import response
-
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from database.database import Database, initialize_database
-from utils import get_db, set_flash_message, render_template, get_records
+from utils import get_db, set_flash_message, render_template, get_records, check_image_exists
 from fastapi import FastAPI, Form, Request, HTTPException, Depends, status, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from models import *
 from auth import (get_password_hash, verify_password, create_access_token, get_current_user,
                   timedelta, ACCESS_TOKEN_EXPIRE_MINUTES, get_optional_user, decode_token,
-                  get_admin_user, generate_unique_personal_id)
+                  get_admin_user, generate_unique_personal_id, check_access_trip)
 from os import path
 from typing import List, Optional
 from shutil import copyfileobj
@@ -98,12 +96,23 @@ async def read_root(
 ):
     context = None
     if user:
-        trips = get_records(
-            table="trips",
-            where="user_id = ?",
-            params=(request.state.user["id"],),
-            order_by="created_at DESC"
-        )
+        trip_query = """
+                     SELECT * \
+                     FROM trips t \
+                              INNER JOIN trip_members tm ON t.id = tm.trip_id
+                     WHERE tm.user_id = ?
+                     ORDER BY t.created_at DESC
+                     """
+        trips = db.execute(trip_query, (request.state.user["id"],))
+
+        def process_row(row) -> dict:
+            data = dict(row)
+            image_exists = check_image_exists("trip", data["id"])
+            data["has_image"] = True if image_exists else False
+            return data
+
+        trips = [process_row(row) for row in trips]
+
         context = {"trips": trips}
     return render_template(request, "index.html", context)
 
@@ -389,14 +398,23 @@ async def read_my_trips(
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
+    user_id = request.state.user["id"]
     ru_months = ["", "янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"]
-    trips_raw = get_records(
-        table="trips",
-        where="user_id = ?",
-        params=(current_user["id"],),
-        order_by="date_from ASC",
-        check_image_type="trip"
-    )
+    trips_raw_query = """
+                      SELECT *
+                      FROM trips t
+                               INNER JOIN trip_members tm ON t.id = tm.trip_id
+                      WHERE tm.user_id = ? \
+                      """
+    trips_raw = db.execute(trips_raw_query, (user_id,)).fetchall()
+
+    def process_row(row) -> dict:
+        data = dict(row)
+        image_exists = check_image_exists("trip", data["id"])
+        data["has_image"] = True if image_exists else False
+        return data
+
+    trips_raw = [process_row(row) for row in trips_raw]
 
     today = datetime.now().date()
     trips = []
@@ -405,6 +423,7 @@ async def read_my_trips(
 
     # noinspection PyTypeChecker
     for t in trips_raw:
+        print(t)
         try:
             d_from = datetime.fromisoformat(t["date_from"].split("T")[0]).date()
             d_to = datetime.fromisoformat(t["date_to"].split("T")[0]).date()
@@ -473,17 +492,35 @@ async def trip_page(
         request: Request,
         trip_id: int,
         db: Database = Depends(get_db),
-        current_user: dict = Depends(get_current_user)
+        current_user: dict = Depends(get_current_user),
+        check_access: bool = Depends(check_access_trip)
 ):
-    trip = get_records(
-        table="trips",
-        where="id = ? AND user_id = ?",
-        params=(trip_id, current_user["id"]),
-        fetch_one=True,
-        check_image_type="trip"
-    )
+    user_id = request.state.user["id"]
+
+    trip_query = """
+                 SELECT *
+                 FROM trips t
+                          INNER JOIN trip_members tm ON t.id = tm.trip_id
+                 WHERE tm.user_id = ?
+                   AND tm.trip_id = ? \
+                 """
+
+    trip = db.execute(trip_query, (user_id, trip_id,)).fetchone()
+
     if not trip:
-        raise HTTPException(status_code=404, detail="Путешествие не найдено или нет доступа")
+        response = RedirectResponse(
+            url="/",
+            status_code=status.HTTP_303_SEE_OTHER
+        )
+        return set_flash_message(response, "error", "Путешествие не найдено или нет доступа")
+
+    def process_row(row) -> dict:
+        data = dict(row)
+        image_exists = check_image_exists("trip", data["id"])
+        data["has_image"] = True if image_exists else False
+        return data
+
+    trip = process_row(trip)
 
     return render_template(request, "trip_details.html", {"trip": trip})
 
@@ -550,8 +587,12 @@ async def create_trip(
             budget=budget
         )
         db.add("trips", trip.model_dump())
+        trip_id = db.cursor.lastrowid
+        db.add("trip_members", {
+            "trip_id": trip_id,
+            "user_id": request.state.user['id'],
+        })
         if preview:
-            trip_id = db.cursor.lastrowid
             await save_uploaded_photo(preview, "trip", trip_id, db)
     except Error as err:
         print(err)
@@ -588,6 +629,7 @@ async def budget_page(
     trips_data = []
     for t in user_trips:
         trip_budget = t["budget"] or 0.0
+        # TODO: REMOVE ALL PRINTS
         print(trip_budget)
         # Вычисляем, какую долю общих средств занимает эта поездка
         percent = (trip_budget / total_budget * 100) if total_budget > 0 else 0
@@ -862,10 +904,14 @@ async def api_get_trip_data(
 
     # Чек-листы, участники и теги
     tasks = db.select("checklists", where="trip_id = ? AND user_id = ?", params=(trip_id, request.state.user['id']))
-    members = db.select("trip_members", columns="id, member_name", where="trip_id = ?", params=(trip_id,))
+    members_query = """
+                    SELECT u.id, u.fullname
+                    FROM users u
+                             INNER JOIN trip_members tm ON tm.user_id = u.id
+                    WHERE tm.trip_id = ?
+                    """
+    members = db.execute(members_query, (trip_id,)).fetchall()
     tags = db.select("trip_tags", columns="id, tag_name", where="trip_id = ?", params=(trip_id,))
-
-    # print(places, tasks, members, tags)
 
     return {
         "places": [dict(t) for t in places],
@@ -896,28 +942,53 @@ async def api_add_trip_item(
             detail="Доступ запрещен"
         )
 
-    table_map = {
-        "place": ("trip_places", {"trip_id": trip_id, "custom_name": item.value}),
-        "task": ("checklists", {"user_id": request.state.user['id'], "trip_id": trip_id, "category": item.value, "item_text": item.value}),
-        "member": ("trip_members", {"trip_id": trip_id, "member_name": item.value}),
-        "tag": ("trip_tags", {"trip_id": trip_id, "tag_name": item.value}),
-    }
+    table, data = ("", {})
 
-    if item.type not in table_map:
-        raise HTTPException(
-            status_code=400,
-            detail="Неверный тип"
-        )
-
-    table, data = table_map[item.type]
-
-    # Не более 10 участников (1 организатор + 9 добавленных)
-    if item.type == "member":
-        count = db.execute("SELECT COUNT(*) FROM trip_members WHERE trip_id = ?", (trip_id,)).fetchone()[0]
-        if count >= 9:
+    match item.type:
+        case "place":
+            table = "trip_places"
+            data = {
+                "trip_id": trip_id,
+                "custom_name": item.value,
+            }
+        case "task":
+            table = "checklists"
+            data = {
+                "user_id": request.state.user['id'],
+                "trip_id": trip_id,
+                "category": item.value,
+                "item_text": item.value
+            }
+        case "member":
+            count = db.execute("SELECT COUNT(*) FROM trip_members WHERE trip_id = ?", (trip_id,)).fetchone()[0]
+            if count >= 9:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Достигнут лимит: максимум 10 участников"
+                )
+            else:
+                user = db.select(
+                    table="users",
+                    columns="id, fullname",
+                    where="personal_id = ?",
+                    params=(item.value,),
+                    fetch_one=True
+                )
+                table = "trip_members"
+                data = {
+                    "trip_id": trip_id,
+                    "user_id": user['id'],
+                }
+        case "tag":
+            table = "trip_tags"
+            data = {
+                "trip_id": trip_id,
+                "tag_name": item.value
+            }
+        case _:
             raise HTTPException(
                 status_code=400,
-                detail="Достигнут лимит: максимум 10 участников"
+                detail="Неверный тип"
             )
 
     db.add(table, data)
@@ -926,18 +997,75 @@ async def api_add_trip_item(
     }
 
 
-@app.delete("/api/trip/delete_item/{item_type}/{item_id}", tags=["Auth"])
+@app.post("/api/trip/task/toggle/{task_id}", tags=["Auth"])
+async def api_toggle_task(
+        request: Request,
+        task_id: int,
+        db: Database = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
+    ...
+
+
+@app.delete("/api/trip/delete_item/{trip_id}/{item_type}/{item_id}", tags=["Auth"])
 async def api_delete_trip_item(
         request: Request,
+        trip_id: int,
         item_type: str,
         item_id: int,
         db: Database = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
-    table_map = {"place": "trip_places", "task": "checklists", "member": "trip_members", "tag": "trip_tags"}
-    if item_type in table_map:
-        db.remove(table_map[item_type], where="id = ?", params=(item_id,))
-    return {"status": "ok"}
+    table_map = {
+        "place": "trip_places",
+        "task": "checklists",
+        "member": "trip_members",
+        "tag": "trip_tags"
+    }
+
+    if item_type not in table_map:
+        raise HTTPException(
+            status_code=400,
+            detail="Неверный тип"
+        )
+
+    match item_type:
+        case "member":
+            result = db.execute("""SELECT t.user_id
+                                     FROM trips t
+                                              INNER JOIN trip_members tm ON t.id = tm.trip_id
+                                     WHERE t.id = ?
+                                       AND t.user_id = ?
+                                  """, (trip_id, request.state.user["id"])).fetchone()
+            if result:
+                if item_id == request.state.user["id"]:
+                    referer = request.headers.get("referer", "/")
+                    response = RedirectResponse(
+                        url=referer,
+                        status_code=status.HTTP_303_SEE_OTHER
+                    )
+                    return set_flash_message(response, "warning",
+                                             "Вы не можете удалить себя из путешествия!")
+
+                db.remove(
+                    table="trip_members",
+                    where="user_id = ?",
+                    params=(item_id,)
+                )
+            else:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Доступ запрещен"
+                )
+        case _:
+            db.remove(
+                table=table_map[item_type],
+                where="id = ?",
+                params=(item_id,)
+            )
+    return {
+        "status": "ok"
+    }
 
 
 @app.get('/favicon.ico', include_in_schema=False)

@@ -4,11 +4,12 @@
     padding: 24px 32px 40px;
 }
 
+
 form {
     width: 100%;
 }
 
-/* Поиск */
+
 .search-bar {
     width: 100%;
     min-width: 600px;
@@ -21,7 +22,7 @@ form {
     align-items: center;
 }
 
-/* Сетка мест */
+
 .places-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -33,6 +34,7 @@ form {
     }
 }
 
+
 .place-card {
     display: block;
     border: 1px solid #5E83AE;
@@ -40,6 +42,7 @@ form {
     border-radius: 16px;
     color: var(--text-color);
 }
+
 
 .place-preview {
     width: 100%;
@@ -55,18 +58,22 @@ form {
     }
 }
 
+
 .place-card.hidden {
     display: none;
 }
+
 
 .place-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
+
 .place-info {
     padding: 14px;
 }
+
 
 .place-name {
     font-size: 1.1rem;
@@ -75,10 +82,12 @@ form {
 
 }
 
+
 .place-rating {
     color: #f5c518;
     font-weight: bold;
 }
+
 
 .place-description {
     color: #555;
@@ -86,12 +95,14 @@ form {
     margin-top: 8px;
 }
 
+
 .tags {
     margin-top: 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
 }
+
 
 .tag {
     background: #f0f0f0;
@@ -101,57 +112,12 @@ form {
     font-size: 0.85rem;
 }
 
-/* ==================== АДАПТИВ ==================== */
-
-/* Планшеты и мобильные */
-@media (max-width: 992px) {
-    .places-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 16px;
-        overflow: auto;
-        padding: 16px;
-    }
-}
-
-@media (max-width: 768px) {
-    .search-bar {
-        margin: 12px 15px;
-        padding: 14px 18px;
-    }
-
-    .place-card img {
-        height: 200px;
-    }
-}
-
-@media (max-width: 480px) {
-    .places-grid {
-        grid-template-columns: 1fr;
-        padding: 12px;
-        gap: 16px;
-    }
-
-    .place-card img {
-        height: 190px;
-    }
-
-    .place-name {
-        font-size: 1.05rem;
-    }
-}
-
-/* Улучшение для очень маленьких экранов */
-@media (max-width: 360px) {
-    .search-bar {
-        font-size: 15px;
-    }
-}
 
 .admin-delete-btn {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(220, 53, 69, 0.2); /* Очень бледный красный */
+    background: rgba(220, 53, 69, 0.2);
     color: #dc3545;
     border: none;
     border-radius: 4px;
@@ -163,12 +129,13 @@ form {
     text-decoration: none;
 }
 
+
 .admin-delete-btn:hover {
-    background: rgba(220, 53, 69, 0.9); /* Яркий при наведении */
+    background: rgba(220, 53, 69, 0.9);
     color: white;
 }
 
-/* Карточка должна быть relative для абсолютного позиционирования кнопки */
+
 .place-card-wrapper {
     position: relative;
     display: block;

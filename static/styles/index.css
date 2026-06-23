@@ -211,22 +211,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.feature-icon svg {
     width: 96px;
     height: 96px;
-    fill: #2a2a2a;
     padding: 1px;
 
-    path {
-        fill: #2a2a2a;
-    }
-}
+    svg {
+        fill: var(--secondary-color);
 
-#dollar-icon {
-    path {
+        path {
+            fill: var(--secondary-color);
+        }
+    }
+    .cls-1 {
         fill: none !important;
+        stroke: var(--secondary-color);
     }
 }
 

@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travel Helper | Проект</title>
+    <style>
+        :root {
+    color-scheme: light;
+    color: #1d2735;
+    background: #f7f9fb;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #eef5ff 0%, #f7f9fb 35%, #f5f7fa 100%);
+    color: #15202b;
+}
+
+.page-shell {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 24px 24px 48px;
+}
+
+.hero-panel {
+    display: grid;
+    grid-template-columns: 1.2fr 0.9fr;
+    align-items: center;
+    gap: 32px;
+    padding: 44px;
+    border-radius: 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(237,245,255,0.92) 100%);
+    box-shadow: 0 24px 80px rgba(17, 42, 89, 0.08);
+}
+
+.hero-panel__copy {
+    max-width: 640px;
+}
+
+.eyebrow,
+.section__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #4f6b8b;
+}
+
+.hero-panel h1 {
+    margin: 0;
+    font-size: clamp(3rem, 3.8vw, 4.5rem);
+    line-height: 1.03;
+    letter-spacing: -0.08em;
+    color: #13263f;
+}
+
+.hero-panel p {
+    margin: 24px 0 0;
+    max-width: 610px;
+    line-height: 1.8;
+    font-size: 1.06rem;
+    color: #44516c;
+}
+
+.hero-actions {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 0 26px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.button--primary {
+    background: #4056ff;
+    color: #fff;
+    box-shadow: 0 18px 30px rgba(64, 86, 255, 0.18);
+}
+
+.button--ghost {
+    color: #4056ff;
+    border: 1px solid rgba(64, 86, 255, 0.18);
+    background: rgba(255,255,255,0.72);
+}
+
+.hero-panel__visual {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.card--hero {
+    width: 100%;
+    max-width: 460px;
+    border-radius: 32px;
+    padding: 34px;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(59, 89, 182, 0.1);
+    box-shadow: 0 28px 70px rgba(44, 75, 143, 0.08);
+}
+
+.card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 26px;
+}
+
+.card__title {
+    margin: 0 0 8px;
+    font-size: 1.85rem;
+    line-height: 1.1;
+    color: #10213d;
+}
+
+.card__subtitle {
+    color: #536080;
+    font-size: 0.98rem;
+}
+
+.mini-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 14px;
+}
+
+.mini-list li {
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: #f1f6ff;
+    color: #32426f;
+    font-size: 0.98rem;
+}
+
+.main {
+    margin-top: 80px;
+}
+
+.section {
+    margin-top: 72px;
+    padding: 0 6px;
+}
+
+.section--alt {
+    background: radial-gradient(circle at top left, rgba(64,86,255,0.09), transparent 45%);
+    border-radius: 32px;
+    padding: 42px 44px 44px;
+}
+
+.section--highlight {
+    padding: 38px 32px;
+    border-radius: 28px;
+    background: #fff;
+    border: 1px solid rgba(64,86,255,0.12);
+    box-shadow: 0 24px 60px rgba(103, 127, 228, 0.08);
+    margin-top: 72px;
+}
+
+.section__intro {
+    max-width: 760px;
+}
+
+.section__intro h2 {
+    margin: 0;
+    font-size: clamp(2rem, 2.4vw, 3rem);
+    line-height: 1.05;
+    color: #10213d;
+}
+
+.section__intro p {
+    margin: 18px 0 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #4f607e;
+}
+
+.grid {
+    display: grid;
+    gap: 24px;
+    margin-top: 36px;
+}
+
+.grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.feature-card,
+.tech-card,
+.file-card,
+.split-card,
+.code-card {
+    border-radius: 26px;
+    background: rgba(255,255,255,0.88);
+    border: 1px solid rgba(37, 63, 114, 0.08);
+    padding: 28px 26px;
+    box-shadow: 0 20px 42px rgba(32, 57, 97, 0.06);
+}
+
+.feature-card h3,
+.tech-card h3,
+.file-card strong,
+.split-card h3 {
+    margin: 0 0 16px;
+    font-size: 1.2rem;
+    color: #0f1a35;
+}
+
+.feature-card p,
+.tech-card p,
+.file-card p,
+.split-card p,
+.code-card p {
+    margin: 0;
+    line-height: 1.8;
+    color: #4d607b;
+    font-size: 1rem;
+}
+
+.tech-card ul,
+.split-card ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+}
+
+.tech-card li,
+.split-card li {
+    padding-left: 18px;
+    position: relative;
+    color: #47586c;
+}
+
+.tech-card li::before,
+.split-card li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #4056ff;
+}
+
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 32px;
+}
+
+.file-card strong {
+    display: block;
+    font-size: 1.05rem;
+    color: #25355c;
+    margin-bottom: 12px;
+}
+
+.code-card {
+    margin-top: 24px;
+    background: #192a54;
+    color: #eef6ff;
+}
+
+.code-card pre {
+    margin: 0;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.98rem;
+}
+
+.code-card code {
+    display: block;
+    white-space: pre-wrap;
+    line-height: 1.55;
+}
+
+.section--split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+    align-items: start;
+}
+
+.split-card ul {
+    padding-left: 16px;
+}
+
+.split-card li {
+    margin-bottom: 10px;
+}
+
+.page-footer {
+    margin-top: 72px;
+    padding: 28px 24px;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(68, 99, 171, 0.12);
+    text-align: center;
+    color: #4f607e;
+}
+
+.page-footer a {
+    color: #4056ff;
+    text-decoration: none;
+}
+
+@media (max-width: 1100px) {
+    .hero-panel {
+        grid-template-columns: 1fr;
+        padding: 32px;
+    }
+
+    .hero-panel__visual {
+        justify-content: center;
+    }
+
+    .grid--4,
+    .file-grid,
+    .grid--3,
+    .section--split {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .page-shell {
+        padding: 18px 18px 32px;
+    }
+
+    .hero-panel {
+        gap: 24px;
+        padding: 26px;
+    }
+
+    .hero-panel h1 {
+        font-size: 2.7rem;
+    }
+
+    .button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+<div class="page-shell">
+    <header class="hero-panel">
+        <div class="hero-panel__copy">
+            <span class="eyebrow">Travel Helper</span>
+            <h1>Путешествуй легче с удобным планировщиком</h1>
+            <p>Современное веб-приложение для создания путешествий, контроля бюджета, поиска достопримечательностей и подготовки чек-листов.</p>
+            <div class="hero-actions">
+                <a class="button button--primary" href="https://github.com/SteppingCode/travel-helper" target="_blank">Посмотреть на GitHub</a>
+                <a class="button button--ghost" href="#features">Подробнее</a>
+            </div>
+        </div>
+        <div class="hero-panel__visual">
+            <div class="card card--hero">
+                <div class="card__header">
+                    <div>
+                        <p class="card__title">Travel Helper</p>
+                        <span class="card__subtitle">Планируй, храни и управляй всеми поездками</span>
+                    </div>
+                </div>
+                <ol class="mini-list">
+                    <li>Создание и управление поездками</li>
+                    <li>Трекер бюджета и расходов</li>
+                    <li>Каталог мест и достопримечательностей</li>
+                    <li>Персональные чек-листы и фото-галереи</li>
+                </ol>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="section" id="features">
+            <div class="section__intro">
+                <span class="section__eyebrow">Возможности</span>
+                <h2>Что умеет проект</h2>
+                <p>Travel Helper объединяет удобный интерфейс, надёжную авторизацию и структуру данных, чтобы вести путешествия от идеи до воспоминаний.</p>
+            </div>
+            <div class="grid grid--4">
+                <article class="feature-card">
+                    <h3>Полный контроль поездки</h3>
+                    <p>Добавляйте поездки, устанавливайте даты, выбирайте направления и храните всю информацию в одном месте.</p>
+                </article>
+                <article class="feature-card">
+                    <h3>Управление бюджетом</h3>
+                    <p>Следите за расходами, планируйте бюджет и оценивайте траты по категориям.</p>
+                </article>
+                <article class="feature-card">
+                    <h3>Список мест и достопримечательностей</h3>
+                    <p>Сохраняйте города, страны, описания, рейтинги и вдохновляйтесь перед следующей поездкой.</p>
+                </article>
+                <article class="feature-card">
+                    <h3>Чек-листы и галереи</h3>
+                    <p>Подготовьтесь к путешествию с задачами и сохраняйте памятные фото в персональной галерее.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section section--alt">
+            <div class="section__intro">
+                <span class="section__eyebrow">Технологии</span>
+                <h2>Стек и архитектура</h2>
+                <p>Проект построен на FastAPI, SQLite и Jinja2, с удобным фронтендом на чистом HTML/CSS и JavaScript.</p>
+            </div>
+            <div class="grid grid--3">
+                <article class="tech-card">
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>FastAPI</li>
+                        <li>JWT авторизация</li>
+                        <li>SQLite</li>
+                        <li>Pydantic валидация</li>
+                    </ul>
+                </article>
+                <article class="tech-card">
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>Jinja2 шаблоны</li>
+                        <li>Адаптивные CSS</li>
+                        <li>Vanilla JavaScript</li>
+                        <li>Интерактивные чек-листы</li>
+                    </ul>
+                </article>
+                <article class="tech-card">
+                    <h3>Инфраструктура</h3>
+                    <ul>
+                        <li>Python 3.12+</li>
+                        <li>pip dependencies</li>
+                        <li>Лёгкая SQLite база</li>
+                        <li>Файловая загрузка фото</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section__intro">
+                <span class="section__eyebrow">Структура</span>
+                <h2>Основные файлы</h2>
+                <p>Ниже перечислены ключевые части проекта для быстрого ознакомления и дальнейшего запуска.</p>
+            </div>
+            <div class="file-grid">
+                <div class="file-card">
+                    <strong>app.py</strong>
+                    <p>Главное приложение FastAPI с маршрутизацией, авторизацией и рендерингом страниц.</p>
+                </div>
+                <div class="file-card">
+                    <strong>auth.py</strong>
+                    <p>JWT авторизация, хеширование паролей и проверка доступа.</p>
+                </div>
+                <div class="file-card">
+                    <strong>database/database.py</strong>
+                    <p>Работа с SQLite, инициализация базы и запросы.</p>
+                </div>
+                <div class="file-card">
+                    <strong>templates/</strong>
+                    <p>Jinja2 шаблоны для всех страниц: маршруты, профили, места и чек-листы.</p>
+                </div>
+                <div class="file-card">
+                    <strong>static/styles/</strong>
+                    <p>CSS стили для адаптивного интерфейса и современного дизайна.</p>
+                </div>
+                <div class="file-card">
+                    <strong>uploads/</strong>
+                    <p>Хранение пользовательских фотографий и галерей.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section--highlight">
+            <div>
+                <span class="section__eyebrow">Запуск</span>
+                <h2>Как запустить локально</h2>
+                <div class="code-card">
+<pre><code>python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app:app --reload</code></pre>
+                </div>
+                <p>После запуска приложение доступно на <strong>http://localhost:8000</strong>. База данных создаётся автоматически при старте.</p>
+            </div>
+        </section>
+
+        <section class="section section--split">
+            <div class="split-card">
+                <h3>Почему именно Travel Helper?</h3>
+                <ul>
+                    <li>Удобный интерфейс и понятная логика.</li>
+                    <li>Полный набор функций для планирования путешествий.</li>
+                    <li>Хранение данных на собственном сервере без лишних зависимостей.</li>
+                    <li>Легко расширяется и кастомизируется.</li>
+                </ul>
+            </div>
+            <div class="split-card">
+                <h3>Чем может удивить?</h3>
+                <ul>
+                    <li>Интерактивные маршруты и поддержка галерей.</li>
+                    <li>Чек-листы для подготовки к поездке.</li>
+                    <li>Административные функции для управления местами.</li>
+                    <li>Интуитивный поиск по городам, странам и тегам.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+</div>
+<footer class="page-footer">
+    <div>
+        <p>Travel Helper — проект на GitHub</p>
+        <a href="https://github.com/SteppingCode/travel-helper" target="_blank">https://github.com/SteppingCode/travel-helper</a>
+    </div>
+</footer>
+</body>
+</html>
